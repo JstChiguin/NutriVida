@@ -1,3 +1,13 @@
 body {
     background-color: lightgray;
 }
+
+.contenedor-servicios {
+    display: flex;
+    gap: 20px;
+}
+
+.tarjeta-servicio {
+    border: 1px solid black;
+    text-align: center;
+}
