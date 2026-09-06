@@ -5,13 +5,23 @@ body {
 .contenedor-servicios {
     display: flex;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
 .tarjeta-servicio {
     border: 1px solid black;
     text-align: center;
-    flex: 1;
+    flex: 1 1 250px;
     padding: 20px;
     border-radius: 10px;
     background-color: white;
+}
+
+#servicios {
+    padding: 40px 20px;
+}
+
+#servicios h2 {
+    text-align: center;
+    margin-bottom: 30px;
 }
