@@ -10,4 +10,8 @@ body {
 .tarjeta-servicio {
     border: 1px solid black;
     text-align: center;
+    flex: 1;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: white;
 }
