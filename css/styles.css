@@ -1,5 +1,5 @@
 body {
-    background-color: lightgray;
+    background-color: #f5f7f5;
 }
 
 .contenedor-servicios {
@@ -9,17 +9,18 @@ body {
 }
 
 .tarjeta-servicio {
-    border: 1px solid black;
+    border: 1px solid lightgray;
     text-align: center;
     flex: 1 1 250px;
     padding: 20px;
     border-radius: 10px;
     background-color: white;
-    box-shadow: 0 2px 5px gray;
+    box-shadow: 0 2px 5px lightgray;
 }
 
 #servicios {
     padding: 40px 20px;
+    background-color: #f5f7f5;
 }
 
 #servicios h2 {
