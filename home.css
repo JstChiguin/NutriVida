@@ -1,0 +1,55 @@
+body {
+    margin: 0;
+}
+
+header {
+    background-color: #4c9a5b;
+    padding: 16px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.logo img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+header nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 24px;
+    font-weight: 600;
+}
+
+.portada {
+    background-color: #4c9a5b;
+    color: white;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.portada-contenido {
+    max-width: 60%;
+    margin: 0 auto;
+}
+
+.portada-contenido h1 {
+    margin: 0 0 12px 0;
+    font-size: 36px;
+}
+
+.portada-contenido p {
+    margin: 0;
+    font-size: 16px;
+}
