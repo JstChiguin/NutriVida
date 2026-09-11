@@ -1,7 +1,7 @@
-<<<<<<< HEAD
 body {
     background-color: #f5f7f5;
 }
+
 
 .contenedor-servicios {
     display: flex;
@@ -74,7 +74,9 @@ body {
 .filtros-servicios button:hover {
     background-color: darkgreen;
     color: white;
-=======
+}
+
+
 .contenedor-nutricionistas {
     display: flex;
     gap: 20px;
@@ -121,5 +123,4 @@ body {
 .tarjeta-nutricionista p {
     margin: 0;
     line-height: 1.5;
->>>>>>> origin/feature/CN-57-listado-nutricionistas
 }
