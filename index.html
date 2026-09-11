@@ -2,48 +2,51 @@
 <html lang="es">
 
 <head>
-<<<<<<< HEAD
-    <meta charset="utf-8">
-    <title>NutriVida</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="home.css" />
+    <title>NutriVida</title>
+    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
-    <header>
+
+    <header id="inicio">
         <div class="logo">
-            <img src="imagenes/Designer.png" alt="logo">
+            <img src="imagenes/Designer.png" alt="Logo de NutriVida">
             NutriVida
         </div>
+
         <nav>
-            <a href="index.html">Inicio</a>
-            <a href="#">Servicios</a>
-            <a href="#">Nutricionistas</a>
+            <a href="#inicio">Inicio</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#nutricionistas">Nutricionistas</a>
             <a href="contacto.html">Contacto</a>
         </nav>
     </header>
 
-    <section class="portada">
-        <div class="portada-contenido">
-            <h1>Tu bienestar comienza aquí</h1>
-            <p>Conecta con nutricionistas certificados y transforma tus hábitos alimenticios
-                con planes personalizados.</p>
-        </div>
-    </section>
+    <main>
 
-</body>
-
-</html>
-
-<title>NutriVida</title>
-    <link rel="stylesheet" href="css/styles.css">
+        <section class="portada">
+            <div class="portada-contenido">
+                <h1>Tu bienestar comienza aquí</h1>
+                <p>
+                    Conecta con nutricionistas certificados y transforma tus hábitos alimenticios
+                    con planes personalizados.
+                </p>
+            </div>
+        </section>
 
         <section id="servicios">
             <h2>Nuestros servicios</h2>
 
             <div class="buscador-servicios">
                 <label for="buscar-servicio">Buscar servicio</label>
-                <input type="text" id="buscar-servicio" placeholder="Ej: nutrición deportiva">
+                <input
+                    type="text"
+                    id="buscar-servicio"
+                    placeholder="Ej: nutrición deportiva"
+                >
             </div>
 
             <div class="filtros-servicios">
@@ -54,18 +57,17 @@
             </div>
 
             <div class="contenedor-servicios">
+
                 <article class="tarjeta-servicio">
                     <h3>Control de peso</h3>
-                    <p>
-                        Evaluación y acompañamiento nutricional personalizado.
-                    </p>
+                    <p>Evaluación y acompañamiento nutricional personalizado.</p>
                 </article>
 
                 <article class="tarjeta-servicio">
                     <h3>Nutrición deportiva</h3>
                     <p>
                         Orientación nutricional adaptada a la actividad física
-                        y los objetivos deportivos
+                        y los objetivos deportivos.
                     </p>
                 </article>
 
@@ -76,14 +78,50 @@
                         metabólicas específicas.
                     </p>
                 </article>
-            </div>
 
+            </div>
+        </section>
+
+        <section id="nutricionistas">
+            <h2>Nuestros nutricionistas</h2>
+
+            <div class="contenedor-nutricionistas">
+
+                <article class="tarjeta-nutricionista">
+                    <img src="img/carolina-fuentes.png" alt="Nutricionista Carolina Fuentes">
+                    <h3>Carolina Fuentes M.</h3>
+                    <p>Obesidad y síndrome metabólico</p>
+                    <p>Lunes, Miércoles y Viernes</p>
+                </article>
+
+                <article class="tarjeta-nutricionista">
+                    <img src="img/rodrigo-sepulveda.png" alt="Nutricionista Rodrigo Sepúlveda">
+                    <h3>Rodrigo Sepúlveda A.</h3>
+                    <p>Nutrición deportiva y rendimiento</p>
+                    <p>Martes, Jueves y Sábados</p>
+                </article>
+
+                <article class="tarjeta-nutricionista">
+                    <img src="img/daniela-morales.png" alt="Nutricionista Daniela Morales">
+                    <h3>Daniela Morales C.</h3>
+                    <p>Alimentación vegetariana, vegana y trastornos alimentarios</p>
+                    <p>Lunes a Viernes</p>
+                </article>
+
+                <article class="tarjeta-nutricionista">
+                    <img src="img/felipe-araya.png" alt="Nutricionista Felipe Araya">
+                    <h3>Felipe Araya R.</h3>
+                    <p>Nutrición pediátrica y familiar</p>
+                    <p>Martes a Viernes</p>
+                </article>
+
+            </div>
         </section>
 
     </main>
 
     <script src="js/servicios.js"></script>
+
 </body>
 
 </html>
->>>>>>> origin/feature/CN-55-catalogo-servicios
