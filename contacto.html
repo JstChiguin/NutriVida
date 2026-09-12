@@ -1,80 +1,83 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contacto - Clínica Nutricional NutriVida</title>
-        <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
 
-        <div id="contenedor-encabezado"></div>
+    <div id="contenedor-encabezado"></div>
 
-        <section class="hero-home" style="padding: 4rem 5%;">
+    <section class="portada-contacto">
         <h1>Contáctanos</h1>
-        <p>¿Tienes dudas sobre nuestros servicios nutricionales o necesitas orientación? Estamos aquí para responder tus consultas y acompañar tu proceso.</p>
+        <p>¿Tienes dudas sobre nuestros servicios nutricionales o necesitas orientación? Estamos aquí para responder tus
+            consultas y acompañar tu proceso.</p>
     </section>
 
-        <main class="contact-section" style="margin-top: 0; padding: 4rem 5%;" aria-labelledby="titulo-contacto">
-        <div class="contact-form">
+    <main class="seccion-contacto" aria-labelledby="titulo-contacto">
+        <div class="formulario-contacto">
 
-            <div id="intro-contacto" style="text-align: center; margin-bottom: 2rem;">
-                <h2 id="titulo-contacto" style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 0.5rem; text-transform: uppercase;">Formulario de Consulta</h2>
-                <p style="color: #666; font-size: 0.95rem;">
-                    Por favor completa el siguiente formulario. Los campos marcados con <span aria-hidden="true" style="color: #d32f2f;">*</span> son obligatorios.
+            <div id="intro-contacto" class="introduccion-contacto">
+                <h2 id="titulo-contacto" class="titulo-contacto">
+                    Formulario de Consulta
+                </h2>
+                <p class="texto-introduccion">
+                    Por favor completa el siguiente formulario. Los campos marcados con
+                    <span class="campo-obligatorio" aria-hidden="true">*</span>
+                    son obligatorios.
                 </p>
             </div>
 
-                        <form id="formulario-contacto" novalidate>
-                
-                                <div class="form-group">
-                    <label for="nombre">Nombre completo <span aria-hidden="true" style="color: #d32f2f;">*</span></label>
-                    <input 
-                        type="text" 
-                        id="nombre" 
-                        name="nombre" 
-                        class="form-control" 
-                        maxlength="50" 
-                        placeholder="Ingresa tu nombre y apellido"
-                        aria-describedby="error-nombre"
-                        autocomplete="name"
-                    >
+            <form id="formulario-contacto" novalidate>
+
+                <div class="grupo-formulario">
+                    <label for="nombre">
+                        Nombre completo
+                        <span class="campo-obligatorio" aria-hidden="true">*</span>
+                    </label>
+
+                    <input type="text" id="nombre" name="nombre" class="control-formulario" maxlength="50"
+                        placeholder="Ingresa tu nombre y apellido" aria-describedby="error-nombre" autocomplete="name">
+
                     <p id="error-nombre" class="error" data-error-for="nombre" role="alert"></p>
                 </div>
 
-                                <div class="form-group">
-                    <label for="correo">Correo electrónico <span aria-hidden="true" style="color: #d32f2f;">*</span></label>
-                    <input 
-                        type="email" 
-                        id="correo" 
-                        name="correo" 
-                        class="form-control" 
-                        placeholder="ejemplo@correo.cl" 
-                        autocomplete="email"
-                        aria-describedby="error-correo"
-                    >
+                <div class="grupo-formulario">
+                    <label for="correo">
+                        Correo electrónico
+                        <span class="campo-obligatorio" aria-hidden="true">*</span>
+                    </label>
+
+                    <input type="email" id="correo" name="correo" class="control-formulario"
+                        placeholder="ejemplo@correo.cl" autocomplete="email" aria-describedby="error-correo">
+
                     <p id="error-correo" class="error" data-error-for="correo" role="alert"></p>
                 </div>
 
-                                <div class="form-group">
+                <div class="grupo-formulario">
                     <label for="telefono">Teléfono celular</label>
-                    <input 
-                        type="tel" 
-                        id="telefono" 
-                        name="telefono" 
-                        class="form-control" 
-                        placeholder="Ej: 9 1234 5678 (opcional)" 
-                        autocomplete="tel"
-                        inputmode="tel"
-                        aria-describedby="hint-telefono error-telefono"
-                    >
-                    <p id="hint-telefono" class="hint">Opcional. Formato chileno de 9 dígitos para coordinar por llamada o WhatsApp.</p>
+
+                    <input type="tel" id="telefono" name="telefono" class="control-formulario"
+                        placeholder="Ej: 9 1234 5678 (opcional)" autocomplete="tel" inputmode="tel"
+                        aria-describedby="hint-telefono error-telefono">
+
+                    <p id="hint-telefono" class="hint">
+                        Opcional. Formato chileno de 9 dígitos para coordinar por llamada o WhatsApp.
+                    </p>
+
                     <p id="error-telefono" class="error" data-error-for="telefono" role="alert"></p>
                 </div>
+                <div class="grupo-formulario">
+                    <label for="motivo">
+                        Motivo de consulta
+                        <span class="campo-obligatorio" aria-hidden="true">*</span>
+                    </label>
 
-                                <div class="form-group">
-                    <label for="motivo">Motivo de consulta <span aria-hidden="true" style="color: #d32f2f;">*</span></label>
-                    <select id="motivo" name="motivo" class="form-control" aria-describedby="error-motivo">
+                    <select id="motivo" name="motivo" class="control-formulario" aria-describedby="error-motivo">
                         <option value="">-- Selecciona el motivo de tu consulta --</option>
                         <option value="consulta_inicial">Primera Consulta Nutricional (50 min)</option>
                         <option value="perdida_peso">Plan Pérdida de Peso (1 o 3 meses)</option>
@@ -85,74 +88,87 @@
                         <option value="evaluacion">Evaluación Corporal (Bioimpedancia / Antropometría)</option>
                         <option value="general">Consulta General y Horarios de Atención</option>
                     </select>
+
                     <p id="error-motivo" class="error" data-error-for="motivo" role="alert"></p>
                 </div>
 
-                                <div class="form-group">
-                    <label for="mensaje">Mensaje <span aria-hidden="true" style="color: #d32f2f;">*</span></label>
-                    <textarea 
-                        id="mensaje" 
-                        name="mensaje" 
-                        class="form-control" 
-                        rows="4" 
-                        maxlength="600" 
+                <div class="grupo-formulario">
+                    <label for="mensaje">
+                        Mensaje
+                        <span class="campo-obligatorio" aria-hidden="true">*</span>
+                    </label>
+
+                    <textarea id="mensaje" name="mensaje" class="control-formulario" rows="4" maxlength="600"
                         placeholder="Cuéntanos tus metas, dudas o motivo de consulta (mínimo 15 caracteres)..."
-                        aria-describedby="hint-mensaje error-mensaje"
-                    ></textarea>
-                    <p id="hint-mensaje" class="hint">Entre 15 y 600 caracteres.</p>
+                        aria-describedby="hint-mensaje error-mensaje"></textarea>
+
+                    <p id="hint-mensaje" class="hint">
+                        Entre 15 y 600 caracteres.
+                    </p>
+
                     <p id="error-mensaje" class="error" data-error-for="mensaje" role="alert"></p>
                 </div>
 
-                                <div class="form-group">
-                    <div class="checkbox-group">
+                <div class="grupo-formulario">
+                    <div class="grupo-checkbox">
                         <input type="checkbox" id="privacidad" name="privacidad" aria-describedby="error-privacidad">
+
                         <label for="privacidad">
-                            Acepto el uso y tratamiento confidencial de mis datos con fines de contacto clínico según la política de privacidad de salud <span aria-hidden="true" style="color: #d32f2f;">*</span>
+                            Acepto el uso y tratamiento confidencial de mis datos con fines de contacto clínico según la
+                            política de privacidad de salud
+                            <span class="campo-obligatorio" aria-hidden="true">*</span>
                         </label>
                     </div>
+
                     <p id="error-privacidad" class="error" data-error-for="privacidad" role="alert"></p>
                 </div>
 
-                                <div class="form-group" style="margin-top: 2rem;">
-                    <button type="submit" class="btn-submit">Enviar Mensaje</button>
+                <div class="grupo-formulario grupo-envio">
+                    <button type="submit" class="boton-enviar">Enviar Mensaje</button>
                 </div>
             </form>
 
-                        <section id="panel-exito" class="success-panel is-hidden" tabindex="-1" aria-live="polite">
-                <div class="success-icon">🌿</div>
+            <section id="panel-exito" class="panel-exito is-hidden" tabindex="-1" aria-live="polite">
+                <div class="icono-exito">🌿</div>
                 <h3>¡Mensaje recibido con éxito!</h3>
-                <p>Muchas gracias, <strong data-exito-nombre></strong>. Hemos registrado tu consulta para el área de <strong data-exito-motivo></strong>.</p>
-                
-                <div class="success-summary">
+                <p>Muchas gracias, <strong data-exito-nombre></strong>. Hemos registrado tu consulta para el área de
+                    <strong data-exito-motivo></strong>.
+                </p>
+
+                <div class="resumen-exito">
                     <p><strong>Detalle de contacto registrado:</strong></p>
                     <p>📧 Respuesta dirigida a: <span data-exito-correo></span></p>
                     <p data-exito-telefono class="is-hidden"></p>
                     <p>🕒 Tiempo estimado de respuesta: Dentro de 24 horas hábiles.</p>
-                    <p>🏥 Ubicación: Av. Alemania 0850, Temuco (o mediante teleconsulta).</p>
+                    <p>🏥 Ubicación: Av. Brasil 2021, Valparaíso (o mediante teleconsulta).</p>
                 </div>
 
-                <p style="font-size: 0.9rem; color: #666;">Un nutricionista de nuestro equipo revisará tu mensaje para coordinar tu atención.</p>
-                <button type="button" id="btn-nuevo-mensaje" class="btn-reset">Enviar otra consulta</button>
+                <p class="texto-panel-exito">
+                    Un nutricionista de nuestro equipo revisará tu mensaje para coordinar tu atención.
+                </p>
+                <button type="button" id="btn-nuevo-mensaje" class="boton-reiniciar">Enviar otra consulta</button>
             </section>
 
         </div>
     </main>
 
-        <footer class="footer">
+    <footer class="footer">
         <div class="footer-content">
             <div class="footer-col">
                 <h4>Clínica NutriVida</h4>
-                <p>Especialistas en salud nutricional, planes personalizados y seguimiento clínico integral en Temuco.</p>
+                <p>Especialistas en salud nutricional, planes personalizados y seguimiento clínico integral en Temuco.
+                </p>
             </div>
             <div class="footer-col">
                 <h4>Horario de Atención</h4>
-                <p>Lunes a Viernes: 08:30 - 19:30 hrs</p>
-                <p>Sábados: 09:00 - 14:00 hrs</p>
+                <p>Lunes a Viernes: 07:30 - 19:30 hrs.</p>
+                <p>Sábados: 08:30 - 14:30 hrs.</p>
+                <p>Domingos y Festivos: Cerrado.</p>
             </div>
             <div class="footer-col">
                 <h4>Contacto Directo</h4>
-                <p>📍 Av. Alemania 0850, Temuco</p>
-                <p>📞 +56 45 294 5600</p>
+                <p>📍 Av. Brasil 2021, Valparaíso</p>
+                <p>📞 +56 32 469 1113</p>
                 <p>✉️ contacto@nutrivida.cl</p>
             </div>
         </div>
@@ -161,8 +177,8 @@
         </div>
     </footer>
 
-        <script type="module" src="js/formulario-contacto.js"></script>
-        <script src="js/componentes.js"></script>
+    <script type="module" src="js/formulario-contacto.js"></script>
+    <script src="js/componentes.js"></script>
 </body>
-</html>
 
+</html>
