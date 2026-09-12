@@ -1,3 +1,12 @@
+:root {
+    --color-primario: #4CAF50;
+    --color-secundario: #2E7D32;
+    --color-acento: #81C784;
+    --color-fondo: #f5f7f5;
+    --color-texto: #333333;
+    --color-tarjeta: #ffffff;
+}
+
 body {
     background-color: #f5f7f5;
 }
@@ -123,4 +132,49 @@ body {
 .tarjeta-nutricionista p {
     margin: 0;
     line-height: 1.5;
+}
+
+.encabezado-principal {
+    background-color: var(--color-primario);
+    color: white;
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.logo img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.navegacion-principal ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+}
+
+.navegacion-principal a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.3s;
+}
+
+.navegacion-principal a:hover {
+    opacity: 0.8;
+    text-decoration: underline;
 }
