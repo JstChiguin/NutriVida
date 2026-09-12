@@ -143,13 +143,13 @@ function enviarFormulario(evento) {
     return;
   }
 
-  formulario.classList.add("is-hidden");
+  formulario.classList.add("oculto");
   const introContacto = document.querySelector("#intro-contacto");
   if (introContacto) {
-    introContacto.classList.add("is-hidden");
+    introContacto.classList.add("oculto");
   }
 
-  panelExito.classList.remove("is-hidden");
+  panelExito.classList.remove("oculto");
   panelExito.querySelector("[data-exito-nombre]").textContent = valores.nombre;
   panelExito.querySelector("[data-exito-correo]").textContent = valores.correo;
   panelExito.querySelector("[data-exito-motivo]").textContent =
@@ -159,9 +159,9 @@ function enviarFormulario(evento) {
   if (elemTelefono) {
     if (valores.telefono) {
       elemTelefono.textContent = `Teléfono: ${valores.telefono}`;
-      elemTelefono.classList.remove("is-hidden");
+      elemTelefono.classList.remove("oculto");
     } else {
-      elemTelefono.classList.add("is-hidden");
+      elemTelefono.classList.add("oculto");
     }
   }
 
@@ -184,11 +184,11 @@ function reiniciarFormulario() {
     }
   });
 
-  panelExito.classList.add("is-hidden");
-  formulario.classList.remove("is-hidden");
+  panelExito.classList.add("oculto");
+  formulario.classList.remove("oculto");
   const introContacto = document.querySelector("#intro-contacto");
   if (introContacto) {
-    introContacto.classList.remove("is-hidden");
+    introContacto.classList.remove("oculto");
   }
 
   formulario.elements["nombre"].focus();
