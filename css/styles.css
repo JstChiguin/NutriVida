@@ -1,14 +1,16 @@
 :root {
     --color-primario: #4CAF50;
     --color-secundario: #2E7D32;
-    --color-acento: #81C784;
+    --color-portada: #81C784;
     --color-fondo: #f5f7f5;
     --color-texto: #333333;
     --color-tarjeta: #ffffff;
 }
 
 body {
-    background-color: #f5f7f5;
+    margin: 0;
+    background-color: var(--color-fondo);
+    font-family: "Times New Roman", Times, serif;
 }
 
 
@@ -24,13 +26,12 @@ body {
     flex: 1 1 250px;
     padding: 20px;
     border-radius: 10px;
-    background-color: white;
+    background-color: var(--color-tarjeta);
     box-shadow: 0 2px 5px lightgray;
 }
 
 #servicios {
     padding: 40px 20px;
-    background-color: #f5f7f5;
 }
 
 #servicios h2 {
@@ -75,7 +76,7 @@ body {
     padding: 10px 16px;
     border: 1px solid darkgreen;
     border-radius: 8px;
-    background-color: white;
+    background-color: var(--color-tarjeta);
     color: darkgreen;
     cursor: pointer;
 }
@@ -179,8 +180,26 @@ body {
     text-decoration: underline;
 }
 
-.portada-contacto {
-    padding: 4rem 5%;
+.portada {
+    background-color: var(--color-portada);
+    color: white;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.portada-contenido {
+    max-width: 60%;
+    margin: 0 auto;
+}
+
+.portada-contenido h1 {
+    margin: 0 0 12px 0;
+    font-size: 36px;
+}
+
+.portada-contenido p {
+    margin: 0 0 6px 0;
+    font-size: 16px;
 }
 
 .seccion-contacto {
@@ -429,7 +448,7 @@ textarea.control-formulario {
 }
 
 .columna-pie-pagina h4 {
-    color: var(--color-acento);
+    color: var(--color-portada);
     margin-bottom: 1.5rem;
     font-size: 1.2rem;
 }
