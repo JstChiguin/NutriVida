@@ -12,3 +12,5 @@ async function cargarComponente(selector, ruta) {
 }
 
 cargarComponente("#contenedor-encabezado", "componentes/encabezado.html");
+
+cargarComponente("#contenedor-pie-pagina", "componentes/pie-pagina.html");

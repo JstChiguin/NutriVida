@@ -414,27 +414,27 @@ textarea.control-formulario {
     color: #666;
 }
 
-.footer {
+.pie-pagina {
     background-color: #222;
     color: #eee;
-    padding: 4rem 5% 2rem 5%;
+    padding: 4rem 7% 2rem 7%;
 }
 
-.footer-content {
+.contenido-pie-pagina {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    max-width: 1200px;
+    gap: 4rem;
+    max-width: 100%;
     margin: 0 auto 3rem auto;
 }
 
-.footer-col h4 {
+.columna-pie-pagina h4 {
     color: var(--color-acento);
     margin-bottom: 1.5rem;
     font-size: 1.2rem;
 }
 
-.footer-bottom {
+.inferior-pie-pagina {
     text-align: center;
     padding-top: 2rem;
     border-top: 1px solid #444;
