@@ -1,4 +1,3 @@
-
 module.exports = function (config) {
   config.set({
     frameworks: ['jasmine'],
@@ -6,14 +5,38 @@ module.exports = function (config) {
     files: [
       {
         pattern: 'tests/**/*.spec.js',
-        type: 'module',
+        watched: false,
       },
       {
-        pattern: 'src/utils/**/*.js',
-        included: false,
-        served: true,
+        pattern: 'tests/**/*.spec.jsx',
+        watched: false,
       },
     ],
+
+    preprocessors: {
+      'tests/**/*.spec.js': ['webpack'],
+      'tests/**/*.spec.jsx': ['webpack'],
+    },
+
+    webpack: {
+      mode: 'development',
+
+      module: {
+        rules: [
+          {
+            test: /\.(js|jsx)$/,
+            exclude: /node_modules/,
+            use: {
+              loader: 'babel-loader',
+            },
+          },
+        ],
+      },
+
+      resolve: {
+        extensions: ['.js', '.jsx'],
+      },
+    },
 
     reporters: ['progress'],
 
