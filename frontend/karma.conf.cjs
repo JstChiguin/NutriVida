@@ -1,3 +1,15 @@
+const fs = require('fs');
+
+if (!process.env.CHROME_BIN) {
+  const edgePath = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+  const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
+  if (fs.existsSync(chromePath)) {
+    process.env.CHROME_BIN = chromePath;
+  } else if (fs.existsSync(edgePath)) {
+    process.env.CHROME_BIN = edgePath;
+  }
+}
+
 module.exports = function (config) {
   config.set({
     frameworks: ['jasmine'],
@@ -38,7 +50,15 @@ module.exports = function (config) {
       },
     },
 
-    reporters: ['progress'],
+    reporters: ['progress', 'coverage'],
+
+    coverageReporter: {
+      dir: 'coverage',
+      reporters: [
+        { type: 'html', subdir: 'html' },
+        { type: 'text-summary' },
+      ],
+    },
 
     browsers: ['ChromeHeadless'],
 

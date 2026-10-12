@@ -160,17 +160,23 @@ export default function Contacto() {
   };
 
   return (
-    <section id="contacto">
-      <div className="portada">
-        <div className="portada-contenido">
-          <h1>Contáctanos</h1>
-          <p>¿Tienes dudas sobre nuestros servicios nutricionales o necesitas orientación?</p>
-          <p>Estamos aquí para responder tus consultas y acompañar tu proceso.</p>
+    <section id="contacto" className="bg-light">
+      <div className="portada py-5 text-white" style={{ backgroundColor: 'var(--color-portada, #81C784)' }}>
+        <div className="container py-3">
+          <div className="row justify-content-center">
+            <div className="col-12 col-md-10 col-lg-8 text-center portada-contenido">
+              <h1 className="display-5 fw-bold mb-3">Contáctanos</h1>
+              <p className="lead mb-2">¿Tienes dudas sobre nuestros servicios nutricionales o necesitas orientación?</p>
+              <p className="mb-0">Estamos aquí para responder tus consultas y acompañar tu proceso.</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <main className="seccion-contacto" aria-labelledby="titulo-contacto">
-        <div className="formulario-contacto">
+      <main className="seccion-contacto container py-5" aria-labelledby="titulo-contacto">
+        <div className="row justify-content-center">
+          <div className="col-12 col-md-10 col-lg-8">
+            <div className="formulario-contacto card shadow-sm border-0 rounded-4 p-4 p-md-5 bg-white">
           {!enviadoExitoso ? (
             <>
               <div id="intro-contacto" className="introduccion-contacto">
@@ -372,6 +378,8 @@ export default function Contacto() {
               </button>
             </section>
           )}
+            </div>
+          </div>
         </div>
       </main>
     </section>

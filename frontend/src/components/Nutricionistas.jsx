@@ -31,20 +31,30 @@ const equipoNutricionistas = [
 
 export default function Nutricionistas() {
   return (
-    <section id="nutricionistas">
-      <h2>Nuestros nutricionistas</h2>
+    <section id="nutricionistas" className="container py-5">
+      <h2 className="text-center mb-5 fw-bold">Nuestros nutricionistas</h2>
 
-      <div className="contenedor-nutricionistas">
+      <div className="contenedor-nutricionistas row g-4 justify-content-center">
         {equipoNutricionistas.map((profesional) => (
-          <article key={profesional.id} className="tarjeta-nutricionista">
-            <img src={profesional.imagen} alt={`Nutricionista ${profesional.nombre}`} />
-            <h3>{profesional.nombre}</h3>
-            <p>{profesional.especialidad}</p>
-            <p>{profesional.horario}</p>
-          </article>
+          <div key={profesional.id} className="col-12 col-sm-6 col-lg-3 d-flex align-items-stretch">
+            <article className="card tarjeta-nutricionista w-100 shadow-sm border-0 rounded-4 text-center p-3 d-flex flex-column align-items-center">
+              <img
+                src={profesional.imagen}
+                alt={`Nutricionista ${profesional.nombre}`}
+                className="rounded-circle shadow-sm my-3"
+                style={{ width: '130px', height: '130px', objectFit: 'cover' }}
+              />
+              <div className="card-body p-2 d-flex flex-column justify-content-between">
+                <div>
+                  <h3 className="h5 fw-bold mb-2">{profesional.nombre}</h3>
+                  <p className="text-success small fw-semibold mb-2">{profesional.especialidad}</p>
+                </div>
+                <p className="text-muted small mt-2 mb-0">{profesional.horario}</p>
+              </div>
+            </article>
+          </div>
         ))}
       </div>
     </section>
   );
 }
-
