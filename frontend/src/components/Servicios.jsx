@@ -43,7 +43,7 @@ export default function Servicios() {
   });
 
   return (
-    <section id="servicios" className="container py-5">
+    <section id="servicios" className="mx-auto w-full max-w-[64rem] px-4 py-6 sm:px-6 sm:py-8">
       <h2 className="text-center mb-4 fw-bold">Nuestros servicios</h2>
 
       <div className="row justify-content-center mb-4">

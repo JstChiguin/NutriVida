@@ -1,7 +1,7 @@
 export default function Portada() {
   return (
-    <section id="inicio" className="portada py-5 text-white" style={{ backgroundColor: 'var(--color-portada, #81C784)' }}>
-      <div className="container py-4">
+    <section id="inicio" className="portada text-white" style={{ backgroundColor: 'var(--color-portada, #81C784)' }}>
+      <div className="mx-auto w-full max-w-[64rem] px-4 py-6 sm:px-6 sm:py-8">
         <div className="row justify-content-center">
           <div className="col-12 col-md-10 col-lg-8 text-center portada-contenido">
             <h1 className="display-5 fw-bold mb-3">Tu bienestar comienza aquí</h1>

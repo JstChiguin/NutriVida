@@ -161,8 +161,8 @@ export default function Contacto() {
 
   return (
     <section id="contacto" className="bg-light">
-      <div className="portada py-5 text-white" style={{ backgroundColor: 'var(--color-portada, #81C784)' }}>
-        <div className="container py-3">
+      <div className="portada text-white" style={{ backgroundColor: 'var(--color-portada, #81C784)' }}>
+        <div className="mx-auto w-full max-w-[64rem] px-4 py-6 sm:px-6 sm:py-8">
           <div className="row justify-content-center">
             <div className="col-12 col-md-10 col-lg-8 text-center portada-contenido">
               <h1 className="display-5 fw-bold mb-3">Contáctanos</h1>
@@ -173,7 +173,7 @@ export default function Contacto() {
         </div>
       </div>
 
-      <main className="seccion-contacto container py-5" aria-labelledby="titulo-contacto">
+      <main className="seccion-contacto mx-auto w-full max-w-[64rem] px-4 py-6 sm:px-6 sm:py-8" aria-labelledby="titulo-contacto">
         <div className="row justify-content-center">
           <div className="col-12 col-md-10 col-lg-8">
             <div className="formulario-contacto card shadow-sm border-0 rounded-4 p-4 p-md-5 bg-white">

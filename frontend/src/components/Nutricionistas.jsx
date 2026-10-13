@@ -31,7 +31,7 @@ const equipoNutricionistas = [
 
 export default function Nutricionistas() {
   return (
-    <section id="nutricionistas" className="container py-5">
+    <section id="nutricionistas" className="mx-auto w-full max-w-[64rem] px-4 py-6 sm:px-6 sm:py-8">
       <h2 className="text-center mb-5 fw-bold">Nuestros nutricionistas</h2>
 
       <div className="contenedor-nutricionistas row g-4 justify-content-center">

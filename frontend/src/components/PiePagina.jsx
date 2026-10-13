@@ -1,7 +1,7 @@
 export default function PiePagina() {
   return (
-    <footer className="pie-pagina bg-dark text-white pt-5 pb-3">
-      <div className="container">
+    <footer className="pie-pagina bg-dark text-white">
+      <div className="mx-auto w-full max-w-[64rem] px-4 py-6 sm:px-6 sm:py-8">
         <div className="row g-4 mb-4">
           <div className="col-12 col-md-4 columna-pie-pagina">
             <h4 className="h5 fw-bold text-success mb-3">Clínica NutriVida</h4>
