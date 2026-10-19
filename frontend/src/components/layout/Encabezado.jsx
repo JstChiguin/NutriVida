@@ -1,20 +1,21 @@
 import { useState } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 
-const claseEnlace = (vistaActual, seccion) => {
-  const activo = vistaActual === seccion ? 'border-bottom border-2 pb-1' : '';
+const claseEnlace = ({ isActive }) => {
+  const activo = isActive ? 'border-bottom border-2 pb-1' : '';
   return `text-white text-decoration-none fw-semibold ${activo}`;
 };
 
-export default function Encabezado({ vistaActual, onNavegar }) {
+export default function Encabezado({ cantidad = 0 }) {
   const [abierto, setAbierto] = useState(false);
+  const location = useLocation();
+
   const cerrar = () => setAbierto(false);
 
-  const manejarClick = (e, seccionId) => {
-    e.preventDefault();
+  const navegarSeccion = (e, seccionId) => {
     cerrar();
-    if (onNavegar) {
-      onNavegar(seccionId);
-    } else {
+    if (location.pathname === '/') {
+      e.preventDefault();
       const elemento = document.getElementById(seccionId);
       if (elemento) {
         elemento.scrollIntoView({ behavior: 'smooth' });
@@ -25,10 +26,11 @@ export default function Encabezado({ vistaActual, onNavegar }) {
   return (
     <header className="encabezado-principal sticky-top shadow-sm bg-success">
       <div className="mx-auto w-full max-w-[64rem] px-4 py-2 d-flex flex-wrap justify-content-between align-items-center">
-        <div
+        <NavLink
+          to="/"
           className="logo d-flex align-items-center gap-2 text-white"
-          onClick={(e) => manejarClick(e, 'inicio')}
-          style={{ cursor: 'pointer', textDecoration: 'none' }}
+          onClick={cerrar}
+          style={{ textDecoration: 'none' }}
         >
           <img
             src="img/logo-nutrivida.png"
@@ -36,7 +38,7 @@ export default function Encabezado({ vistaActual, onNavegar }) {
             style={{ width: '45px', height: '45px', objectFit: 'contain' }}
           />
           <span className="fs-4 fw-bold">NutriVida</span>
-        </div>
+        </NavLink>
 
         <button
           type="button"
@@ -71,40 +73,32 @@ export default function Encabezado({ vistaActual, onNavegar }) {
         >
           <ul className="d-flex flex-column flex-md-row gap-3 gap-md-4 list-unstyled mb-0 align-items-md-center">
             <li>
-              <a
-                href="#inicio"
-                onClick={(e) => manejarClick(e, 'inicio')}
-                className={claseEnlace(vistaActual, 'inicio')}
-              >
+              <NavLink to="/" end className={claseEnlace} onClick={cerrar}>
                 Inicio
-              </a>
+              </NavLink>
             </li>
             <li>
               <a
-                href="#servicios"
-                onClick={(e) => manejarClick(e, 'servicios')}
-                className={claseEnlace(vistaActual, 'servicios')}
+                href="/#servicios"
+                onClick={(e) => navegarSeccion(e, 'servicios')}
+                className="text-white text-decoration-none fw-semibold"
               >
                 Servicios
               </a>
             </li>
             <li>
               <a
-                href="#nutricionistas"
-                onClick={(e) => manejarClick(e, 'nutricionistas')}
-                className={claseEnlace(vistaActual, 'nutricionistas')}
+                href="/#nutricionistas"
+                onClick={(e) => navegarSeccion(e, 'nutricionistas')}
+                className="text-white text-decoration-none fw-semibold"
               >
                 Nutricionistas
               </a>
             </li>
             <li>
-              <a
-                href="#contacto"
-                onClick={(e) => manejarClick(e, 'contacto')}
-                className={claseEnlace(vistaActual, 'contacto')}
-              >
+              <NavLink to="/contacto" className={claseEnlace} onClick={cerrar}>
                 Contacto
-              </a>
+              </NavLink>
             </li>
           </ul>
         </nav>

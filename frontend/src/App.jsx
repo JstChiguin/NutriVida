@@ -1,45 +1,17 @@
-import { useState } from 'react';
-import Encabezado from './components/Encabezado';
-import Portada from './components/Portada';
-import Servicios from './components/Servicios';
-import Nutricionistas from './components/Nutricionistas';
-import Contacto from './components/Contacto';
-import PiePagina from './components/PiePagina';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './components/layout/Layout';
+import Inicio from './components/paginas/Inicio';
+import Contacto from './components/paginas/Contacto';
 
 export default function App() {
-  const [seccionActiva, setSeccionActiva] = useState('inicio');
-
-  const navegarA = (seccionId) => {
-    setSeccionActiva(seccionId);
-    const elemento = document.getElementById(seccionId);
-    if (elemento) {
-      elemento.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
-    <div className="contenedor-app">
-      {/* Encabezado común a toda la aplicación */}
-      <Encabezado vistaActual={seccionActiva} onNavegar={navegarA} />
-
-      {/* Vistas agrupadas en una sola página (SPA) */}
-      <main>
-        {/* Vista Inicio / Portada principal */}
-        <Portada />
-
-        {/* Vista / Sección de Servicios */}
-        <Servicios />
-
-        {/* Vista / Sección de Nutricionistas */}
-        <Nutricionistas />
-
-        {/* Vista de Contacto (anteriormente contacto.html) */}
-        <Contacto />
-      </main>
-
-      {/* Pie de página común */}
-      <PiePagina />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Inicio />} />
+          <Route path="contacto" element={<Contacto />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
-

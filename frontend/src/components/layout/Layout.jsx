@@ -1,6 +1,6 @@
-export function Outlet() {
-  return null;
-}
+import { Outlet } from 'react-router-dom';
+import Encabezado from './Encabezado';
+import PiePagina from './PiePagina';
 
 export function ResumenServicios({ servicios = [], onRemover }) {
   if (!servicios || servicios.length === 0) {
@@ -34,17 +34,20 @@ export default function Layout({
   serviciosSeleccionados = [],
   onRemoverServicio = () => {},
   barraLateral = null,
-  children,
 }) {
   return (
-    <div className="mx-auto grid w-full max-w-[64rem] flex-1 grid-cols-1 items-start gap-8 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[1fr_18rem]">
-      {children ? children : <Outlet />}
+    <div className="d-flex flex-column min-vh-100">
+      <Encabezado />
+      <div className="flex-grow-1">
+        <Outlet />
+      </div>
       {barraLateral || (
         <ResumenServicios
           servicios={serviciosSeleccionados}
           onRemover={onRemoverServicio}
         />
       )}
+      <PiePagina />
     </div>
   );
 }
