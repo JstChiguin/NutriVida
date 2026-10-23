@@ -6,7 +6,7 @@ import {
   validarMotivo,
   validarMensaje,
   validarPrivacidad,
-} from '../utils/validadores.js';
+} from '../../utils/validadores.js';
 
 const etiquetasMotivo = {
   consulta_inicial: 'Primera Consulta Nutricional (50 min)',

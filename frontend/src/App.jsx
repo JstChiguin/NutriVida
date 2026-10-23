@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import Encabezado from './components/Encabezado';
-import Portada from './components/Portada';
-import Servicios from './components/Servicios';
-import Nutricionistas from './components/Nutricionistas';
-import Contacto from './components/Contacto';
-import PiePagina from './components/PiePagina';
+import Encabezado from './components/paginas/Encabezado';
+import Portada from './components/paginas/Portada';
+import Servicios from './components/paginas/Servicios';
+import Nutricionistas from './components/paginas/Nutricionistas';
+import Contacto from './components/paginas/Contacto';
+import PiePagina from './components/paginas/PiePagina';
 
 export default function App() {
   const [seccionActiva, setSeccionActiva] = useState('inicio');

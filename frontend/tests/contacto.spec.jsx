@@ -1,6 +1,6 @@
 import { render, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import Contacto from '../src/components/Contacto.jsx';
+import Contacto from '../src/components/paginas/Contacto.jsx';
 
 afterEach(() => {
   cleanup();
