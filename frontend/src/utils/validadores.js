@@ -1,4 +1,3 @@
-
 export function estaVacio(valor) {
   if (valor === null || valor === undefined) {
     return true;
@@ -116,7 +115,6 @@ export function telefonoChileno(
   return esCelularLocal || esCelularInternacional ? null : mensaje;
 }
 
-
 export function validarNombre(valor) {
   return (
     obligatorio(valor, "El nombre es obligatorio") ||
@@ -125,7 +123,6 @@ export function validarNombre(valor) {
     soloLetras(valor, "El nombre solo puede contener letras y espacios")
   );
 }
-
 
 export function validarCorreo(valor) {
   return (

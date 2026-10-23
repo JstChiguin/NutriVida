@@ -188,7 +188,7 @@ body {
 }
 
 .portada-contenido {
-    max-width: 60%;
+    max-width: 100%;
     margin: 0 auto;
 }
 
@@ -475,4 +475,24 @@ textarea.control-formulario {
     border-top: 1px solid #444;
     font-size: 0.9rem;
     color: #aaa;
+}
+
+.max-w-\[64rem\] {
+    max-width: 64rem !important;
+}
+
+.w-full {
+    width: 100% !important;
+}
+
+.grid-cols-1 {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 992px) {
+    .lg\:grid-cols-\[1fr_18rem\] {
+        display: grid;
+        grid-template-columns: 1fr 18rem;
+    }
 }
