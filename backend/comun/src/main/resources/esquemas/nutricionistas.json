@@ -1,0 +1,12 @@
+{
+  "bsonType": "object",
+  "required": ["usuarioId", "nombreCompleto", "especialidades", "serviciosIds", "activo", "creadoEn"],
+  "properties": {
+    "usuarioId": { "bsonType": "objectId" },
+    "nombreCompleto": { "bsonType": "string", "minLength": 3, "maxLength": 120 },
+    "especialidades": { "bsonType": "array", "minItems": 1, "items": { "bsonType": "string" } },
+    "serviciosIds": { "bsonType": "array", "items": { "bsonType": "objectId" } },
+    "activo": { "bsonType": "bool" },
+    "creadoEn": { "bsonType": "date" }
+  }
+}

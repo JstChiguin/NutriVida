@@ -1,0 +1,35 @@
+{
+  "bsonType": "object",
+  "required": ["pacienteId", "nutricionistaId", "numeroVersion", "estado", "vigenteDesde", "objetivos", "comidas"],
+  "properties": {
+    "pacienteId": { "bsonType": "objectId" },
+    "nutricionistaId": { "bsonType": "objectId" },
+    "numeroVersion": { "bsonType": ["int", "long"], "minimum": 1 },
+    "estado": { "enum": ["VIGENTE", "REEMPLAZADO", "FINALIZADO"] },
+    "vigenteDesde": { "bsonType": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "objetivos": { "bsonType": "array", "minItems": 1, "items": { "bsonType": "string" } },
+    "comidas": {
+      "bsonType": "array",
+      "minItems": 1,
+      "items": {
+        "bsonType": "object",
+        "required": ["nombre", "alimentos"],
+        "properties": {
+          "nombre": { "bsonType": "string" },
+          "alimentos": {
+            "bsonType": "array",
+            "items": {
+              "bsonType": "object",
+              "required": ["alimento", "cantidad", "unidad"],
+              "properties": {
+                "alimento": { "bsonType": "string" },
+                "cantidad": { "bsonType": ["double", "int"], "minimum": 0 },
+                "unidad": { "bsonType": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

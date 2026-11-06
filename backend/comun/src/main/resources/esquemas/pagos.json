@@ -1,0 +1,12 @@
+{
+  "bsonType": "object",
+  "required": ["citaId", "pacienteId", "monto", "estado", "metodo", "creadoEn"],
+  "properties": {
+    "citaId": { "bsonType": "objectId" },
+    "pacienteId": { "bsonType": "objectId" },
+    "monto": { "bsonType": ["int", "long"], "minimum": 0 },
+    "estado": { "enum": ["APROBADO_SIMULADO", "RECHAZADO_SIMULADO", "ANULADO"] },
+    "metodo": { "enum": ["TARJETA_SIMULADA", "TRANSFERENCIA_SIMULADA", "EFECTIVO_SIMULADO"] },
+    "creadoEn": { "bsonType": "date" }
+  }
+}

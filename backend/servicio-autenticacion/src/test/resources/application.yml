@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: servicio-autenticacion
+  data:
+    mongodb:
+      uri: ${NUTRIVIDA_MONGO_SERVIDOR_PRUEBAS:mongodb://localhost:27017}/nutrivida_pruebas_autenticacion
+      auto-index-creation: true
+
+nutrivida:
+  seguridad:
+    secreto-jwt: secreto-solo-para-pruebas-automatizadas-0123456789
+    expiracion-minutos: 30
+    origenes-permitidos: http://localhost:5173
+    rutas-publicas-post:
+      - /api/autenticacion/registro
+      - /api/autenticacion/iniciar-sesion
+  servicios:
+    clinico-url: http://localhost:65000
+  mongo:
+    colecciones-con-esquema: usuarios,tokens_revocados
