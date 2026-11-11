@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: servicio-agenda
+  data:
+    mongodb:
+      uri: ${NUTRIVIDA_MONGO_SERVIDOR_PRUEBAS:mongodb://localhost:27017}/nutrivida_pruebas_agenda
+      auto-index-creation: true
+
+nutrivida:
+  seguridad:
+    secreto-jwt: secreto-solo-para-pruebas-automatizadas-0123456789
+    expiracion-minutos: 30
+    origenes-permitidos: http://localhost:5173
+  agenda:
+    zona-horaria: America/Santiago
+    horas-minimas-cancelacion: 2
+    paso-oferta-minutos: 30
+    url-clinico: http://localhost:65001
+  mongo:
+    colecciones-con-esquema: agendas,citas,ocupaciones_agenda,pagos

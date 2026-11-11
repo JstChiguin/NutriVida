@@ -1,0 +1,13 @@
+{
+  "bsonType": "object",
+  "required": ["nombre", "descripcion", "categoria", "duracionMinutos", "precioReferencial", "activo", "creadoEn"],
+  "properties": {
+    "nombre": { "bsonType": "string", "minLength": 3, "maxLength": 100 },
+    "descripcion": { "bsonType": "string", "maxLength": 500 },
+    "categoria": { "bsonType": "string" },
+    "duracionMinutos": { "bsonType": ["int", "long"], "minimum": 15, "maximum": 180 },
+    "precioReferencial": { "bsonType": ["int", "long"], "minimum": 0 },
+    "activo": { "bsonType": "bool" },
+    "creadoEn": { "bsonType": "date" }
+  }
+}

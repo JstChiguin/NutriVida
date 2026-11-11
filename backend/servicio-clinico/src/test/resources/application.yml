@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: servicio-clinico
+  data:
+    mongodb:
+      uri: ${NUTRIVIDA_MONGO_SERVIDOR_PRUEBAS:mongodb://localhost:27017}/nutrivida_pruebas_clinico
+      auto-index-creation: true
+
+nutrivida:
+  seguridad:
+    secreto-jwt: secreto-solo-para-pruebas-automatizadas-0123456789
+    expiracion-minutos: 30
+    origenes-permitidos: http://localhost:5173
+    rutas-publicas-get:
+      - /api/servicios
+      - /api/servicios/*
+      - /api/nutricionistas
+      - /api/nutricionistas/*
+    rutas-publicas-post:
+      - /api/solicitudes-contacto
+  mongo:
+    colecciones-con-esquema: pacientes,nutricionistas,servicios,fichas_clinicas,mediciones,planes_alimentarios,solicitudes_contacto
