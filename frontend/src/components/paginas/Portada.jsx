@@ -1,14 +1,21 @@
-export default function Portada() {
+
+export default function Portada({ titulo = 'Tu bienestar comienza aquí', children }) {
   return (
-    <section id="inicio" className="portada text-white" style={{ backgroundColor: 'var(--color-portada, #81C784)' }}>
+    <section
+      id="inicio"
+      className="portada text-white"
+      style={{ backgroundColor: 'var(--color-portada, #81C784)' }}
+    >
       <div className="mx-auto w-full max-w-[64rem] px-4 py-6 sm:px-6 sm:py-8">
         <div className="row justify-content-center">
           <div className="col-12 col-md-10 col-lg-8 text-center portada-contenido">
-            <h1 className="display-5 fw-bold mb-3">Tu bienestar comienza aquí</h1>
-            <p className="lead mb-0">
-              Conecta con nutricionistas certificados y transforma tus hábitos alimenticios
-              con planes personalizados.
-            </p>
+            <h1 className="display-5 fw-bold mb-3">{titulo}</h1>
+            {children ?? (
+              <p className="lead mb-0">
+                Conecta con nutricionistas certificados y transforma tus hábitos
+                alimenticios con planes personalizados.
+              </p>
+            )}
           </div>
         </div>
       </div>

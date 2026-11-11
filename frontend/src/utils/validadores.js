@@ -189,3 +189,41 @@ export function validarPrivacidad(valor) {
   );
 }
 
+export function validarContrasena(valor) {
+  const contrasena = valor ?? "";
+  if (contrasena === "") {
+    return "La contraseña es obligatoria";
+  }
+  if (contrasena.length < 8) {
+    return "La contraseña debe tener al menos 8 caracteres";
+  }
+  if (!/[A-Za-z]/.test(contrasena) || !/\d/.test(contrasena)) {
+    return "La contraseña debe contener letras y números";
+  }
+  return null;
+}
+
+export function validarConfirmacionContrasena(contrasena, confirmacion) {
+  return contrasena === confirmacion ? null : "Las contraseñas no coinciden";
+}
+
+export function validarRut(valor) {
+  const rut = String(valor ?? "").trim().toUpperCase();
+  if (rut === "") {
+    return null;
+  }
+  if (!/^\d{7,8}-[\dK]$/.test(rut)) {
+    return "El RUT debe tener el formato 12345678-5";
+  }
+  const [cuerpo, digitoIngresado] = rut.split("-");
+  let suma = 0;
+  let multiplicador = 2;
+  for (let posicion = cuerpo.length - 1; posicion >= 0; posicion -= 1) {
+    suma += Number(cuerpo[posicion]) * multiplicador;
+    multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
+  }
+  const resto = 11 - (suma % 11);
+  const digitoEsperado = resto === 11 ? "0" : resto === 10 ? "K" : String(resto);
+  return digitoEsperado === digitoIngresado ? null : "El dígito verificador del RUT no es válido";
+}
+
