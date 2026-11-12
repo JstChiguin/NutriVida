@@ -1,4 +1,3 @@
-
 import { Route, Routes } from 'react-router-dom';
 import MarcoAplicacion from './components/layout/MarcoAplicacion.jsx';
 import RutaProtegida from './rutas/RutaProtegida.jsx';
