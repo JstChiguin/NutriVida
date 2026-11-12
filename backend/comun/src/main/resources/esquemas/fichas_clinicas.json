@@ -1,0 +1,27 @@
+{
+  "bsonType": "object",
+  "required": ["pacienteId", "nutricionistaResponsableId", "fechaApertura", "motivoConsulta", "estado", "evoluciones"],
+  "properties": {
+    "pacienteId": { "bsonType": "objectId" },
+    "nutricionistaResponsableId": { "bsonType": "objectId" },
+    "fechaApertura": { "bsonType": "date" },
+    "motivoConsulta": { "bsonType": "string", "minLength": 1 },
+    "estado": { "enum": ["ABIERTA", "CERRADA"] },
+    "alergias": { "bsonType": "array", "items": { "bsonType": "string" } },
+    "intolerancias": { "bsonType": "array", "items": { "bsonType": "string" } },
+    "evoluciones": {
+      "bsonType": "array",
+      "items": {
+        "bsonType": "object",
+        "required": ["identificador", "fecha", "nutricionistaId", "descripcion", "corregida"],
+        "properties": {
+          "identificador": { "bsonType": "string" },
+          "fecha": { "bsonType": "date" },
+          "nutricionistaId": { "bsonType": "objectId" },
+          "descripcion": { "bsonType": "string" },
+          "corregida": { "bsonType": "bool" }
+        }
+      }
+    }
+  }
+}

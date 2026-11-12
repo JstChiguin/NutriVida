@@ -1,3 +1,4 @@
+import MapaReferencial from './MapaReferencial.jsx';
 import { useState, useRef } from 'react';
 import {
   validarNombre,
@@ -382,6 +383,7 @@ export default function Contacto() {
           </div>
         </div>
       </main>
+      <MapaReferencial />
     </section>
   );
 }

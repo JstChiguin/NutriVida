@@ -1,0 +1,27 @@
+{
+  "bsonType": "object",
+  "required": ["pacienteId", "nutricionistaId", "servicioId", "duracionMinutos", "inicio", "fin", "motivoConsulta", "estado", "historialEstados"],
+  "properties": {
+    "pacienteId": { "bsonType": "objectId" },
+    "nutricionistaId": { "bsonType": "objectId" },
+    "servicioId": { "bsonType": "objectId" },
+    "duracionMinutos": { "bsonType": ["int", "long"], "minimum": 15, "maximum": 180 },
+    "inicio": { "bsonType": "date" },
+    "fin": { "bsonType": "date" },
+    "estado": { "enum": ["SOLICITADA", "CONFIRMADA", "RECHAZADA", "CANCELADA", "REALIZADA", "INASISTENCIA"] },
+    "pagada": { "bsonType": "bool" },
+    "historialEstados": {
+      "bsonType": "array",
+      "minItems": 1,
+      "items": {
+        "bsonType": "object",
+        "required": ["evento", "estado", "fecha"],
+        "properties": {
+          "evento": { "enum": ["SOLICITUD", "CONFIRMACION", "RECHAZO", "CANCELACION", "REPROGRAMACION", "ATENCION_REALIZADA", "INASISTENCIA"] },
+          "estado": { "enum": ["SOLICITADA", "CONFIRMADA", "RECHAZADA", "CANCELADA", "REALIZADA", "INASISTENCIA"] },
+          "fecha": { "bsonType": "date" }
+        }
+      }
+    }
+  }
+}

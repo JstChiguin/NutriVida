@@ -1,0 +1,12 @@
+{
+  "bsonType": "object",
+  "required": ["nombre", "correo", "mensaje", "estado", "claveDuplicado", "creadoEn"],
+  "properties": {
+    "nombre": { "bsonType": "string", "minLength": 3 },
+    "correo": { "bsonType": "string" },
+    "mensaje": { "bsonType": "string", "minLength": 10, "maxLength": 1000 },
+    "estado": { "enum": ["PENDIENTE", "EN_REVISION", "RESUELTA"] },
+    "claveDuplicado": { "bsonType": "string" },
+    "creadoEn": { "bsonType": "date" }
+  }
+}

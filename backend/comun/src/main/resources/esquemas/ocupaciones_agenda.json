@@ -1,0 +1,9 @@
+{
+  "bsonType": "object",
+  "required": ["nutricionistaId", "bloqueInicio", "citaId"],
+  "properties": {
+    "nutricionistaId": { "bsonType": "objectId" },
+    "bloqueInicio": { "bsonType": "date" },
+    "citaId": { "bsonType": "objectId" }
+  }
+}

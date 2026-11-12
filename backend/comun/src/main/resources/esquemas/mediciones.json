@@ -1,0 +1,14 @@
+{
+  "bsonType": "object",
+  "required": ["pacienteId", "nutricionistaId", "fecha", "pesoKg", "estaturaCm", "imc", "estado"],
+  "properties": {
+    "pacienteId": { "bsonType": "objectId" },
+    "nutricionistaId": { "bsonType": "objectId" },
+    "fecha": { "bsonType": "date" },
+    "pesoKg": { "bsonType": ["double", "int"], "minimum": 2, "maximum": 400 },
+    "estaturaCm": { "bsonType": ["double", "int"], "minimum": 40, "maximum": 250 },
+    "imc": { "bsonType": ["double", "int"], "minimum": 1, "maximum": 200 },
+    "cinturaCm": { "bsonType": ["double", "int", "null"], "minimum": 20, "maximum": 250 },
+    "estado": { "enum": ["VIGENTE", "ANULADA"] }
+  }
+}

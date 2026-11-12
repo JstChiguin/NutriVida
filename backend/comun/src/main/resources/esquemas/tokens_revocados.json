@@ -1,0 +1,9 @@
+{
+  "bsonType": "object",
+  "required": ["usuarioId", "revocadoEn", "expiraEn"],
+  "properties": {
+    "usuarioId": { "bsonType": "string" },
+    "revocadoEn": { "bsonType": "date" },
+    "expiraEn": { "bsonType": "date" }
+  }
+}
