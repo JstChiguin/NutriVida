@@ -1,0 +1,65 @@
+name: nutrivida
+
+x-variables-comunes: &variables-comunes
+  NUTRIVIDA_MONGO_URI: mongodb://mongodb:27017/nutrivida
+  NUTRIVIDA_JWT_SECRETO: ${NUTRIVIDA_JWT_SECRETO:?Defina NUTRIVIDA_JWT_SECRETO en el archivo .env}
+  NUTRIVIDA_ORIGENES_PERMITIDOS: ${NUTRIVIDA_ORIGENES_PERMITIDOS:-http://localhost:5173}
+
+services:
+  mongodb:
+    image: mongo:7
+    ports:
+      - "127.0.0.1:${PUERTO_MONGO:-27018}:27017"
+    volumes:
+      - datos_mongodb:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  servicio-autenticacion:
+    build:
+      context: ./backend
+      args:
+        SERVICIO: servicio-autenticacion
+    environment:
+      <<: *variables-comunes
+      NUTRIVIDA_URL_CLINICO: http://servicio-clinico:8082
+      NUTRIVIDA_ADMIN_CORREO: ${NUTRIVIDA_ADMIN_CORREO:-}
+      NUTRIVIDA_ADMIN_CONTRASENA: ${NUTRIVIDA_ADMIN_CONTRASENA:-}
+    ports:
+      - "8081:8081"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  servicio-clinico:
+    build:
+      context: ./backend
+      args:
+        SERVICIO: servicio-clinico
+    environment:
+      <<: *variables-comunes
+    ports:
+      - "8082:8082"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  servicio-agenda:
+    build:
+      context: ./backend
+      args:
+        SERVICIO: servicio-agenda
+    environment:
+      <<: *variables-comunes
+      NUTRIVIDA_URL_CLINICO: http://servicio-clinico:8082
+    ports:
+      - "8083:8083"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+volumes:
+  datos_mongodb:

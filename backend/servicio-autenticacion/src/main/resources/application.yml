@@ -1,0 +1,26 @@
+server:
+  port: ${PUERTO_AUTENTICACION:8081}
+
+spring:
+  application:
+    name: servicio-autenticacion
+  data:
+    mongodb:
+      uri: ${NUTRIVIDA_MONGO_URI:mongodb://localhost:27017/nutrivida}
+      auto-index-creation: true
+
+nutrivida:
+  seguridad:
+    secreto-jwt: ${NUTRIVIDA_JWT_SECRETO:}
+    expiracion-minutos: ${NUTRIVIDA_JWT_EXPIRACION_MINUTOS:60}
+    origenes-permitidos: ${NUTRIVIDA_ORIGENES_PERMITIDOS:http://localhost:5173}
+    rutas-publicas-post:
+      - /api/autenticacion/registro
+      - /api/autenticacion/iniciar-sesion
+  servicios:
+    clinico-url: ${NUTRIVIDA_URL_CLINICO:http://localhost:8082}
+  administrador:
+    correo: ${NUTRIVIDA_ADMIN_CORREO:}
+    contrasena: ${NUTRIVIDA_ADMIN_CONTRASENA:}
+  mongo:
+    colecciones-con-esquema: usuarios,tokens_revocados

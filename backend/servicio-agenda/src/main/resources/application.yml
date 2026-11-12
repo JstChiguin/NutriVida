@@ -1,0 +1,23 @@
+server:
+  port: ${PUERTO_AGENDA:8083}
+
+spring:
+  application:
+    name: servicio-agenda
+  data:
+    mongodb:
+      uri: ${NUTRIVIDA_MONGO_URI:mongodb://localhost:27017/nutrivida}
+      auto-index-creation: true
+
+nutrivida:
+  seguridad:
+    secreto-jwt: ${NUTRIVIDA_JWT_SECRETO:}
+    expiracion-minutos: ${NUTRIVIDA_JWT_EXPIRACION_MINUTOS:60}
+    origenes-permitidos: ${NUTRIVIDA_ORIGENES_PERMITIDOS:http://localhost:5173}
+  agenda:
+    zona-horaria: ${NUTRIVIDA_ZONA_HORARIA:America/Santiago}
+    horas-minimas-cancelacion: ${NUTRIVIDA_HORAS_MINIMAS_CANCELACION:2}
+    paso-oferta-minutos: 30
+    url-clinico: ${NUTRIVIDA_URL_CLINICO:http://localhost:8082}
+  mongo:
+    colecciones-con-esquema: agendas,citas,ocupaciones_agenda,pagos

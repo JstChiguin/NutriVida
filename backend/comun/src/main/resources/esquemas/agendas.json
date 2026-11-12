@@ -1,0 +1,32 @@
+{
+  "bsonType": "object",
+  "required": ["horariosSemanales", "bloqueos", "activa"],
+  "properties": {
+    "_id": { "bsonType": "objectId" },
+    "activa": { "bsonType": "bool" },
+    "horariosSemanales": {
+      "bsonType": "array",
+      "items": {
+        "bsonType": "object",
+        "required": ["dia", "horaInicio", "horaFin"],
+        "properties": {
+          "dia": { "enum": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"] },
+          "horaInicio": { "bsonType": "string", "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$" },
+          "horaFin": { "bsonType": "string", "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$" }
+        }
+      }
+    },
+    "bloqueos": {
+      "bsonType": "array",
+      "items": {
+        "bsonType": "object",
+        "required": ["identificador", "inicio", "fin", "motivo", "tipo"],
+        "properties": {
+          "inicio": { "bsonType": "date" },
+          "fin": { "bsonType": "date" },
+          "tipo": { "enum": ["BLOQUEO", "AUSENCIA"] }
+        }
+      }
+    }
+  }
+}

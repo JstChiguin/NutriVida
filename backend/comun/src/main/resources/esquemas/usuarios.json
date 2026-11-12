@@ -1,0 +1,14 @@
+{
+  "bsonType": "object",
+  "required": ["correo", "hashContrasena", "nombreCompleto", "rol", "activo", "creadoEn"],
+  "properties": {
+    "correo": { "bsonType": "string", "pattern": "^[^@\\s]+@[^@\\s]+$" },
+    "hashContrasena": { "bsonType": "string", "minLength": 20 },
+    "nombreCompleto": { "bsonType": "string", "minLength": 3, "maxLength": 120 },
+    "rol": { "enum": ["ADMINISTRADOR", "NUTRICIONISTA", "PACIENTE"] },
+    "activo": { "bsonType": "bool" },
+    "creadoEn": { "bsonType": "date" },
+    "actualizadoEn": { "bsonType": "date" },
+    "ultimoAcceso": { "bsonType": ["date", "null"] }
+  }
+}
