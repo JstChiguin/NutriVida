@@ -1,224 +1,300 @@
-# NutriVida — Clínica de Atención Nutricional
 
-**Proyecto académico de Desarrollo FullStack II (DSY1104), Duoc UC.**
+# 🥗 NutriVida — Clínica de Atención Nutricional
 
-NutriVida es una aplicación web para la atención nutricional que reúne un sitio público, registro e inicio de sesión, reserva y gestión de citas, seguimiento de pacientes y herramientas de administración. Integra un frontend React, tres microservicios Spring Boot y MongoDB.
+NutriVida es una aplicación web de gestión nutricional desarrollada para facilitar la atención de pacientes, la reserva de consultas y la administración de una clínica especializada en nutrición.
 
-> **Importante:** clínica y registros utilizados con fines académicos. Todas las demostraciones deben emplear exclusivamente datos ficticios. La dirección Av. Brasil 2021, Valparaíso, es la ubicación definida para la simulación del proyecto; no implica que allí funcione una clínica real.
+El sistema reúne en una misma plataforma la información de los servicios nutricionales, la gestión de profesionales, las citas y el seguimiento de pacientes, proporcionando diferentes funcionalidades según el tipo de usuario.
 
-**Repositorio:** [JstChiguin/NutriVida](https://github.com/JstChiguin/NutriVida)
+Este proyecto fue desarrollado con fines académicos para la asignatura **Desarrollo FullStack II (DSY1104)** de Duoc UC.
 
-## Funcionalidades
+## 🌿 ¿Qué es NutriVida?
 
-### Sitio público
+NutriVida busca digitalizar los procesos de atención de una clínica nutricional, permitiendo que pacientes y profesionales interactúen mediante una plataforma web.
 
-- Inicio con navegación y tarjetas interactivas.
-- Catálogo de servicios nutricionales, búsqueda y filtros por categoría.
-- Perfiles de nutricionistas consultados desde la API, con información referencial cuando no hay conexión.
-- Formulario de contacto con validación de campos, consentimiento de privacidad, mensajes de error y confirmación visual.
-- Mapa interactivo con **Leaflet**, controles de zoom y marcador personalizado de NutriVida.
+La aplicación contempla el proceso de atención nutricional, desde la consulta de servicios y la reserva de una hora hasta el registro de evaluaciones, mediciones y planes alimentarios.
 
-### Pacientes
+Su objetivo es facilitar el acceso a la atención nutricional y mantener organizada la información necesaria para el trabajo clínico y administrativo.
 
-- Registro, inicio y cierre de sesión.
-- Consulta y actualización de perfil.
-- Solicitud y consulta de citas, según disponibilidad y permisos.
-- Consulta de ficha clínica, mediciones, seguimiento y planes alimentarios.
+## ✨ ¿Qué permite hacer NutriVida?
 
-### Nutricionistas
+### 🌐 Visitantes
 
-- Agenda y gestión de citas.
-- Consulta de pacientes atendidos y sus antecedentes autorizados.
-- Registro y gestión de información clínica y planes alimentarios, según los permisos implementados.
+Las personas que ingresan al sitio web pueden:
 
-### Administración
+- Conocer la clínica y sus servicios nutricionales.
+- Consultar información de los nutricionistas.
+- Buscar y filtrar los servicios disponibles.
+- Acceder a un formulario de contacto.
+- Consultar la ubicación referencial de la clínica mediante un mapa interactivo.
+- Registrarse para acceder a las funcionalidades de pacientes.
 
-- Gestión de usuarios, roles y estados de cuenta.
-- Gestión de servicios y profesionales.
-- Asignación de nutricionistas, solicitudes y pagos simulados.
-- Reportes y consulta de auditoría.
+### 👤 Pacientes
 
-Las rutas internas se protegen según los roles **PACIENTE**, **NUTRICIONISTA** y **ADMINISTRADOR**.
+Los pacientes registrados cuentan con funcionalidades para:
 
-## Tecnologías
+- Iniciar sesión de forma segura.
+- Consultar y actualizar información de su perfil.
+- Buscar profesionales y servicios nutricionales.
+- Solicitar citas según los horarios disponibles.
+- Consultar sus citas registradas.
+- Acceder a información de su seguimiento nutricional.
+- Revisar la información nutricional que corresponda a su perfil.
 
-| Componente | Tecnologías |
+### 🩺 Nutricionistas
+
+Los profesionales pueden utilizar el sistema para:
+
+- Consultar su agenda de atención.
+- Revisar información de sus pacientes asignados.
+- Gestionar información de fichas clínicas.
+- Registrar evaluaciones y mediciones nutricionales.
+- Realizar seguimiento de la evolución de los pacientes.
+- Elaborar y gestionar planes alimentarios.
+
+### 🛠️ Administradores
+
+Los usuarios con permisos administrativos pueden:
+
+- Gestionar usuarios y sus respectivos roles.
+- Administrar la información de los nutricionistas.
+- Gestionar los servicios nutricionales.
+- Supervisar citas y agendas.
+- Gestionar registros de pagos.
+- Revisar solicitudes de contacto.
+- Consultar reportes e información administrativa.
+- Revisar registros de auditoría.
+
+## 🧩 Principales módulos
+
+| Módulo | Descripción |
 |---|---|
-| Frontend | React 19, JavaScript, Vite 8, React Router, Bootstrap 5 y CSS |
-| Mapa | Leaflet 1.9.4 |
-| Backend | Java 21, Spring Boot 3.5, Spring Security, API REST |
-| Persistencia | MongoDB 7, Spring Data MongoDB |
-| Seguridad | JWT, BCrypt y autorización basada en roles y recursos |
-| Pruebas | Vitest, React Testing Library, JUnit 5 y Spring Test |
-| Documentación API | OpenAPI / Swagger UI |
-| Entorno local | Docker y Docker Compose |
-| Colaboración | Git y GitHub, ramas y Pull Requests |
+| Inicio | Presentación de la clínica y sus servicios. |
+| Servicios | Catálogo de prestaciones nutricionales con búsqueda y filtros. |
+| Nutricionistas | Información de los profesionales disponibles. |
+| Contacto | Formulario de consultas y mapa de ubicación referencial. |
+| Autenticación | Registro, inicio y cierre de sesión. |
+| Pacientes | Gestión de perfiles e información de pacientes. |
+| Agenda | Disponibilidad de horarios y gestión de citas. |
+| Ficha clínica | Registro y consulta de información de atención nutricional. |
+| Seguimiento | Control de mediciones y evolución nutricional. |
+| Planes alimentarios | Gestión de indicaciones y planes nutricionales. |
+| Administración | Gestión de usuarios, servicios, profesionales y solicitudes. |
+| Reportes | Consulta de información clínica y administrativa. |
 
-## Estructura del proyecto
+## 🔐 Seguridad y acceso
 
-```text
-NutriVida/
-├── backend/
-│   ├── comun/
-│   ├── servicio-autenticacion/
-│   ├── servicio-clinico/
-│   └── servicio-agenda/
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── layout/
-│   │   │   ├── paginas/
-│   │   │   └── ui/
-│   │   ├── configuracion/
-│   │   ├── contexto/
-│   │   ├── datos/
-│   │   ├── hooks/
-│   │   ├── paginas/
-│   │   │   └── administracion/
-│   │   ├── rutas/
-│   │   ├── servicios/
-│   │   ├── utils/
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── estilos-integracion.css
-│   ├── tests/
-│   └── package.json
-├── mongodb/
-├── scripts/
-├── docs/
-├── docker-compose.yml
-├── .env.example
-└── README.md
-```
+NutriVida utiliza autenticación mediante **JWT (JSON Web Token)** y control de acceso basado en roles.
 
-El backend se divide en un módulo común y tres servicios independientes:
+El sistema contempla cuatro perfiles principales:
 
-| Servicio | Puerto local | Responsabilidad |
-|---|---:|---|
-| Autenticación | `8081` | Registro, inicio de sesión, usuarios y roles |
-| Clínico | `8082` | Servicios, nutricionistas, pacientes, fichas, mediciones, planes y contacto |
-| Agenda | `8083` | Horarios, disponibilidad, citas, pagos simulados y reportes |
-| Frontend Vite | `5173` | Interfaz web |
-| MongoDB | `27018` | Base de datos expuesta solo en localhost por Docker Compose |
+- Visitante.
+- Paciente.
+- Nutricionista.
+- Administrador.
 
-## Requisitos para ejecutar localmente
+Cada usuario autenticado accede a las funcionalidades permitidas para su rol.
+
+La aplicación también incorpora validaciones de entrada, controles de autorización y mecanismos de auditoría.
+
+**Importante:** NutriVida es un proyecto académico. Los datos utilizados para demostraciones y pruebas deben ser ficticios; no debe utilizarse para almacenar información real de pacientes sin una evaluación formal de seguridad y privacidad.
+
+## 🖥️ Tecnologías utilizadas
+
+### Frontend
+
+- React 19.
+- JavaScript y JSX.
+- Vite.
+- React Router.
+- Bootstrap 5.
+- CSS3.
+- Leaflet y OpenStreetMap.
+
+### Backend
+
+- Java.
+- Spring Boot.
+- API REST.
+- Spring Security.
+- JWT.
+- Maven.
+
+### Base de datos
+
+- MongoDB.
+- Colecciones y documentos.
+- Validadores e índices.
+- Consultas y operaciones CRUD.
+
+### Herramientas de desarrollo
+
+- Visual Studio Code.
+- Git y GitHub.
+- Docker y Docker Compose.
+- Vitest.
+- React Testing Library.
+- ESLint.
+- Swagger / OpenAPI.
+
+## 🏗️ Arquitectura de la aplicación
+
+NutriVida se organiza en tres componentes principales:
+
+**Frontend:** interfaz web desarrollada con React, encargada de mostrar información y permitir la interacción con el usuario.
+
+**Backend:** servicios desarrollados con Spring Boot, responsables de procesar las solicitudes, aplicar las reglas de negocio y controlar la seguridad.
+
+**Base de datos:** MongoDB, utilizada para almacenar la información de la aplicación.
+
+El backend se divide en tres servicios:
+
+| Servicio | Responsabilidad |
+|---|---|
+| Autenticación | Registro, inicio de sesión, usuarios y roles. |
+| Clínico | Pacientes, nutricionistas, fichas clínicas, mediciones y planes alimentarios. |
+| Agenda | Disponibilidad de horarios, reservas, citas, pagos y reportes asociados. |
+
+La comunicación entre el frontend y los servicios se realiza mediante API REST utilizando solicitudes HTTP y respuestas JSON.
+
+## 📁 Organización del proyecto
+
+El repositorio está organizado en las siguientes carpetas:
+
+- `frontend/`: aplicación web desarrollada en React.
+- `backend/`: servicios Spring Boot y componentes compartidos.
+- `mongodb/`: scripts para colecciones, validaciones, índices y datos ficticios.
+- `scripts/`: herramientas auxiliares para preparación de datos.
+
+El archivo `docker-compose.yml` contiene la configuración para ejecutar los servicios mediante contenedores.
+
+
+El archivo `docker-compose.yml` contiene la configuración para ejecutar los servicios mediante contenedores.
+
+## 🚀 Ejecución local
+
+### Requisitos
 
 - Git.
-- Node.js y npm compatibles con Vite 8 (se recomienda Node.js 22 LTS).
-- Docker Desktop con Docker Compose, para MongoDB y los microservicios.
-- Opcional: Java 21 y Maven 3.9 para compilar o probar el backend fuera de Docker.
+- Node.js y npm.
+- Java y Maven, para ejecutar el backend fuera de contenedores.
+- Docker y Docker Compose, para utilizar el entorno con contenedores.
 
-## Instalación y ejecución en Windows (PowerShell)
+### 1. Clonar el repositorio
 
-Desde la raíz del repositorio:
-
-### 1. Preparar la configuración local
-
-```powershell
-if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+```bash
+git clone https://github.com/JstChiguin/NutriVida.git
+cd NutriVida
 ```
 
-Edita `.env` en tu equipo y define los valores requeridos, especialmente `NUTRIVIDA_JWT_SECRETO` (un secreto aleatorio suficientemente largo). Configura las credenciales iniciales únicamente para el entorno de pruebas, si corresponde.
+### 2. Configurar el entorno
 
-**No publiques `.env`, contraseñas, tokens ni datos personales.** Conserva `.env.example` solo como plantilla, sin secretos reales.
+Revisar los archivos `.env.example` disponibles en el proyecto y crear los archivos de configuración local que correspondan.
 
-### 2. Iniciar MongoDB y los tres servicios Spring Boot
+No incluir credenciales, contraseñas ni claves privadas en GitHub.
 
-```powershell
-docker compose up -d --build
-docker compose ps
+### 3. Iniciar los servicios
+
+Con Docker instalado y la configuración local preparada:
+
+```bash
+docker compose up --build -d
 ```
 
-Docker Compose crea y utiliza un volumen persistente para MongoDB. **No ejecutes `docker compose down -v` si necesitas conservar los datos del entorno.**
+### 4. Iniciar el frontend
 
-### 3. Instalar y ejecutar el frontend
-
-En una segunda terminal, desde la raíz del proyecto:
-
-```powershell
-npm.cmd --prefix frontend ci
-npm.cmd --prefix frontend run dev
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
-Abre **http://localhost:5173**.
+Abrir en el navegador la dirección local indicada por Vite.
 
-El frontend utiliza por defecto los servicios locales. Si necesitas otras direcciones, configura `frontend/.env` tomando como referencia `frontend/.env.example`, con `VITE_URL_AUTENTICACION`, `VITE_URL_CLINICO` y `VITE_URL_AGENDA`.
+### 5. Detener los servicios
 
-### 4. API y documentación
+Desde la raíz del proyecto:
 
-Con los servicios funcionando, la interfaz de Swagger UI está disponible en:
-
-- Autenticación: http://localhost:8081/swagger-ui.html
-- Clínico: http://localhost:8082/swagger-ui.html
-- Agenda: http://localhost:8083/swagger-ui.html
-
-Los endpoints y permisos se describen en [`docs/api-endpoints.md`](docs/api-endpoints.md).
-
-## Pruebas y calidad
-
-Desde la raíz, en PowerShell:
-
-```powershell
-npm.cmd --prefix frontend run test
-npm.cmd --prefix frontend run lint
-npm.cmd --prefix frontend run build
+```bash
+docker compose down
 ```
 
-**Última verificación informada para la integración en `main` (12-11-2026):**
+## 🧪 Pruebas y validación
 
-- **143 de 143 pruebas Vitest aprobadas**, distribuidas en **16 archivos**.
-- Compilación Vite exitosa (**83 módulos**).
-- ESLint sin errores.
-- Conflictos de Git resueltos antes de integrar `develop` en `main`.
-- Commit de integración de `main`: **`7a44a01`** (PR #12).
+El frontend dispone de pruebas automatizadas mediante Vitest y React Testing Library.
 
-Para ejecutar las pruebas del backend, con Java y Maven instalados:
+En la revisión de la versión integrada se obtuvieron los siguientes resultados:
 
-```powershell
-mvn -f backend/pom.xml test
+- **143 pruebas aprobadas.**
+- **16 archivos de pruebas aprobados.**
+- Compilación de producción realizada correctamente.
+- Análisis estático con ESLint sin errores.
+
+Para ejecutar las verificaciones del frontend:
+
+```bash
+cd frontend
+npm run test
+npm run build
+npm run lint
 ```
 
-Algunas pruebas de integración del backend requieren MongoDB accesible; no se afirma aquí que hayan sido ejecutadas en la última validación del frontend.
+El backend también contiene pruebas automatizadas. Su ejecución y resultado deben verificarse en el entorno correspondiente.
 
-## Datos de demostración
+## 📌 Estado del proyecto
 
-El repositorio contiene scripts en `mongodb/` y `scripts/` para preparar colecciones y datos de demostración ficticios. Consulta [`docs/taller-bases-de-datos.md`](docs/taller-bases-de-datos.md) antes de utilizarlos. No cargues información clínica ni datos personales reales.
+La aplicación fue integrada en la rama principal `main` mediante Pull Requests, conservando el historial del trabajo colaborativo.
 
-## Seguridad y privacidad
+**Versión integrada de referencia:** commit `7a44a01`, correspondiente al Pull Request #12.
 
-- Autenticación con JWT y contraseñas protegidas mediante BCrypt.
-- Autorización por roles y controles sobre el acceso a los recursos.
-- Variables sensibles fuera del código fuente y del repositorio.
-- Uso exclusivo de identidades, contactos y antecedentes clínicos ficticios para pruebas.
-- El formulario público exige consentimiento de privacidad.
+### Funcionalidades incorporadas
 
-**Alcance del formulario de Contacto:** las pruebas verifican sus validaciones y la confirmación visual; dicha confirmación, por sí sola, **no acredita el envío o almacenamiento efectivo de la consulta en el backend**.
+- Interfaz pública de la clínica.
+- Navegación mediante React Router.
+- Registro y autenticación de usuarios.
+- Control de acceso según roles.
+- Gestión de pacientes y nutricionistas.
+- Gestión de citas y disponibilidad.
+- Fichas clínicas y seguimiento nutricional.
+- Planes alimentarios.
+- Administración de usuarios y servicios.
+- Reportes y auditoría.
+- Mapa interactivo de ubicación referencial.
 
-## Despliegue y limitaciones conocidas
+### Verificaciones y mejoras pendientes
 
-El repositorio registra una publicación del frontend mediante **GitHub Pages**. Esto no significa que MongoDB y los tres microservicios estén alojados y disponibles públicamente: para utilizar las funciones que dependen de la API se necesita un backend accesible y correctamente configurado.
+- Comprobar el despliegue público completo del frontend, backend y base de datos.
+- Revisar las vulnerabilidades moderadas informadas por npm.
+- Optimizar el tamaño de los archivos generados en la compilación.
+- Completar las pruebas funcionales de extremo a extremo.
+- Verificar el envío y la persistencia de consultas del formulario de contacto.
 
-Pendientes identificados durante la integración:
+El despliegue del frontend en GitHub Pages no implica automáticamente que los servicios backend y MongoDB estén disponibles públicamente.
 
-- Revisar las **cuatro vulnerabilidades moderadas** informadas por `npm audit`, sin aplicar actualizaciones incompatibles automáticamente.
-- Optimizar el tamaño del paquete JavaScript: Vite advierte un archivo superior a **500 kB** tras minificación.
-- Comprobar el flujo completo frontend–backend en el entorno de despliegue previsto.
-- Validar la compatibilidad final de la solución con las exigencias de infraestructura y base de datos de la pauta académica.
+## 👩‍💻 Equipo de desarrollo
 
-## Documentación
+Proyecto desarrollado por estudiantes de **Duoc UC**, carrera de Ingeniería Informática.
 
-- [`docs/arquitectura.md`](docs/arquitectura.md): componentes, microservicios y decisiones técnicas.
-- [`docs/api-endpoints.md`](docs/api-endpoints.md): rutas REST y permisos.
-- [`docs/taller-bases-de-datos.md`](docs/taller-bases-de-datos.md): MongoDB y consultas.
-- [`docs/guia-de-defensa.md`](docs/guia-de-defensa.md): conceptos y preparación para la presentación.
+**Integrantes:**
 
-## Trabajo colaborativo
+- Chiguin Chiang.
+- Victoria Ortega.
+- Arlette Patiño.
 
-Proyecto desarrollado por **Chiguin Chiang, Victoria Ortega y Arlette Patiño**.
+**Asignatura:** Desarrollo FullStack II — DSY1104.
 
-Se utiliza `main` para la versión principal y `develop` para integrar trabajo. Las nuevas funcionalidades deben desarrollarse en ramas creadas desde `develop`, revisarse mediante Pull Requests y fusionarse sin reescribir el historial del equipo. Los commits deben describir en español los cambios, motivos, archivos afectados y verificaciones realmente ejecutadas, con la identidad Git verificada de cada integrante.
+## 🤝 Trabajo colaborativo
+
+El desarrollo se organiza utilizando Git y GitHub.
+
+- `main`: rama principal con las integraciones revisadas.
+- `develop`: rama de integración de nuevas funcionalidades.
+- `feature/*`: ramas de desarrollo de funcionalidades.
+- `fix/*`: ramas de correcciones.
+
+
+Los cambios se incorporan mediante Pull Requests, permitiendo revisar el trabajo antes de integrarlo.
+
 
 ---
 
-**Estado:** integración de código completada en `main` el 12 de noviembre de 2026; validaciones de despliegue integral y observaciones técnicas pendientes.
+**NutriVida — Proyecto académico de Desarrollo FullStack II, Duoc UC.**
