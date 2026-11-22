@@ -66,7 +66,7 @@ Decisiones de modelado:
 
 ## 3. Seguridad
 
-1. **Autenticación**: `POST /api/autenticacion/iniciar-sesion` valida el hash BCrypt y entrega un JWT HS256 con `sub` (id de usuario), `correo`, `rol`, `jti`, emisor y expiración. El secreto viene de `NUTRIVIDA_JWT_SECRETO` (mínimo 32 caracteres, sin valor por defecto).
+1. **Autenticación**: `POST /api/v1/autenticacion/iniciar-sesion` valida el hash BCrypt y entrega un JWT HS256 con `sub` (id de usuario), `correo`, `rol`, `jti`, emisor y expiración. El secreto viene de `NUTRIVIDA_JWT_SECRETO` (mínimo 32 caracteres, sin valor por defecto).
 2. **Cierre de sesión**: el `jti` se guarda en `tokens_revocados` (índice TTL). Los tres servicios consultan esa colección en `FiltroAutenticacionJwt` mediante `VerificadorRevocacionMongo` (módulo `comun`), por lo que un token cerrado recibe 401 en autenticación, clínico y agenda. Hay pruebas automatizadas de token vigente, revocado y expirado en los tres servicios. Costo: una consulta por `_id` a MongoDB en cada petición autenticada.
 3. **Roles (RBAC)**: `ADMINISTRADOR`, `NUTRICIONISTA`, `PACIENTE` más `SERVICIO_INTERNO`, que solo existe en tokens de un minuto firmados por los propios servicios y no puede asignarse a un usuario. Se aplica con `@PreAuthorize` en cada endpoint.
 4. **Propiedad del recurso (acceso horizontal)**: el rol no basta. `ControlAcceso` (clínico) y `cargarConAcceso` (agenda) comparan el usuario con el dueño del dato:

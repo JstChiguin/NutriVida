@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/pacientes/{pacienteId}/ficha-clinica")
+@RequestMapping("/api/v1/pacientes/{pacienteId}/ficha-clinica")
 @Tag(name = "Fichas clínicas", description = "Ficha nutricional con evoluciones y correcciones auditadas")
 public class ControladorFichasClinicas {
 

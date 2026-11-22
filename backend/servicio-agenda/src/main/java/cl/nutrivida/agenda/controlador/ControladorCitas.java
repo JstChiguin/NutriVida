@@ -32,7 +32,7 @@ import java.time.Instant;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/citas")
+@RequestMapping("/api/v1/citas")
 @Tag(name = "Citas", description = "Solicitud, confirmación, cancelación, reprogramación y atención de citas")
 public class ControladorCitas {
 

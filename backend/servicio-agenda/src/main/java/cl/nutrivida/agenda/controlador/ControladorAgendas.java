@@ -28,7 +28,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/agendas/{nutricionistaId}")
+@RequestMapping("/api/v1/agendas/{nutricionistaId}")
 @Tag(name = "Agendas", description = "Horarios semanales, bloqueos, ausencias y disponibilidad")
 public class ControladorAgendas {
 

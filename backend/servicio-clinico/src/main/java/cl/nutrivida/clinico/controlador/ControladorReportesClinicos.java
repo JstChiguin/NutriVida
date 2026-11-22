@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.Instant;
 
 @RestController
-@RequestMapping("/api/reportes")
+@RequestMapping("/api/v1/reportes")
 @PreAuthorize("hasRole('ADMINISTRADOR')")
 @Tag(name = "Reportes clínicos", description = "Indicadores agregados sin datos personales")
 public class ControladorReportesClinicos {

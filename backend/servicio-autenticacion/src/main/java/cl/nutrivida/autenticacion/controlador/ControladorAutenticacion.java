@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/autenticacion")
+@RequestMapping("/api/v1/autenticacion")
 @Tag(name = "Autenticación", description = "Registro de pacientes, inicio y cierre de sesión con JWT")
 public class ControladorAutenticacion {
 

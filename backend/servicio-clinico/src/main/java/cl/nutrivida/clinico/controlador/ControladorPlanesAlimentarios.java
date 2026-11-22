@@ -31,7 +31,7 @@ public class ControladorPlanesAlimentarios {
         this.servicioPlanes = servicioPlanes;
     }
 
-    @PostMapping("/api/pacientes/{pacienteId}/planes-alimentarios")
+    @PostMapping("/api/v1/pacientes/{pacienteId}/planes-alimentarios")
     @PreAuthorize("hasRole('NUTRICIONISTA')")
     @Operation(summary = "Crea el primer plan alimentario del paciente (nutricionista autorizado)")
     public ResponseEntity<PlanAlimentarioRespuesta> crearPlan(@PathVariable String pacienteId,
@@ -40,14 +40,14 @@ public class ControladorPlanesAlimentarios {
                 .body(servicioPlanes.crearPlan(UsuarioActual.obtener(), pacienteId, solicitud));
     }
 
-    @GetMapping("/api/pacientes/{pacienteId}/planes-alimentarios/vigente")
+    @GetMapping("/api/v1/pacientes/{pacienteId}/planes-alimentarios/vigente")
     @PreAuthorize("hasAnyRole('NUTRICIONISTA','PACIENTE')")
     @Operation(summary = "Consulta el plan vigente del paciente")
     public PlanAlimentarioRespuesta consultarPlanVigente(@PathVariable String pacienteId) {
         return servicioPlanes.consultarPlanVigente(UsuarioActual.obtener(), pacienteId);
     }
 
-    @GetMapping("/api/pacientes/{pacienteId}/planes-alimentarios")
+    @GetMapping("/api/v1/pacientes/{pacienteId}/planes-alimentarios")
     @PreAuthorize("hasAnyRole('NUTRICIONISTA','PACIENTE')")
     @Operation(summary = "Historial de versiones de planes del paciente")
     public PaginaRespuesta<PlanAlimentarioRespuesta> listarVersiones(@PathVariable String pacienteId,
@@ -57,14 +57,14 @@ public class ControladorPlanesAlimentarios {
                 ParametrosPagina.crear(pagina, tamano, "numeroVersion", true));
     }
 
-    @GetMapping("/api/planes-alimentarios/{planId}")
+    @GetMapping("/api/v1/planes-alimentarios/{planId}")
     @PreAuthorize("hasAnyRole('NUTRICIONISTA','PACIENTE')")
     @Operation(summary = "Consulta un plan por identificador")
     public PlanAlimentarioRespuesta consultarPlan(@PathVariable String planId) {
         return servicioPlanes.consultarPlan(UsuarioActual.obtener(), planId);
     }
 
-    @PutMapping("/api/planes-alimentarios/{planId}")
+    @PutMapping("/api/v1/planes-alimentarios/{planId}")
     @PreAuthorize("hasRole('NUTRICIONISTA')")
     @Operation(summary = "Crea una nueva versión del plan y marca la anterior como reemplazada")
     public PlanAlimentarioRespuesta actualizarPlan(@PathVariable String planId,
@@ -72,7 +72,7 @@ public class ControladorPlanesAlimentarios {
         return servicioPlanes.actualizarPlan(UsuarioActual.obtener(), planId, solicitud);
     }
 
-    @PatchMapping("/api/planes-alimentarios/{planId}/finalizacion")
+    @PatchMapping("/api/v1/planes-alimentarios/{planId}/finalizacion")
     @PreAuthorize("hasRole('NUTRICIONISTA')")
     @Operation(summary = "Finaliza un plan vigente")
     public PlanAlimentarioRespuesta finalizarPlan(@PathVariable String planId) {
