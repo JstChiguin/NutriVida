@@ -135,4 +135,4 @@ Primeros días con citas: 2026-09-14, 09-15, 09-20, 10-05 y 10-06, una cita cada
 
 ## Diferencia con los datos de la aplicación
 
-La aplicación (backend) guarda los mismos tipos de documento en la base `nutrivida`. Las semillas del taller se pueden abrir también desde la aplicación apuntando `NUTRIVIDA_MONGO_URI` a `nutrivida_taller` (las cuentas de la semilla usan la contraseña ficticia `Demo12345` mediante un hash BCrypt).
+La aplicación (backend) guarda los mismos tipos de documento en la base `nutrivida`. Las semillas del taller se pueden abrir también desde la aplicación apuntando `NUTRIVIDA_MONGO_URI` a `nutrivida_taller` (las cuentas de la semilla usan una contraseña ficticia almacenada como hash BCrypt, que no se publica en este documento).
