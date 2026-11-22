@@ -8,6 +8,7 @@ export const clinicoApi = {
     solicitar('clinico', 'PATCH', `/api/servicios/${servicioId}/estado`, { cuerpo: { activo } }),
 
   listarNutricionistas: (parametros) => solicitar('clinico', 'GET', '/api/nutricionistas', { parametros }),
+  consultarNutricionista: (nutricionistaId) => solicitar('clinico', 'GET', `/api/nutricionistas/${nutricionistaId}`),
   consultarMiPerfilNutricionista: () => solicitar('clinico', 'GET', '/api/nutricionistas/yo'),
   actualizarMiPerfilNutricionista: (datos) => solicitar('clinico', 'PUT', '/api/nutricionistas/yo', { cuerpo: datos }),
   crearNutricionista: (datos) => solicitar('clinico', 'POST', '/api/nutricionistas', { cuerpo: datos }),
