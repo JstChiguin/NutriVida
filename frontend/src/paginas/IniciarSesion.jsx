@@ -14,7 +14,7 @@ const RUTA_INICIAL_POR_ROL = {
 };
 
 export default function IniciarSesion() {
-  const { iniciarSesion, autenticado, usuario } = useAutenticacion();
+  const { iniciarSesion, autenticado, usuario, avisoSesion } = useAutenticacion();
   const navegar = useNavigate();
   const ubicacion = useLocation();
   const [valores, setValores] = useState({ correo: '', contrasena: '' });
@@ -54,6 +54,7 @@ export default function IniciarSesion() {
     <div className="mx-auto w-full max-w-md px-4 py-10">
       <div className="rounded-2xl bg-white p-6 shadow-sm">
         <h1 className="mb-4 text-2xl font-bold text-exito">Iniciar sesión</h1>
+        <Mensaje>{avisoSesion}</Mensaje>
         <Mensaje>{errorGeneral}</Mensaje>
         <form onSubmit={manejarEnvio} noValidate>
           <CampoTexto etiqueta="Correo electrónico" id="correo" type="email" autoComplete="email" obligatorio
