@@ -210,7 +210,7 @@ node --env-file=.env scripts/sembrar-datos-demo.mjs
 
 ### Despliegue en AWS
 
-La configuración para desplegar NutriVida en AWS (Caddy con HTTPS, Nginx con React, Docker Compose para la EC2 pública y la EC2 privada, y MongoDB Atlas) está en [docs/despliegue-aws.md](docs/despliegue-aws.md) y en `despliegue/aws/`.
+La configuración para desplegar NutriVida en AWS (Caddy con HTTPS, Nginx con React, Docker Compose para la EC2 pública y la EC2 privada, y MongoDB Atlas) está en `despliegue/aws/`, con un `.env.example` por cada instancia que lista las variables de entorno necesarias.
 
 ### 4. Iniciar el frontend
 
