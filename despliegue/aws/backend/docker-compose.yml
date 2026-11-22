@@ -6,11 +6,11 @@ x-entorno-comun: &entorno-comun
   NUTRIVIDA_JWT_EXPIRACION_MINUTOS: ${NUTRIVIDA_JWT_EXPIRACION_MINUTOS:-60}
   NUTRIVIDA_ORIGENES_PERMITIDOS: ${NUTRIVIDA_ORIGENES_PERMITIDOS:-https://localhost}
   NUTRIVIDA_FORWARD_HEADERS: framework
-  JAVA_TOOL_OPTIONS: ${JAVA_OPCIONES:--Xms64m -Xmx256m}
+  JAVA_TOOL_OPTIONS: ${JAVA_OPCIONES:--Xms32m -Xmx160m -XX:+UseSerialGC -Xss512k -XX:MaxMetaspaceSize=128m -XX:TieredStopAtLevel=1 -XX:+ExitOnOutOfMemoryError}
 
 services:
   servicio-autenticacion:
-    image: ${REGISTRO_IMAGENES:-chiguin/nutrivida}:autenticacion-aws
+    image: ${REGISTRO_IMAGENES:-chiguin/nutrivida}:autenticacion-${ETIQUETA_IMAGENES:-aws}
     build:
       context: ../../../backend
       args:
@@ -31,7 +31,7 @@ services:
       - "${IP_ESCUCHA:-0.0.0.0}:8081:8081"
 
   servicio-clinico:
-    image: ${REGISTRO_IMAGENES:-chiguin/nutrivida}:clinico-aws
+    image: ${REGISTRO_IMAGENES:-chiguin/nutrivida}:clinico-${ETIQUETA_IMAGENES:-aws}
     build:
       context: ../../../backend
       args:
@@ -49,7 +49,7 @@ services:
       - "${IP_ESCUCHA:-0.0.0.0}:8082:8082"
 
   servicio-agenda:
-    image: ${REGISTRO_IMAGENES:-chiguin/nutrivida}:agenda-aws
+    image: ${REGISTRO_IMAGENES:-chiguin/nutrivida}:agenda-${ETIQUETA_IMAGENES:-aws}
     build:
       context: ../../../backend
       args:

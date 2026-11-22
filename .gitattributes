@@ -2,3 +2,5 @@
 *.conf text eol=lf
 *.template text eol=lf
 Dockerfile text eol=lf
+despliegue/** text eol=lf
+backend/.dockerignore text eol=lf
