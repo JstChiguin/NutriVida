@@ -35,3 +35,11 @@ cobertura-local/
 *.crt
 caddy_datos/
 caddy_config/
+
+# Documentacion interna del equipo (no es entregable)
+docs/guia-de-defensa.md
+docs/taller-bases-de-datos.md
+docs/arquitectura.md
+docs/api-endpoints.md
+docs/despliegue-aws.md
+docs/interno/
