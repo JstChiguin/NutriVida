@@ -15,11 +15,11 @@ nutrivida:
     expiracion-minutos: ${NUTRIVIDA_JWT_EXPIRACION_MINUTOS:60}
     origenes-permitidos: ${NUTRIVIDA_ORIGENES_PERMITIDOS:http://localhost:5173}
     rutas-publicas-get:
-      - /api/servicios
-      - /api/servicios/*
-      - /api/nutricionistas
-      - /api/nutricionistas/*
+      - /api/v1/servicios
+      - /api/v1/servicios/*
+      - /api/v1/nutricionistas
+      - /api/v1/nutricionistas/*
     rutas-publicas-post:
-      - /api/solicitudes-contacto
+      - /api/v1/solicitudes-contacto
   mongo:
     colecciones-con-esquema: pacientes,nutricionistas,servicios,fichas_clinicas,mediciones,planes_alimentarios,solicitudes_contacto

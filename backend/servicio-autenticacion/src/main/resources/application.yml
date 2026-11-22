@@ -15,8 +15,8 @@ nutrivida:
     expiracion-minutos: ${NUTRIVIDA_JWT_EXPIRACION_MINUTOS:60}
     origenes-permitidos: ${NUTRIVIDA_ORIGENES_PERMITIDOS:http://localhost:5173}
     rutas-publicas-post:
-      - /api/autenticacion/registro
-      - /api/autenticacion/iniciar-sesion
+      - /api/v1/autenticacion/registro
+      - /api/v1/autenticacion/iniciar-sesion
   servicios:
     clinico-url: ${NUTRIVIDA_URL_CLINICO:http://localhost:8082}
   administrador:

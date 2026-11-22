@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/pacientes")
+@RequestMapping("/api/v1/pacientes")
 @Tag(name = "Pacientes", description = "Perfiles de pacientes y autorización de nutricionistas")
 public class ControladorPacientes {
 

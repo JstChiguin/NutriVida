@@ -29,7 +29,7 @@ public class ClienteServicioClinico {
                 Rol.SERVICIO_INTERNO, VIGENCIA_TOKEN_INTERNO);
         try {
             clienteRest.post()
-                    .uri("/api/internos/pacientes")
+                    .uri("/api/v1/internos/pacientes")
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenInterno)
                     .body(solicitud)
                     .retrieve()

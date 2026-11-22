@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/solicitudes-contacto")
+@RequestMapping("/api/v1/solicitudes-contacto")
 @Tag(name = "Solicitudes de contacto", description = "Formulario público de contacto y su gestión")
 public class ControladorSolicitudesContacto {
 

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Hidden
 @RestController
-@RequestMapping("/api/internos")
+@RequestMapping("/api/v1/internos")
 @PreAuthorize("hasRole('SERVICIO_INTERNO')")
 public class ControladorInterno {
 
