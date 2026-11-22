@@ -18,7 +18,7 @@ import java.time.Instant;
 import java.util.function.Function;
 
 @RestController
-@RequestMapping("/api/auditorias")
+@RequestMapping("/api/v1/auditorias")
 @PreAuthorize("hasRole('ADMINISTRADOR')")
 @Tag(name = "Auditorías", description = "Consulta de la bitácora de operaciones importantes")
 public class ControladorAuditorias {

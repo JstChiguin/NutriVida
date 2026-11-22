@@ -12,8 +12,8 @@ nutrivida:
     expiracion-minutos: 30
     origenes-permitidos: http://localhost:5173
     rutas-publicas-post:
-      - /api/autenticacion/registro
-      - /api/autenticacion/iniciar-sesion
+      - /api/v1/autenticacion/registro
+      - /api/v1/autenticacion/iniciar-sesion
   servicios:
     clinico-url: http://localhost:65000
   mongo:

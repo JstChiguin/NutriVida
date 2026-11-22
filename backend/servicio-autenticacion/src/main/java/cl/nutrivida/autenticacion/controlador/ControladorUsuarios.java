@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/v1/usuarios")
 @Tag(name = "Usuarios", description = "Administración de cuentas, roles y estado")
 public class ControladorUsuarios {
 

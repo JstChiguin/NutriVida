@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.Instant;
 
 @RestController
-@RequestMapping("/api/pacientes/{pacienteId}/mediciones")
+@RequestMapping("/api/v1/pacientes/{pacienteId}/mediciones")
 @Tag(name = "Mediciones", description = "Peso, estatura, IMC y evolución antropométrica")
 public class ControladorMediciones {
 

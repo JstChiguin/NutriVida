@@ -30,28 +30,28 @@ public class ClienteClinicoRest implements ClienteClinico {
 
     @Override
     public ResumenPaciente consultarMiPerfilDePaciente() {
-        return pedirConSesion("/api/pacientes/yo", ResumenPaciente.class);
+        return pedirConSesion("/api/v1/pacientes/yo", ResumenPaciente.class);
     }
 
     @Override
     public ResumenPaciente consultarPaciente(String pacienteId) {
-        return pedirConSesion("/api/pacientes/" + pacienteId, ResumenPaciente.class);
+        return pedirConSesion("/api/v1/pacientes/" + pacienteId, ResumenPaciente.class);
     }
 
     @Override
     public ResumenNutricionista consultarMiPerfilDeNutricionista() {
-        return pedirConSesion("/api/nutricionistas/yo", ResumenNutricionista.class);
+        return pedirConSesion("/api/v1/nutricionistas/yo", ResumenNutricionista.class);
     }
 
     @Override
     public ResumenNutricionista consultarNutricionista(String nutricionistaId) {
-        return ejecutar(() -> clienteRest.get().uri("/api/nutricionistas/{id}", nutricionistaId)
+        return ejecutar(() -> clienteRest.get().uri("/api/v1/nutricionistas/{id}", nutricionistaId)
                 .retrieve().body(ResumenNutricionista.class));
     }
 
     @Override
     public ResumenServicio consultarServicio(String servicioId) {
-        return ejecutar(() -> clienteRest.get().uri("/api/servicios/{id}", servicioId)
+        return ejecutar(() -> clienteRest.get().uri("/api/v1/servicios/{id}", servicioId)
                 .retrieve().body(ResumenServicio.class));
     }
 
@@ -60,7 +60,7 @@ public class ClienteClinicoRest implements ClienteClinico {
         String tokenInterno = servicioTokens.generar("servicio-agenda", "interno@nutrivida.local",
                 Rol.SERVICIO_INTERNO, VIGENCIA_TOKEN_INTERNO);
         ejecutar(() -> clienteRest.post()
-                .uri("/api/internos/pacientes/{p}/nutricionistas/{n}/autorizacion", pacienteId, nutricionistaId)
+                .uri("/api/v1/internos/pacientes/{p}/nutricionistas/{n}/autorizacion", pacienteId, nutricionistaId)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenInterno)
                 .retrieve().toBodilessEntity());
     }

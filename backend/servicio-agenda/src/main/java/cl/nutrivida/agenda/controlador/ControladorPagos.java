@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.Instant;
 
 @RestController
-@RequestMapping("/api/pagos")
+@RequestMapping("/api/v1/pagos")
 @Tag(name = "Pagos simulados", description = "Pagos ficticios y comprobantes sin valor tributario")
 public class ControladorPagos {
 

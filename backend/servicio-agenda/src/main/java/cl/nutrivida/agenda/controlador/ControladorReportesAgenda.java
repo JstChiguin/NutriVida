@@ -20,7 +20,7 @@ import java.time.Instant;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/reportes")
+@RequestMapping("/api/v1/reportes")
 @PreAuthorize("hasRole('ADMINISTRADOR')")
 @Tag(name = "Reportes de agenda", description = "Indicadores agregados con MongoDB aggregation, sin datos personales")
 public class ControladorReportesAgenda {
