@@ -28,7 +28,7 @@ export default function Administracion() {
         {SECCIONES.map((seccion) => (
           <button key={seccion.clave} type="button" role="tab" aria-selected={seccionActiva === seccion.clave}
             onClick={() => setSeccionActiva(seccion.clave)}
-            className={`rounded-lg px-4 py-2 font-semibold ${seccionActiva === seccion.clave ? 'bg-exito text-white' : 'bg-white text-exito'}`}>
+            className={`pestana-seccion rounded-lg px-4 py-2 font-semibold ${seccionActiva === seccion.clave ? 'bg-exito text-white' : 'bg-white text-exito'}`}>
             {seccion.etiqueta}
           </button>
         ))}

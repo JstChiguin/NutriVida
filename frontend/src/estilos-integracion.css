@@ -474,3 +474,108 @@ main .overflow-x-auto { border-radius: .7rem; }
   transform: rotate(45deg);
   font-size: 18px;
 }
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 40px;
+  padding: .5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: .65rem;
+  font-size: .875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+.boton:focus-visible { outline: 3px solid #91dab8; outline-offset: 2px; }
+.boton.boton-primario { background: #146e4e; border-color: #146e4e; color: #fff; }
+.boton.boton-primario:hover { background: #0e5b40; border-color: #0e5b40; color: #fff; }
+.boton.boton-primario:active { background: #0b4a34; border-color: #0b4a34; }
+.boton.boton-contorno { background: #fff; border-color: #146e4e; color: #146e4e; }
+.boton.boton-contorno:hover { background: #ebf8f0; color: #0e5b40; }
+.boton.boton-contorno:active { background: #d6f0e0; }
+.boton.boton-peligro { background: #fff; border-color: #b42333; color: #b42333; }
+.boton.boton-peligro:hover { background: #fff1f1; border-color: #951c2a; color: #951c2a; }
+.boton.boton-peligro:active { background: #fde0e0; }
+.boton.boton-peligro:focus-visible { outline-color: #f3a7af; }
+.boton.boton-claro { background: #fff; border-color: #fff; color: #116c4d; }
+.boton.boton-claro:hover { background: #ebf8f0; color: #0e5b40; }
+.boton.boton-contorno-claro { background: transparent; border-color: rgba(255, 255, 255, .85); color: #fff; }
+.boton.boton-contorno-claro:hover { background: rgba(255, 255, 255, .12); color: #fff; }
+.boton:disabled,
+.boton:disabled:hover,
+.boton:disabled:active {
+  background: #e5e7eb;
+  border-color: #d1d5db;
+  color: #374151;
+  cursor: not-allowed;
+}
+.portada .boton { min-height: 44px; }
+
+.pestana-seccion { border: 1px solid #146e4e; }
+
+#nutricionistas .contenedor-nutricionistas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0;
+}
+#nutricionistas .contenedor-nutricionistas > li { display: flex; min-width: 0; }
+#nutricionistas .contenedor-nutricionistas .tarjeta-nutricionista { flex: 1 1 auto; max-width: none; margin: 0; }
+#nutricionistas .tarjeta-nutricionista .card-body { width: 100%; }
+@media (min-width: 576px) {
+  #nutricionistas .contenedor-nutricionistas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  #nutricionistas .contenedor-nutricionistas { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.resumen-reserva-detalle { display: block; color: #50625a; font-size: .8rem; }
+.resumen-servicios .boton { min-height: 32px; padding: .25rem .65rem; font-size: .8rem; }
+
+.grilla-horarios {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+  gap: .5rem;
+  list-style: none;
+  margin: 0 0 .75rem;
+  padding: 0;
+}
+.grilla-horarios .boton { width: 100%; font-variant-numeric: tabular-nums; }
+.horario-seleccionado-aviso { margin-bottom: .5rem; font-size: .875rem; font-weight: 600; color: #146e4e; }
+
+.selector-asignacion { min-width: min(14rem, 100%); }
+
+@media (max-width: 575.98px) {
+  main .tarjeta-seccion.p-5 { padding: 1rem !important; }
+  main .tarjeta-asignacion.p-4 { padding: .875rem !important; }
+  main .selector-asignacion select.px-3 { padding-left: .625rem !important; padding-right: .375rem !important; }
+}
+
+.boton-quitar-asignacion {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 1px solid #b42333;
+  border-radius: 999px;
+  background: #fff;
+  color: #b42333;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease;
+}
+.boton-quitar-asignacion:hover { background: #fff1f1; color: #951c2a; border-color: #951c2a; }
+.boton-quitar-asignacion:focus-visible { outline: 3px solid #f3a7af; outline-offset: 2px; }

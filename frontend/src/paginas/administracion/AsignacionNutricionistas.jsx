@@ -19,22 +19,22 @@ function FilaPaciente({ paciente, nutricionistas, onCambio }) {
   };
 
   return (
-    <li className="rounded-xl border border-gray-100 p-4">
+    <li className="tarjeta-asignacion rounded-xl border border-gray-100 p-4">
       <p className="font-bold">{paciente.nombreCompleto}</p>
       <p className="mb-2 text-sm text-gray-500">{paciente.correo}</p>
-      <ul className="mb-3 flex flex-wrap gap-2">
+      <ul className="list-unstyled mb-3 flex flex-wrap gap-2">
         {paciente.nutricionistasAutorizados.length === 0 && <li className="text-sm text-gray-500">Sin nutricionistas asignados</li>}
         {paciente.nutricionistasAutorizados.map((nutricionistaId) => (
           <li key={nutricionistaId} className="flex items-center gap-2 rounded-full bg-green-50 px-3 py-1 text-sm">
             {nombrePorId[nutricionistaId] ?? nutricionistaId}
-            <button type="button" className="font-bold text-red-600"
+            <button type="button" className="boton-quitar-asignacion"
               aria-label={`Retirar a ${nombrePorId[nutricionistaId] ?? nutricionistaId} de ${paciente.nombreCompleto}`}
               onClick={() => onCambio(() => clinicoApi.retirarNutricionista(paciente.id, nutricionistaId), 'Asignación retirada')}>×</button>
           </li>
         ))}
       </ul>
       <div className="flex flex-wrap items-end gap-2">
-        <div className="min-w-56 flex-1">
+        <div className="selector-asignacion flex-1">
           <CampoSeleccion etiqueta="Asignar nutricionista" id={`asignar-${paciente.id}`} marcador="Selecciona un profesional" value={elegido}
             onChange={(evento) => setElegido(evento.target.value)}
             opciones={disponibles.map((nutricionista) => ({ valor: nutricionista.id, etiqueta: nutricionista.nombreCompleto }))} />
@@ -73,7 +73,7 @@ export default function AsignacionNutricionistas() {
       <EstadoConsulta cargando={pacientes.cargando || nutricionistas.cargando} error={pacientes.error || nutricionistas.error}
         onReintentar={() => { pacientes.recargar(); nutricionistas.recargar(); }} vacio={pacientes.datos?.contenido.length === 0}
         mensajeVacio="No hay pacientes que coincidan.">
-        <ul className="space-y-3">
+        <ul className="list-unstyled space-y-3">
           {pacientes.datos?.contenido.map((paciente) => (
             <FilaPaciente key={paciente.id} paciente={paciente} nutricionistas={nutricionistas.datos?.contenido ?? []} onCambio={aplicarCambio} />
           ))}

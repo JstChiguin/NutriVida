@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useConsulta } from '../../hooks/useConsulta.js';
+import { EnlaceBoton } from '../ui/Boton.jsx';
 import { clinicoApi } from '../../servicios/clinicoApi.js';
 import { EstadoConsulta } from '../ui/EstadoConsulta.jsx';
 import { SERVICIOS_REFERENCIALES } from '../../datos/contenidoInstitucional.js';
@@ -124,12 +124,13 @@ export default function Servicios() {
                   )}
 
                   {!sinConexion && (
-                    <Link
+                    <EnlaceBoton
+                      variante="contorno"
                       to={`/mis-citas/nueva?servicioId=${servicio.id}`}
-                      className="btn btn-outline-success mt-3"
+                      className="mt-3"
                     >
                       Reservar
-                    </Link>
+                    </EnlaceBoton>
                   )}
                 </div>
               </article>
