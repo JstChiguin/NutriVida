@@ -1,5 +1,6 @@
 server:
   port: ${PUERTO_AUTENTICACION:8081}
+  forward-headers-strategy: ${NUTRIVIDA_FORWARD_HEADERS:none}
 
 spring:
   application:

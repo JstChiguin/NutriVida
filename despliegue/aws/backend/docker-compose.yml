@@ -1,0 +1,83 @@
+name: nutrivida-backend
+
+x-entorno-comun: &entorno-comun
+  NUTRIVIDA_MONGO_URI: ${NUTRIVIDA_MONGO_URI:?Defina NUTRIVIDA_MONGO_URI en el archivo .env}
+  NUTRIVIDA_JWT_SECRETO: ${NUTRIVIDA_JWT_SECRETO:?Defina NUTRIVIDA_JWT_SECRETO en el archivo .env}
+  NUTRIVIDA_JWT_EXPIRACION_MINUTOS: ${NUTRIVIDA_JWT_EXPIRACION_MINUTOS:-60}
+  NUTRIVIDA_ORIGENES_PERMITIDOS: ${NUTRIVIDA_ORIGENES_PERMITIDOS:-https://localhost}
+  NUTRIVIDA_FORWARD_HEADERS: framework
+  JAVA_TOOL_OPTIONS: ${JAVA_OPCIONES:--Xms64m -Xmx256m}
+
+services:
+  servicio-autenticacion:
+    image: ${REGISTRO_IMAGENES:-chiguin/nutrivida}:autenticacion-aws
+    build:
+      context: ../../../backend
+      args:
+        SERVICIO: servicio-autenticacion
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:8081/v3/api-docs"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    environment:
+      <<: *entorno-comun
+      NUTRIVIDA_URL_CLINICO: http://servicio-clinico:8082
+      NUTRIVIDA_ADMIN_CORREO: ${NUTRIVIDA_ADMIN_CORREO:-}
+      NUTRIVIDA_ADMIN_CONTRASENA: ${NUTRIVIDA_ADMIN_CONTRASENA:-}
+    ports:
+      - "${IP_ESCUCHA:-0.0.0.0}:8081:8081"
+
+  servicio-clinico:
+    image: ${REGISTRO_IMAGENES:-chiguin/nutrivida}:clinico-aws
+    build:
+      context: ../../../backend
+      args:
+        SERVICIO: servicio-clinico
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:8082/v3/api-docs"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    environment:
+      <<: *entorno-comun
+    ports:
+      - "${IP_ESCUCHA:-0.0.0.0}:8082:8082"
+
+  servicio-agenda:
+    image: ${REGISTRO_IMAGENES:-chiguin/nutrivida}:agenda-aws
+    build:
+      context: ../../../backend
+      args:
+        SERVICIO: servicio-agenda
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:8083/v3/api-docs"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    environment:
+      <<: *entorno-comun
+      NUTRIVIDA_URL_CLINICO: http://servicio-clinico:8082
+    ports:
+      - "${IP_ESCUCHA:-0.0.0.0}:8083:8083"
+
+  mongodb:
+    profiles: ["mongo-local"]
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - datos_mongodb:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  datos_mongodb:
