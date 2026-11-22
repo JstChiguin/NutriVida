@@ -1,0 +1,19 @@
+name: nutrivida-caddy
+
+services:
+  caddy:
+    container_name: nutrivida-https
+    image: caddy:2
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      DOMINIO_PUBLICO: ${DOMINIO_PUBLICO:?Defina DOMINIO_PUBLICO en el archivo .env}
+      PUERTO_NGINX: ${PUERTO_NGINX:-80}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_datos:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_datos:
+  caddy_config:

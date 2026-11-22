@@ -1,0 +1,25 @@
+name: nutrivida-frontend
+
+services:
+  frontend:
+    container_name: nutrivida-frontend
+    image: ${REGISTRO_IMAGENES:-chiguin/nutrivida}:frontend-aws
+    build:
+      context: ../../../frontend
+    restart: unless-stopped
+    environment:
+      IP_BACKEND_PRIVADA: ${IP_BACKEND_PRIVADA:?Defina IP_BACKEND_PRIVADA en el archivo .env}
+      MODO_TLS: ${MODO_TLS:-http}
+      NOMBRE_SERVIDOR: ${NOMBRE_SERVIDOR:-}
+      SUFIJO_PUERTO_HTTPS: ${SUFIJO_PUERTO_HTTPS:-}
+      PROXY_CONFIABLE: ${PROXY_CONFIABLE:-172.16.0.0/12}
+    ports:
+      - "${IP_ESCUCHA:-127.0.0.1}:${PUERTO_HTTP:-80}:80"
+      - "${IP_ESCUCHA:-127.0.0.1}:${PUERTO_HTTPS:-8443}:443"
+    volumes:
+      - certificados:/etc/nginx/certificados
+      - acme:/var/www/acme
+
+volumes:
+  certificados:
+  acme:

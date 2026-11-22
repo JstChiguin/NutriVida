@@ -1,0 +1,30 @@
+geo $proxy_confiable {
+    default 0;
+    127.0.0.0/8 1;
+    ${PROXY_CONFIABLE} 1;
+}
+
+map "$proxy_confiable:$http_x_forwarded_proto" $esquema_original {
+    "~^1:(https?)$" $1;
+    default $scheme;
+}
+
+upstream backend_autenticacion {
+    server ${IP_BACKEND_PRIVADA}:8081;
+}
+
+upstream backend_clinico {
+    server ${IP_BACKEND_PRIVADA}:8082;
+}
+
+upstream backend_agenda {
+    server ${IP_BACKEND_PRIVADA}:8083;
+}
+
+server {
+    listen 80;
+    server_name _;
+    server_tokens off;
+
+    include /etc/nginx/nutrivida/ubicaciones.conf;
+}
