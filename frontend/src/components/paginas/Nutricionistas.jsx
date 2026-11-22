@@ -1,7 +1,7 @@
 
-import { Link } from 'react-router-dom';
 import { useConsulta } from '../../hooks/useConsulta.js';
 import { clinicoApi } from '../../servicios/clinicoApi.js';
+import { EnlaceBoton } from '../ui/Boton.jsx';
 import { EstadoConsulta } from '../ui/EstadoConsulta.jsx';
 import { NUTRICIONISTAS_REFERENCIALES } from '../../datos/contenidoInstitucional.js';
 
@@ -71,12 +71,9 @@ export default function Nutricionistas() {
         vacio={profesionales.length === 0}
         mensajeVacio="Aún no hay nutricionistas disponibles."
       >
-        <div className="contenedor-nutricionistas row g-4 justify-content-center">
+        <ul className="contenedor-nutricionistas list-unstyled">
           {profesionales.map((profesional) => (
-            <div
-              key={profesional.id}
-              className="col-12 col-sm-6 col-lg-3 d-flex align-items-stretch"
-            >
+            <li key={profesional.id}>
               <article className="card tarjeta-nutricionista w-100 shadow-sm border-0 rounded-4 text-center p-3 d-flex flex-column align-items-center">
                 <Fotografia profesional={profesional} />
 
@@ -99,18 +96,19 @@ export default function Nutricionistas() {
                     )}
 
                   {!sinConexion && (
-                    <Link
+                    <EnlaceBoton
+                      variante="contorno"
                       to={`/mis-citas/nueva?nutricionistaId=${profesional.id}`}
-                      className="btn btn-outline-success mt-3"
+                      className="mt-3 w-100"
                     >
                       Reservar
-                    </Link>
+                    </EnlaceBoton>
                   )}
                 </div>
               </article>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </EstadoConsulta>
     </section>
   );
