@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class VersionadoApiIntegracionPruebas {
 
-    private static final String CONTRASENA = "Clave1234";
+    private static final String CONTRASENA = "Aa1-" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 12);
 
     @Autowired
     private MockMvc mockMvc;
