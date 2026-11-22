@@ -26,10 +26,10 @@ Un **microservicio** es una aplicación pequeña e independiente con una respons
 
 | Operación | Método | Ejemplo real |
 |---|---|---|
-| Crear | `POST` | `POST /api/citas` solicita una cita |
-| Leer | `GET` | `GET /api/citas?estado=CONFIRMADA&pagina=0` lista con filtros y paginación |
-| Actualizar | `PUT` / `PATCH` | `PATCH /api/citas/{id}/reprogramacion` cambia la fecha |
-| Eliminar | `DELETE` | `DELETE /api/servicios/{id}` **desactiva** el servicio (porque las citas lo referencian) |
+| Crear | `POST` | `POST /api/v1/citas` solicita una cita |
+| Leer | `GET` | `GET /api/v1/citas?estado=CONFIRMADA&pagina=0` lista con filtros y paginación |
+| Actualizar | `PUT` / `PATCH` | `PATCH /api/v1/citas/{id}/reprogramacion` cambia la fecha |
+| Eliminar | `DELETE` | `DELETE /api/v1/servicios/{id}` **desactiva** el servicio (porque las citas lo referencian) |
 
 Los datos viajan como **JSON**. Los códigos HTTP comunican el resultado: 200 correcto, 201 creado, 400 datos inválidos, 401 sin sesión, 403 sin permiso, 404 no existe, 409 conflicto (por ejemplo, horario ya tomado).
 
