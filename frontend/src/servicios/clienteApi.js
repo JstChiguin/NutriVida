@@ -1,4 +1,5 @@
 import { URLS_SERVICIOS } from '../configuracion/entorno.js';
+import { MENSAJE_SESION_EXPIRADA, MENSAJE_SIN_PERMISOS, tokenExpirado } from '../utils/sesion.js';
 
 export class ErrorApi extends Error {
   constructor(estado, codigo, mensaje, detalles = []) {
@@ -42,6 +43,10 @@ async function leerRespuesta(respuesta) {
 
 export async function solicitar(servicio, metodo, ruta, { cuerpo, parametros } = {}) {
   const token = proveedorDeToken();
+  if (token && tokenExpirado(token)) {
+    alSesionInvalida(token);
+    throw new ErrorApi(401, 'SESION_EXPIRADA', MENSAJE_SESION_EXPIRADA);
+  }
   let respuesta;
   try {
     respuesta = await fetch(construirUrl(servicio, ruta, parametros), {
@@ -61,12 +66,12 @@ export async function solicitar(servicio, metodo, ruta, { cuerpo, parametros } =
     return datos;
   }
   if (respuesta.status === 401 && token) {
-    alSesionInvalida();
+    alSesionInvalida(token);
   }
   throw new ErrorApi(
     respuesta.status,
     datos?.codigo ?? 'ERROR_DESCONOCIDO',
-    datos?.mensaje ?? 'Ocurrió un error inesperado',
+    datos?.mensaje ?? (respuesta.status === 403 ? MENSAJE_SIN_PERMISOS : 'Ocurrió un error inesperado'),
     datos?.detalles ?? [],
   );
 }
