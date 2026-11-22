@@ -1,5 +1,6 @@
 server:
   port: ${PUERTO_CLINICO:8082}
+  forward-headers-strategy: ${NUTRIVIDA_FORWARD_HEADERS:none}
 
 spring:
   application:

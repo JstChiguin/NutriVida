@@ -1,0 +1,17 @@
+{
+	admin off
+	auto_https disable_redirects
+}
+
+{$DOMINIO_PUBLICO} {
+	encode zstd gzip
+
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+
+	reverse_proxy 127.0.0.1:{$PUERTO_NGINX:80}
+}

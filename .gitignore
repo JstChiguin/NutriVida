@@ -29,3 +29,9 @@ target/
 hs_err_pid*
 !.env.example
 cobertura-local/
+
+*.pem
+*.key
+*.crt
+caddy_datos/
+caddy_config/
