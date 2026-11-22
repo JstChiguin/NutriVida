@@ -200,6 +200,14 @@ Con Docker instalado y la configuración local preparada:
 docker compose up --build -d
 ```
 
+`NUTRIVIDA_CONTRASENA_DEMO` define la contraseña común de las cuentas ficticias. Si `NUTRIVIDA_ADMIN_CONTRASENA` queda vacía, el administrador inicial utiliza esa misma contraseña. Ambas se configuran solo en el archivo `.env` local, que no se versiona. El archivo `.env.example` no trae valores para contraseñas ni para `NUTRIVIDA_JWT_SECRETO`: defínalos localmente (el secreto JWT requiere al menos 32 caracteres aleatorios) y no los publique.
+
+Para cargar los datos ficticios en una base nueva:
+
+```bash
+node --env-file=.env scripts/sembrar-datos-demo.mjs
+```
+
 ### 4. Iniciar el frontend
 
 ```bash

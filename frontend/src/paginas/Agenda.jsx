@@ -42,7 +42,7 @@ function FilaCita({ cita, onAccion }) {
         {cita.estado === 'CONFIRMADA' && (
           <>
             <Boton onClick={() => onAccion(() => agendaApi.registrarAtencionRealizada(cita.id), 'Atención registrada')}>Atención realizada</Boton>
-            <Boton variante="suave" onClick={() => onAccion(() => agendaApi.registrarInasistencia(cita.id), 'Inasistencia registrada')}>Inasistencia</Boton>
+            <Boton variante="peligro" onClick={() => onAccion(() => agendaApi.registrarInasistencia(cita.id), 'Inasistencia registrada')}>Inasistencia</Boton>
             <Boton variante="peligro" onClick={() => onAccion(() => agendaApi.cancelarCita(cita.id, 'Cancelada por el profesional'), 'Cita cancelada')}>Cancelar</Boton>
           </>
         )}
@@ -250,7 +250,7 @@ export default function Agenda() {
       <div role="tablist" className="mb-5 flex gap-2">
         {[['citas', 'Citas'], ['horarios', 'Horarios y bloqueos']].map(([clave, etiqueta]) => (
           <button key={clave} type="button" role="tab" aria-selected={pestana === clave} onClick={() => setPestana(clave)}
-            className={`rounded-lg px-4 py-2 font-semibold ${pestana === clave ? 'bg-exito text-white' : 'bg-white text-exito'}`}>
+            className={`pestana-seccion rounded-lg px-4 py-2 font-semibold ${pestana === clave ? 'bg-exito text-white' : 'bg-white text-exito'}`}>
             {etiqueta}
           </button>
         ))}

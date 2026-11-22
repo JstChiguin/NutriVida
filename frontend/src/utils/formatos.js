@@ -5,7 +5,8 @@ export function formatearFechaHora(valor) {
     return '';
   }
   return new Intl.DateTimeFormat('es-CL', {
-    dateStyle: 'medium', timeStyle: 'short', timeZone: ZONA_HORARIA,
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: ZONA_HORARIA,
   }).format(new Date(valor));
 }
 
@@ -18,7 +19,9 @@ export function formatearFecha(valor) {
 }
 
 export function formatearHora(valor) {
-  return new Intl.DateTimeFormat('es-CL', { timeStyle: 'short', timeZone: ZONA_HORARIA }).format(new Date(valor));
+  return new Intl.DateTimeFormat('es-CL', {
+    hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: ZONA_HORARIA,
+  }).format(new Date(valor));
 }
 
 export function formatearPrecio(valor) {
@@ -50,6 +53,14 @@ export function fechaLocalISO(fecha) {
   const mes = String(fecha.getMonth() + 1).padStart(2, '0');
   const dia = String(fecha.getDate()).padStart(2, '0');
   return `${anio}-${mes}-${dia}`;
+}
+
+export function fechaEnZonaHoraria(valor) {
+  const partes = new Intl.DateTimeFormat('en-CA', {
+    year: 'numeric', month: '2-digit', day: '2-digit', timeZone: ZONA_HORARIA,
+  }).formatToParts(new Date(valor));
+  const parte = (tipo) => partes.find((elemento) => elemento.type === tipo)?.value;
+  return `${parte('year')}-${parte('month')}-${parte('day')}`;
 }
 
 export function convertirFechaAInstante(fecha, finDelDia = false) {

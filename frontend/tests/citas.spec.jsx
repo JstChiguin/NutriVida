@@ -18,7 +18,7 @@ vi.mock('../src/servicios/agendaApi.js', () => ({
   },
 }));
 vi.mock('../src/servicios/clinicoApi.js', () => ({
-  clinicoApi: { listarServicios: vi.fn(), listarNutricionistas: vi.fn() },
+  clinicoApi: { listarServicios: vi.fn(), listarNutricionistas: vi.fn(), consultarNutricionista: vi.fn() },
 }));
 
 const CITA = {
@@ -101,6 +101,7 @@ describe('Solicitud de cita', () => {
       contenido: [{ id: 's1', nombre: 'Control nutricional', duracionMinutos: 30, precioReferencial: 25000 }],
     });
     clinicoApi.listarNutricionistas.mockResolvedValue({ contenido: [{ id: 'n1', nombreCompleto: 'Ana Ficticia' }] });
+    clinicoApi.consultarNutricionista.mockResolvedValue({ id: 'n1', nombreCompleto: 'Ana Ficticia', activo: true });
     agendaApi.consultarDisponibilidad.mockResolvedValue([
       { fecha: '2026-11-03', horarios: [{ inicio: '2026-11-03T12:00:00Z', fin: '2026-11-03T12:30:00Z' }] },
     ]);
@@ -137,7 +138,7 @@ describe('Solicitud de cita', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Enviar solicitud' }));
 
     expect(screen.getByText(/Describe brevemente el motivo/)).toBeTruthy();
-    expect(screen.getByText('Con Ana Ficticia')).toBeTruthy();
+    expect(screen.getByText('Nutricionista: Ana Ficticia')).toBeTruthy();
     expect(agendaApi.solicitarCita).not.toHaveBeenCalled();
   });
 

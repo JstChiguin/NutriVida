@@ -2,11 +2,13 @@ const URL_AUTENTICACION = process.env.NUTRIVIDA_URL_AUTENTICACION ?? 'http://loc
 const URL_CLINICO = process.env.NUTRIVIDA_URL_CLINICO ?? 'http://localhost:8082';
 const URL_AGENDA = process.env.NUTRIVIDA_URL_AGENDA ?? 'http://localhost:8083';
 const CORREO_ADMINISTRADOR = process.env.NUTRIVIDA_ADMIN_CORREO ?? 'admin@nutrivida.demo';
-const CONTRASENA_ADMINISTRADOR = process.env.NUTRIVIDA_ADMIN_CONTRASENA;
-const CONTRASENA_DEMO = process.env.NUTRIVIDA_CONTRASENA_DEMO ?? 'Demo12345';
+const CONTRASENA_DEMO = process.env.NUTRIVIDA_CONTRASENA_DEMO;
+const CONTRASENA_ADMINISTRADOR = process.env.NUTRIVIDA_ADMIN_CONTRASENA || CONTRASENA_DEMO;
 
-if (!CONTRASENA_ADMINISTRADOR) {
-  console.error('Defina NUTRIVIDA_ADMIN_CONTRASENA con la contraseña del administrador inicial.');
+if (!CONTRASENA_DEMO) {
+  console.error('Falta definir NUTRIVIDA_CONTRASENA_DEMO en el archivo .env.');
+  console.error('Es obligatoria: se usa para las cuentas ficticias de profesionales y pacientes.');
+  console.error('NUTRIVIDA_ADMIN_CONTRASENA es opcional y, si queda vacía, el administrador inicial usa NUTRIVIDA_CONTRASENA_DEMO.');
   process.exit(1);
 }
 
