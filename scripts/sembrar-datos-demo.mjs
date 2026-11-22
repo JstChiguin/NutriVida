@@ -32,7 +32,7 @@ async function llamar(base, metodo, ruta, token, cuerpo, estadosAceptados = [200
 }
 
 async function iniciarSesion(correo, contrasena) {
-  return llamar(URL_AUTENTICACION, 'POST', '/api/autenticacion/iniciar-sesion', null, { correo, contrasena });
+  return llamar(URL_AUTENTICACION, 'POST', '/api/v1/autenticacion/iniciar-sesion', null, { correo, contrasena });
 }
 
 async function crearOBuscar(crear, buscar) {
@@ -81,8 +81,8 @@ async function main() {
   const serviciosCreados = [];
   for (const servicio of servicios) {
     const creado = await crearOBuscar(
-      () => llamar(URL_CLINICO, 'POST', '/api/servicios', tokenAdministrador, servicio),
-      async () => (await llamar(URL_CLINICO, 'GET', `/api/servicios?soloActivos=false&texto=${encodeURIComponent(servicio.nombre)}`)).contenido[0],
+      () => llamar(URL_CLINICO, 'POST', '/api/v1/servicios', tokenAdministrador, servicio),
+      async () => (await llamar(URL_CLINICO, 'GET', `/api/v1/servicios?soloActivos=false&texto=${encodeURIComponent(servicio.nombre)}`)).contenido[0],
     );
     serviciosCreados.push(creado);
   }
@@ -92,19 +92,19 @@ async function main() {
   const profesionales = [];
   for (const integrante of equipo) {
     const usuario = await crearOBuscar(
-      () => llamar(URL_AUTENTICACION, 'POST', '/api/usuarios', tokenAdministrador, {
+      () => llamar(URL_AUTENTICACION, 'POST', '/api/v1/usuarios', tokenAdministrador, {
         nombreCompleto: integrante.nombre, correo: integrante.correo, contrasena: CONTRASENA_DEMO, rol: 'NUTRICIONISTA',
       }),
-      async () => (await llamar(URL_AUTENTICACION, 'GET', `/api/usuarios?texto=${encodeURIComponent(integrante.correo)}`, tokenAdministrador)).contenido[0],
+      async () => (await llamar(URL_AUTENTICACION, 'GET', `/api/v1/usuarios?texto=${encodeURIComponent(integrante.correo)}`, tokenAdministrador)).contenido[0],
     );
     const perfil = await crearOBuscar(
-      () => llamar(URL_CLINICO, 'POST', '/api/nutricionistas', tokenAdministrador, {
+      () => llamar(URL_CLINICO, 'POST', '/api/v1/nutricionistas', tokenAdministrador, {
         usuarioId: usuario.id, nombreCompleto: integrante.nombre, titulo: 'Nutricionista', especialidades: integrante.especialidades,
         biografia: 'Perfil ficticio para demostración académica.', fotoUrl: integrante.foto, serviciosIds: identificadoresServicios,
       }),
-      async () => (await llamar(URL_CLINICO, 'GET', `/api/nutricionistas?texto=${encodeURIComponent(integrante.nombre)}`)).contenido[0],
+      async () => (await llamar(URL_CLINICO, 'GET', `/api/v1/nutricionistas?texto=${encodeURIComponent(integrante.nombre)}`)).contenido[0],
     );
-    await llamar(URL_AGENDA, 'PUT', `/api/agendas/${perfil.id}/horarios`, tokenAdministrador, {
+    await llamar(URL_AGENDA, 'PUT', `/api/v1/agendas/${perfil.id}/horarios`, tokenAdministrador, {
       horarios: integrante.dias.map((dia) => ({ dia, horaInicio: '09:00', horaFin: '13:00' }))
         .concat(integrante.dias.map((dia) => ({ dia, horaInicio: '15:00', horaFin: '18:00' }))),
     });
@@ -116,10 +116,10 @@ async function main() {
   const sesionesPacientes = [];
   for (const paciente of pacientes) {
     const sesion = await crearOBuscar(
-      () => llamar(URL_AUTENTICACION, 'POST', '/api/autenticacion/registro', null, { ...paciente, contrasena: CONTRASENA_DEMO }),
+      () => llamar(URL_AUTENTICACION, 'POST', '/api/v1/autenticacion/registro', null, { ...paciente, contrasena: CONTRASENA_DEMO }),
       () => iniciarSesion(paciente.correo, CONTRASENA_DEMO),
     );
-    const perfil = await llamar(URL_CLINICO, 'GET', '/api/pacientes/yo', sesion.token);
+    const perfil = await llamar(URL_CLINICO, 'GET', '/api/v1/pacientes/yo', sesion.token);
     sesionesPacientes.push({ token: sesion.token, perfil });
   }
   console.log(`Pacientes registrados: ${sesionesPacientes.length}`);
@@ -128,36 +128,36 @@ async function main() {
   const servicioControl = serviciosCreados.find((servicio) => servicio.nombre === 'Control nutricional');
   const profesionalDemo = profesionales[2];
   const horarios = await llamar(URL_AGENDA, 'GET',
-    `/api/agendas/${profesionalDemo.perfil.id}/disponibilidad?servicioId=${servicioControl.id}&fecha=${fecha}`, sesionesPacientes[0].token);
+    `/api/v1/agendas/${profesionalDemo.perfil.id}/disponibilidad?servicioId=${servicioControl.id}&fecha=${fecha}`, sesionesPacientes[0].token);
   const libres = horarios[0].horarios;
 
-  const citasExistentes = await llamar(URL_AGENDA, 'GET', '/api/citas', sesionesPacientes[0].token);
+  const citasExistentes = await llamar(URL_AGENDA, 'GET', '/api/v1/citas', sesionesPacientes[0].token);
 
   if (citasExistentes.totalElementos > 0) {
     console.log('Los datos de citas y ficha clínica ya existían; se conservan sin duplicar');
   } else if (libres.length >= pacientes.length) {
     const citas = [];
     for (let posicion = 0; posicion < sesionesPacientes.length; posicion += 1) {
-      const cita = await llamar(URL_AGENDA, 'POST', '/api/citas', sesionesPacientes[posicion].token, {
+      const cita = await llamar(URL_AGENDA, 'POST', '/api/v1/citas', sesionesPacientes[posicion].token, {
         nutricionistaId: profesionalDemo.perfil.id, servicioId: servicioControl.id, inicio: libres[posicion * 2].inicio,
         motivoConsulta: 'Control de peso y hábitos alimentarios',
       });
       citas.push(cita);
     }
-    await llamar(URL_AGENDA, 'PATCH', `/api/citas/${citas[0].id}/confirmacion`, profesionalDemo.token);
-    await llamar(URL_AGENDA, 'PATCH', `/api/citas/${citas[1].id}/confirmacion`, profesionalDemo.token);
-    await llamar(URL_AGENDA, 'POST', `/api/citas/${citas[0].id}/pagos`, sesionesPacientes[0].token, { metodo: 'TARJETA_SIMULADA' });
+    await llamar(URL_AGENDA, 'PATCH', `/api/v1/citas/${citas[0].id}/confirmacion`, profesionalDemo.token);
+    await llamar(URL_AGENDA, 'PATCH', `/api/v1/citas/${citas[1].id}/confirmacion`, profesionalDemo.token);
+    await llamar(URL_AGENDA, 'POST', `/api/v1/citas/${citas[0].id}/pagos`, sesionesPacientes[0].token, { metodo: 'TARJETA_SIMULADA' });
 
     const pacienteId = sesionesPacientes[0].perfil.id;
-    await llamar(URL_CLINICO, 'POST', `/api/pacientes/${pacienteId}/ficha-clinica`, profesionalDemo.token, {
+    await llamar(URL_CLINICO, 'POST', `/api/v1/pacientes/${pacienteId}/ficha-clinica`, profesionalDemo.token, {
       motivoConsulta: 'Control de peso', alergias: ['Maní'], habitosAlimentarios: 'Almuerza fuera de casa',
       actividadFisica: { nivel: 'LIGERO', descripcion: 'Caminatas', sesionesPorSemana: 3 }, objetivosNutricionales: ['Reducir 5 kg en 3 meses'],
     });
-    await llamar(URL_CLINICO, 'POST', `/api/pacientes/${pacienteId}/mediciones`, profesionalDemo.token, { pesoKg: 82.4, estaturaCm: 168, cinturaCm: 96, fecha: '2026-08-01T12:00:00Z' });
-    await llamar(URL_CLINICO, 'POST', `/api/pacientes/${pacienteId}/mediciones`, profesionalDemo.token, { pesoKg: 80.1, cinturaCm: 94, fecha: '2026-09-01T12:00:00Z' });
-    await llamar(URL_CLINICO, 'POST', `/api/pacientes/${pacienteId}/mediciones`, profesionalDemo.token, { pesoKg: 78.3, cinturaCm: 92, fecha: '2026-10-01T12:00:00Z' });
-    await llamar(URL_CLINICO, 'POST', `/api/pacientes/${pacienteId}/ficha-clinica/evoluciones`, profesionalDemo.token, { descripcion: 'Buena adherencia al plan inicial.', citaId: citas[0].id });
-    await llamar(URL_CLINICO, 'POST', `/api/pacientes/${pacienteId}/planes-alimentarios`, profesionalDemo.token, {
+    await llamar(URL_CLINICO, 'POST', `/api/v1/pacientes/${pacienteId}/mediciones`, profesionalDemo.token, { pesoKg: 82.4, estaturaCm: 168, cinturaCm: 96, fecha: '2026-08-01T12:00:00Z' });
+    await llamar(URL_CLINICO, 'POST', `/api/v1/pacientes/${pacienteId}/mediciones`, profesionalDemo.token, { pesoKg: 80.1, cinturaCm: 94, fecha: '2026-09-01T12:00:00Z' });
+    await llamar(URL_CLINICO, 'POST', `/api/v1/pacientes/${pacienteId}/mediciones`, profesionalDemo.token, { pesoKg: 78.3, cinturaCm: 92, fecha: '2026-10-01T12:00:00Z' });
+    await llamar(URL_CLINICO, 'POST', `/api/v1/pacientes/${pacienteId}/ficha-clinica/evoluciones`, profesionalDemo.token, { descripcion: 'Buena adherencia al plan inicial.', citaId: citas[0].id });
+    await llamar(URL_CLINICO, 'POST', `/api/v1/pacientes/${pacienteId}/planes-alimentarios`, profesionalDemo.token, {
       objetivos: ['Reducción gradual de peso'], recomendacionesGenerales: 'Mantener hidratación.',
       comidas: [{ nombre: 'Desayuno', horario: '08:00', alimentos: [{ alimento: 'Avena', cantidad: 40, unidad: 'g' }, { alimento: 'Leche descremada', cantidad: 200, unidad: 'ml' }] }],
     });
@@ -166,7 +166,7 @@ async function main() {
     console.log('No hay horarios suficientes para sembrar citas de demostración');
   }
 
-  await llamar(URL_CLINICO, 'POST', '/api/solicitudes-contacto', null, {
+  await llamar(URL_CLINICO, 'POST', '/api/v1/solicitudes-contacto', null, {
     nombre: 'Visitante Demo', correo: 'visitante@nutrivida.demo', telefono: '56944444444', mensaje: 'Quisiera conocer los planes de nutrición deportiva.',
   });
   console.log('Datos de demostración listos');
