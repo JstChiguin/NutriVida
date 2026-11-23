@@ -18,7 +18,7 @@ sha256:dc45227fe2abd0404da754fb04de079afe8b0cafd994f09188acb54bb5ef0b55
 
 ## Comando
 
-Reemplace `<commit>` y `<sha256-del-script>` por los valores indicados en el Pull Request.
+Procedimiento ya aplicado en la EC2 `back` y conservado como registro. Reemplace `<commit>` y `<sha256-del-script>` por los valores indicados en el Pull Request.
 
 ```
 curl -fsSL -o /tmp/b7.sh https://raw.githubusercontent.com/JstChiguin/NutriVida/<commit>/despliegue/aws/backend/b7-autenticacion.sh && echo '<sha256-del-script>  /tmp/b7.sh' | sha256sum -c - && sudo -n env CONFIRMO=SI bash /tmp/b7.sh 95d7ab6 sha256:dc45227fe2abd0404da754fb04de079afe8b0cafd994f09188acb54bb5ef0b55
@@ -44,24 +44,39 @@ Automática: ante cualquier fallo posterior al reemplazo, el script recrea el se
 Manual:
 
 ```
-cd /opt/nutrivida/backend && sudo ETIQUETA_IMAGENES=899e328 docker compose up -d --no-deps --force-recreate servicio-autenticacion
+cd /opt/nutrivida/backend && sudo ETIQUETA_AUTENTICACION=899e328 docker compose up -d --no-deps --force-recreate servicio-autenticacion
 ```
 
 La imagen `autenticacion-899e328` y la etiqueta `autenticacion-previo-<fecha>` se conservan. Los contenedores `-previo` creados por B3, B4 y B5 pertenecen al proyecto antiguo `nutrivida` y no son tocados.
 
-## Regla para futuras actualizaciones del backend
+## Etiqueta propia de Autenticación en el Compose
 
-Actualice siempre un servicio con etiqueta explícita y sin dependencias:
+`docker-compose.yml` resuelve la imagen de Autenticación con `autenticacion-${ETIQUETA_AUTENTICACION:-${ETIQUETA_IMAGENES:-aws}}`:
+
+| `ETIQUETA_AUTENTICACION` | `ETIQUETA_IMAGENES` | Imagen de Autenticación |
+|---|---|---|
+| sin definir o vacía | sin definir | `autenticacion-aws` |
+| sin definir o vacía | `899e328` | `autenticacion-899e328` |
+| `95d7ab6` | `899e328` | `autenticacion-95d7ab6` |
+
+Clínico y Agenda siguen usando solo `ETIQUETA_IMAGENES`. Sin la variable nueva el comportamiento es el anterior, así que otros entornos no cambian. Se comprobó con `docker compose config` en los cuatro casos.
+
+Para que `docker compose up -d` conserve la corrección del 409, el `.env` de la EC2 `back` debe incluir `ETIQUETA_AUTENTICACION=95d7ab6`. Ese archivo no se versiona: `.env.example` solo lista la variable, vacía.
+
+## Regla para futuras actualizaciones
+
+Actualice un servicio a la vez, sin dependencias y con su etiqueta explícita:
 
 ```
-cd /opt/nutrivida/backend && sudo ETIQUETA_IMAGENES=<etiqueta> docker compose up -d --no-deps --force-recreate servicio-<nombre>
+cd /opt/nutrivida/backend && sudo ETIQUETA_AUTENTICACION=<etiqueta> docker compose up -d --no-deps --force-recreate servicio-autenticacion
+cd /opt/nutrivida/backend && sudo ETIQUETA_IMAGENES=<etiqueta> docker compose up -d --no-deps --force-recreate servicio-clinico
 ```
 
-## Riesgo: `docker compose up -d` general
+`b7-autenticacion.sh` pasa `ETIQUETA_IMAGENES`. Si el `.env` define `ETIQUETA_AUTENTICACION`, esa variable tiene prioridad y el script no podría cambiar la imagen. Por eso se conserva como registro de B7 y no debe reutilizarse para futuras versiones sin adaptarlo y probarlo.
 
-No ejecute `docker compose up -d` sin indicar un servicio y una etiqueta. El `.env` define una sola etiqueta (`ETIQUETA_IMAGENES=899e328`) para todos los servicios, así que un `up -d` general recrearía Autenticación con `autenticacion-899e328` y bajaría la corrección del 409. Se comprobó en el ensayo local.
+## Riesgo residual con el Compose anterior
 
-Solución permanente, aún no aplicada: definir `ETIQUETA_AUTENTICACION` en el Compose con respaldo en `ETIQUETA_IMAGENES` (`autenticacion-${ETIQUETA_AUTENTICACION:-${ETIQUETA_IMAGENES:-aws}}`) y una variable equivalente para cada servicio. Cambiaría el Compose de producción y requiere autorización y pruebas propias.
+Un Compose sin `ETIQUETA_AUTENTICACION` recrearía Autenticación con la etiqueta única del `.env` (`899e328`) ante un `docker compose up -d` general y bajaría la corrección. El cambio descrito arriba lo evita solo si el Compose actualizado está en la EC2 y el `.env` define la variable. Hasta entonces, no ejecute `up -d` sin servicio y etiqueta.
 
 ## Pruebas realizadas (ensayo local aislado, sin producción)
 
