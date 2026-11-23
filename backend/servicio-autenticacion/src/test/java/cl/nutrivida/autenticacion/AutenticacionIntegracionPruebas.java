@@ -1,6 +1,7 @@
 package cl.nutrivida.autenticacion;
 
 import cl.nutrivida.autenticacion.servicio.ClienteServicioClinico;
+import cl.nutrivida.comun.excepciones.ConflictoDeNegocio;
 import cl.nutrivida.comun.excepciones.ServicioNoDisponible;
 import cl.nutrivida.comun.pruebas.RequiereMongoDisponible;
 import cl.nutrivida.comun.seguridad.Rol;
@@ -24,6 +25,8 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -137,6 +140,60 @@ class AutenticacionIntegracionPruebas {
                 .andExpect(status().isServiceUnavailable());
 
         assertThat(plantillaMongo.getCollection("usuarios").countDocuments()).isZero();
+    }
+
+    @Test
+    void respondeConflictoYEliminaElUsuarioSiElRutYaExisteEnElClinico() throws Exception {
+        doThrow(new ConflictoDeNegocio("Ya existe un paciente registrado con ese RUT"))
+                .when(clienteServicioClinico).crearPerfilPaciente(any());
+
+        mockMvc.perform(post("/api/autenticacion/registro").contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpoRegistro("rutrepetido@nutrivida.test")))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.codigo").value("CONFLICTO_DE_NEGOCIO"))
+                .andExpect(jsonPath("$.mensaje").value("Ya existe un paciente registrado con ese RUT"));
+
+        assertThat(plantillaMongo.getCollection("usuarios").countDocuments()).isZero();
+    }
+
+    @Test
+    void permiteRegistrarElMismoCorreoTrasUnConflictoDeRutPorqueSeLimpioElUsuario() throws Exception {
+        doThrow(new ConflictoDeNegocio("Ya existe un paciente registrado con ese RUT"))
+                .doNothing()
+                .when(clienteServicioClinico).crearPerfilPaciente(any());
+
+        mockMvc.perform(post("/api/autenticacion/registro").contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpoRegistro("reintento@nutrivida.test")))
+                .andExpect(status().isConflict());
+
+        registrar("reintento@nutrivida.test");
+
+        assertThat(plantillaMongo.getCollection("usuarios").countDocuments()).isEqualTo(1);
+    }
+
+    @Test
+    void conservaElServicioNoDisponibleYLaLimpiezaCuandoElClinicoFallaDeVerdad() throws Exception {
+        doThrow(new ServicioNoDisponible("No fue posible crear el perfil clínico del paciente"))
+                .when(clienteServicioClinico).crearPerfilPaciente(any());
+
+        mockMvc.perform(post("/api/autenticacion/registro").contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpoRegistro("clinicocaido@nutrivida.test")))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.codigo").value("SERVICIO_NO_DISPONIBLE"));
+
+        assertThat(plantillaMongo.getCollection("usuarios").countDocuments()).isZero();
+    }
+
+    @Test
+    void noConsultaAlClinicoCuandoElCorreoYaEstaRegistrado() throws Exception {
+        registrar("unico@nutrivida.test");
+
+        mockMvc.perform(post("/api/autenticacion/registro").contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpoRegistro("unico@nutrivida.test")))
+                .andExpect(status().isConflict());
+
+        verify(clienteServicioClinico, times(1)).crearPerfilPaciente(any());
+        assertThat(plantillaMongo.getCollection("usuarios").countDocuments()).isEqualTo(1);
     }
 
     @Test
