@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+S="${SANDBOX:?}"
+metodo="GET"
+origen=""
+url=""
+entrada=""
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --request) metodo="$2"; shift ;;
+        --header)
+            if [ "$2" = "@-" ]; then
+                entrada="$(cat)"
+            else
+                case "$2" in Origin:*) origen="${2#Origin: }" ;; esac
+            fi
+            shift
+            ;;
+        --write-out|--output|--max-time|--proto|--cacert|--resolve) shift ;;
+        -k|--insecure|--no-check-certificate) echo "$*" >> "$S/inseguro.log" ;;
+        --silent|--fail|--tlsv1.2|--show-error) ;;
+        *) url="$1" ;;
+    esac
+    shift
+done
+case "$url" in
+    */latest/api/token)
+        [ -e "$S/imds_caido" ] && exit 22
+        printf 'TOKENFALSO'
+        exit 0
+        ;;
+    */latest/meta-data/public-ipv4)
+        [ -e "$S/imds_caido" ] && exit 22
+        case "$entrada" in *TOKENFALSO*) ;; *) exit 22 ;; esac
+        [ -s "$S/ip_publica" ] || exit 22
+        cat "$S/ip_publica"
+        exit 0
+        ;;
+esac
+ruta="/${url#https://*/}"
+[ "$ruta" = "/$url" ] && ruta="/"
+clave=""
+case "$origen" in
+    "") clave="" ;;
+    https://origen-no-permitido.invalid) clave="AJENO" ;;
+    *) clave="NUEVO" ;;
+esac
+printf '%s %s %s\n' "$metodo" "$ruta" "$clave" >> "$S/peticiones_https.log"
+if [ -e "$S/certificado_invalido" ]; then
+    printf '000'
+    exit 60
+fi
+if [ -s "$S/backend_503_restantes" ]; then
+    restantes="$(cat "$S/backend_503_restantes")"
+    case "$ruta" in
+        /clinico/*)
+            if [ "$restantes" -gt 0 ]; then
+                echo $((restantes - 1)) > "$S/backend_503_restantes"
+                printf '503'
+                exit 0
+            fi
+            ;;
+    esac
+fi
+codigo="$(awk -F'\t' -v m="$metodo" -v r="$ruta" -v c="$clave" '$1==m && $2==r && $3==c {print $4; exit}' "$S/respuestas.tsv")"
+[ -n "$codigo" ] || codigo="404"
+printf '%s' "$codigo"
+exit 0
