@@ -1,0 +1,13 @@
+GET	/		200
+GET	/clinico/api/v1/servicios		200
+GET	/clinico/api/v1/nutricionistas		200
+GET	/autenticacion/api/v1/usuarios		401
+GET	/clinico/api/v1/pacientes		401
+GET	/agenda/api/v1/agendas/000000000000000000000000		401
+GET	/clinico/api/v1/internos/comprobacion		404
+GET	/.env		403
+POST	/autenticacion/api/v1/usuarios	NUEVO	401
+POST	/agenda/api/v1/agendas/000000000000000000000000/bloqueos	NUEVO	401
+POST	/clinico/api/v1/pacientes	NUEVO	401
+POST	/autenticacion/api/v1/usuarios	AJENO	403
+POST	/agenda/api/v1/agendas/000000000000000000000000/bloqueos	AJENO	403

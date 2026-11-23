@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+S="${SANDBOX:?}"
+printf '%s\n' "$*" >> "$S/llamadas_docker.log"
+orden="${1:-}"
+shift
+case "$orden" in
+    info)
+        [ -e "$S/docker_caido" ] && exit 1
+        exit 0
+        ;;
+    inspect)
+        formato=""
+        if [ "${1:-}" = "--format" ]; then
+            formato="$2"
+            shift 2
+        fi
+        [ -e "$S/docker_caido" ] && exit 1
+        case "$formato" in
+            *State.Running*) if [ -e "$S/caddy_detenido" ]; then echo false; else echo true; fi ;;
+            *.Source*) printf '%s|%s\n' "$(readlink -f "$ARCHIVO_CADDYFILE")" "/etc/caddy/Caddyfile" ;;
+            *.Id*) cat "$S/huella_contenedor" ;;
+        esac
+        exit 0
+        ;;
+    cp)
+        cp "$1" "$S/contenedor_$(basename "${2#*:}")"
+        exit $?
+        ;;
+    exec)
+        shift
+        case "${1:-}" in
+            caddy)
+                subcomando="$2"
+                configuracion=""
+                while [ "$#" -gt 0 ]; do
+                    if [ "$1" = "--config" ]; then configuracion="$2"; fi
+                    shift
+                done
+                if [ "$subcomando" = "validate" ]; then
+                    if grep -q DIRECTIVA_INVALIDA "$S/contenedor_$(basename "$configuracion")"; then
+                        echo "Error: adapting config using caddyfile: unrecognized directive" >&2
+                        exit 1
+                    fi
+                    exit 0
+                fi
+                if [ "$subcomando" = "reload" ]; then
+                    if [ -e "$S/reload_falla_una_vez" ]; then
+                        rm -f "$S/reload_falla_una_vez"
+                        echo "Error: reload failed" >&2
+                        exit 1
+                    fi
+                    [ -e "$S/reload_falla_siempre" ] && { echo "Error: reload failed" >&2; exit 1; }
+                    echo x >> "$S/recargas"
+                    cp "$ARCHIVO_CADDYFILE" "$S/ultimo_recargado"
+                    exit 0
+                fi
+                exit 1
+                ;;
+            sha256sum)
+                if [ -e "$S/montaje_distinto" ]; then
+                    echo "0000  $2"
+                    exit 0
+                fi
+                sha256sum "$ARCHIVO_CADDYFILE" | sed "s# .*# $2#"
+                exit 0
+                ;;
+            rm)
+                exit 0
+                ;;
+        esac
+        echo "exec no permitido: $*" >> "$S/docker_prohibido.log"
+        exit 1
+        ;;
+    *)
+        echo "orden docker no permitida: $orden" >> "$S/docker_prohibido.log"
+        exit 1
+        ;;
+esac
