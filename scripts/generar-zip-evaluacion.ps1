@@ -23,7 +23,7 @@ $carpetaEntregas = Join-Path (Split-Path -Parent $carpetaProyecto) 'Entregas-Nut
 $nombreZip = 'NutriVida-Entrega-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '.zip'
 $rutaZip = Join-Path $carpetaEntregas $nombreZip
 
-$carpetasPermitidas = @('backend', 'frontend', 'mongodb', 'scripts')
+$carpetasPermitidas = @('backend', 'frontend', 'mongodb', 'scripts', 'despliegue')
 if ($IncluirDocs) {
     $carpetasPermitidas += 'docs'
 }
