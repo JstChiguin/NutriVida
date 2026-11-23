@@ -163,10 +163,8 @@ El repositorio está organizado en las siguientes carpetas:
 - `frontend/`: aplicación web desarrollada en React.
 - `backend/`: servicios Spring Boot y componentes compartidos.
 - `mongodb/`: scripts para colecciones, validaciones, índices y datos ficticios.
-- `scripts/`: herramientas auxiliares para preparación de datos.
-
-El archivo `docker-compose.yml` contiene la configuración para ejecutar los servicios mediante contenedores.
-
+- `despliegue/`: configuración versionada para desplegar en AWS (Docker Compose, Caddy y plantillas `.env.example`).
+- `scripts/`: herramientas auxiliares para la preparación de datos y la generación del ZIP de entrega.
 
 El archivo `docker-compose.yml` contiene la configuración para ejecutar los servicios mediante contenedores.
 
@@ -212,6 +210,12 @@ node --env-file=.env scripts/sembrar-datos-demo.mjs
 
 La configuración para desplegar NutriVida en AWS (Caddy con HTTPS, Nginx con React, Docker Compose para la EC2 pública y la EC2 privada, y MongoDB Atlas) está en `despliegue/aws/`, con un `.env.example` por cada instancia que lista las variables de entorno necesarias.
 
+El despliegue de laboratorio utiliza dos instancias EC2. La pública ejecuta Caddy, que atiende HTTPS, y Nginx, que sirve la aplicación React y solo escucha en `127.0.0.1`. La privada ejecuta los tres servicios Spring Boot, conectados a MongoDB Atlas. Nginx reenvía `/autenticacion/`, `/clinico/` y `/agenda/` a cada servicio y bloquea las rutas internas, y el frontend consume la API versionada (`/api/v1`).
+
+Las imágenes Docker se publican con una etiqueta basada en el commit, por ejemplo `chiguin/nutrivida:frontend-899e328`, y se reemplazan servicio por servicio conservando el contenedor anterior para poder revertir.
+
+El entorno de AWS es de laboratorio y no permanece encendido de forma permanente. La dirección pública (un dominio `sslip.io` derivado de la IP de la instancia) cambia cada vez que se enciende, por lo que no es una URL permanente. Las credenciales, los archivos `.env` reales y los procedimientos internos de despliegue no se publican en el repositorio.
+
 ### 4. Iniciar el frontend
 
 ```bash
@@ -230,15 +234,25 @@ Desde la raíz del proyecto:
 docker compose down
 ```
 
+## 📦 Generar el ZIP de entrega
+
+Desde la carpeta `scripts` de un clon del proyecto:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\generar-zip-evaluacion.ps1"
+```
+
+El script incluye `backend`, `frontend`, `mongodb`, `scripts`, `despliegue` y los documentos de la raíz permitidos; la carpeta `docs` solo se agrega con el parámetro `-IncluirDocs`. Excluye `.git`, `.claude`, `node_modules`, `dist`, `target`, los archivos `.env` (salvo `.env.example`), las claves y los certificados, y se detiene sin crear el ZIP si detecta patrones de credenciales. El resultado queda en la carpeta `Entregas-NutriVida`, junto a la carpeta del proyecto. Conviene revisar su contenido antes de compartirlo.
+
 ## 🧪 Pruebas y validación
 
 El frontend dispone de pruebas automatizadas mediante Vitest y React Testing Library.
 
-En la revisión de la versión integrada se obtuvieron los siguientes resultados:
+En la última verificación local sobre `develop` (23-11-2026) se obtuvieron los siguientes resultados:
 
-- **143 pruebas aprobadas.**
-- **16 archivos de pruebas aprobados.**
-- Compilación de producción realizada correctamente.
+- **Frontend: 190 pruebas aprobadas** en 18 archivos de pruebas.
+- **Backend: 124 pruebas aprobadas** (11 del módulo común, 22 de autenticación, 45 del servicio clínico y 46 de agenda), ejecutadas contra una base MongoDB de pruebas aislada y con datos ficticios.
+- Compilación de producción del frontend realizada correctamente (Vite informa una advertencia por el tamaño del paquete principal).
 - Análisis estático con ESLint sin errores.
 
 Para ejecutar las verificaciones del frontend:
@@ -250,13 +264,18 @@ npm run build
 npm run lint
 ```
 
-El backend también contiene pruebas automatizadas. Su ejecución y resultado deben verificarse en el entorno correspondiente.
+Para ejecutar las pruebas del backend se necesita Maven, Java y un servidor MongoDB de pruebas distinto de cualquier base con datos propios. Su dirección se indica con la variable `NUTRIVIDA_MONGO_SERVIDOR_PRUEBAS`:
+
+```bash
+cd backend
+mvn test
+```
 
 ## 📌 Estado del proyecto
 
 La aplicación fue integrada en la rama principal `main` mediante Pull Requests, conservando el historial del trabajo colaborativo.
 
-**Versión integrada de referencia:** commit `7a44a01`, correspondiente al Pull Request #12.
+**Versión integrada de referencia:** commit `b2d2ccb` de `main`, correspondiente al Pull Request #30.
 
 ### Funcionalidades incorporadas
 
@@ -271,10 +290,13 @@ La aplicación fue integrada en la rama principal `main` mediante Pull Requests,
 - Administración de usuarios y servicios.
 - Reportes y auditoría.
 - Mapa interactivo de ubicación referencial.
+- API REST versionada (`/api/v1`) en los tres servicios y en el frontend.
+- Manejo de la expiración de sesión y de las respuestas 401 y 403 en el frontend.
+- Despliegue en AWS con Docker, Caddy y Nginx, completado y verificado en un entorno de laboratorio.
 
 ### Verificaciones y mejoras pendientes
 
-- Comprobar el despliegue público completo del frontend, backend y base de datos.
+- Verificar nuevamente el despliegue en AWS cada vez que se encienda el entorno de laboratorio.
 - Revisar las vulnerabilidades moderadas informadas por npm.
 - Optimizar el tamaño de los archivos generados en la compilación.
 - Completar las pruebas funcionales de extremo a extremo.
