@@ -214,6 +214,10 @@ El despliegue de laboratorio utiliza dos instancias EC2. La pública ejecuta Cad
 
 Las imágenes Docker se publican con una etiqueta basada en el commit, por ejemplo `chiguin/nutrivida:frontend-899e328`, y se reemplazan servicio por servicio conservando el contenedor anterior para poder revertir.
 
+En el Compose del backend, la imagen de Autenticación admite una etiqueta propia (`ETIQUETA_AUTENTICACION`) que, si no se define, usa `ETIQUETA_IMAGENES`. Así se actualiza Autenticación sin cambiar Clínico ni Agenda. El procedimiento está en `despliegue/aws/backend/ACTUALIZACION-AUTENTICACION.md`.
+
+La recuperación automática del dominio tras reiniciar AWS Academy cubre solo la EC2 pública (Caddy y el dominio `sslip.io`), según `despliegue/aws/frontend/automatizacion/README.md`. El backend no se sincroniza automáticamente con ese dominio: funciona porque Spring acepta el mismo origen y no necesita cambios.
+
 El entorno de AWS es de laboratorio y no permanece encendido de forma permanente. La dirección pública (un dominio `sslip.io` derivado de la IP de la instancia) cambia cada vez que se enciende, por lo que no es una URL permanente. Las credenciales, los archivos `.env` reales y los procedimientos internos de despliegue no se publican en el repositorio.
 
 ### 4. Iniciar el frontend
