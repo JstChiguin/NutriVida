@@ -75,6 +75,8 @@ services:
     environment:
       <<: *entorno-comun
       NUTRIVIDA_URL_CLINICO: http://servicio-clinico:8082
+      NUTRIVIDA_ZONA_HORARIA: ${NUTRIVIDA_ZONA_HORARIA:-America/Santiago}
+      NUTRIVIDA_HORAS_MINIMAS_CANCELACION: ${NUTRIVIDA_HORAS_MINIMAS_CANCELACION:-2}
     ports:
       - "${IP_ESCUCHA:?Defina IP_ESCUCHA en el archivo .env}:8083:8083"
 
