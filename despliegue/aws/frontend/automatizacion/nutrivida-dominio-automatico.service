@@ -1,0 +1,22 @@
+[Unit]
+Description=NutriVida actualiza el dominio HTTPS de sslip.io con la IP publica de la instancia
+Documentation=file:///usr/local/sbin/nutrivida-dominio-automatico
+After=network-online.target docker.service
+Wants=network-online.target
+ConditionPathExists=!/etc/nutrivida/dominio-automatico.desactivado
+ConditionPathExists=/usr/local/sbin/nutrivida-dominio-automatico
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/nutrivida-dominio-automatico --aplicar --modo-servicio
+User=root
+Nice=10
+RuntimeMaxSec=1800
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=full
+Restart=no
+
+[Install]
+WantedBy=multi-user.target

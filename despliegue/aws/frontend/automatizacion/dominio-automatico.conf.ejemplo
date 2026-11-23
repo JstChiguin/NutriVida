@@ -1,0 +1,5 @@
+CONTENEDOR_CADDY=nutrivida-https
+ARCHIVO_CADDYFILE=/opt/nutrivida-https/Caddyfile
+DIRECTORIO_RESPALDOS=/var/backups/nutrivida-dominio
+SUFIJO_DOMINIO=sslip.io
+PUERTO_HTTPS=443
