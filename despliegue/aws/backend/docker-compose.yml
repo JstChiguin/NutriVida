@@ -16,7 +16,7 @@ x-entorno-comun: &entorno-comun
 services:
   servicio-autenticacion:
     container_name: nutrivida-autenticacion
-    image: ${REGISTRO_IMAGENES:-chiguin/nutrivida}:autenticacion-${ETIQUETA_IMAGENES:-aws}
+    image: ${REGISTRO_IMAGENES:-chiguin/nutrivida}:autenticacion-${ETIQUETA_AUTENTICACION:-${ETIQUETA_IMAGENES:-aws}}
     build:
       context: ../../../backend
       args:
