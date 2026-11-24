@@ -1,5 +1,7 @@
 import MapaReferencial from './MapaReferencial.jsx';
 import { useState, useRef } from 'react';
+import { clinicoApi } from '../../servicios/clinicoApi.js';
+import { describirError } from '../../servicios/clienteApi.js';
 import {
   validarNombre,
   validarCorreo,
@@ -35,6 +37,8 @@ export default function Contacto() {
   const [tocados, setTocados] = useState({});
   const [enviadoExitoso, setEnviadoExitoso] = useState(false);
   const [datosConfirmados, setDatosConfirmados] = useState(null);
+  const [enviando, setEnviando] = useState(false);
+  const [errorEnvio, setErrorEnvio] = useState('');
 
   const refNombre = useRef(null);
   const refCorreo = useRef(null);
@@ -94,8 +98,22 @@ export default function Contacto() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const construirSolicitud = () => {
+    const etiqueta = etiquetasMotivo[valores.motivo] || 'Consulta Nutricional';
+    const telefono = valores.telefono.replace(/\D/g, '');
+    return {
+      nombre: valores.nombre.trim(),
+      correo: valores.correo.trim(),
+      ...(telefono ? { telefono } : {}),
+      mensaje: `[Motivo: ${etiqueta}] ${valores.mensaje.trim()}`,
+    };
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (enviando) {
+      return;
+    }
 
     const nuevosErrores = {
       nombre: validarNombre(valores.nombre),
@@ -133,8 +151,17 @@ export default function Contacto() {
       return;
     }
 
-    setDatosConfirmados({ ...valores });
-    setEnviadoExitoso(true);
+    setErrorEnvio('');
+    setEnviando(true);
+    try {
+      await clinicoApi.enviarSolicitudContacto(construirSolicitud());
+      setDatosConfirmados({ ...valores });
+      setEnviadoExitoso(true);
+    } catch (falla) {
+      setErrorEnvio(describirError(falla));
+    } finally {
+      setEnviando(false);
+    }
   };
 
   const handleReset = () => {
@@ -143,6 +170,7 @@ export default function Contacto() {
     setTocados({});
     setEnviadoExitoso(false);
     setDatosConfirmados(null);
+    setErrorEnvio('');
   };
 
   const obtenerClaseInput = (nombreCampo) => {
@@ -338,8 +366,11 @@ export default function Contacto() {
                 </div>
 
                 <div className="grupo-formulario grupo-envio">
-                  <button type="submit" className="boton-enviar">
-                    Enviar Mensaje
+                  <p id="error-envio" className="error" role="alert">
+                    {errorEnvio}
+                  </p>
+                  <button type="submit" className="boton-enviar" disabled={enviando}>
+                    {enviando ? 'Enviando...' : 'Enviar Mensaje'}
                   </button>
                 </div>
               </form>
