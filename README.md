@@ -391,7 +391,7 @@ Resultados obtenidos el 28 de noviembre de 2026 en la rama `feature/eft-nutrivid
 
 | Verificación | Resultado |
 |---|---|
-| Pruebas frontend (Vitest) | 305 aprobadas en 22 archivos. |
+| Pruebas frontend (Vitest) | 307 aprobadas en 22 archivos. |
 | Cobertura frontend (v8) | Sentencias 91,55 %, ramas 85,15 %, funciones 89,71 %, líneas 92,28 %. `src/servicios`: líneas 98,48 %. |
 | Pruebas backend (JUnit, MongoDB 7 aislado en Docker) | 169 métodos `@Test`, 169 ejecutadas, 0 fallos, 0 omitidas. |
 | Cobertura backend (JaCoCo, líneas) | Autenticación 86,0 %, Clínico 92,8 %, Agenda 91,5 %, Común 20,5 %. |
@@ -399,7 +399,9 @@ Resultados obtenidos el 28 de noviembre de 2026 en la rama `feature/eft-nutrivid
 
 Métodos de prueba del backend por módulo: Común 11, Autenticación 51, Clínico 55 y Agenda 52.
 
-Verificación de integración sobre el stack Docker (`scripts/verificar-integracion-local.ps1`, vía Nginx): 28 comprobaciones HTTP aprobadas, y recorrido en Chrome (F5, renovación automática, pago rechazado y aprobado con comprobante, URLs restringidas, logout, video) con 17 comprobaciones aprobadas. Medición responsive en Chrome de 22 rutas a 360, 768, 1024 y 1280 px sin desbordes, errores de consola, campos sin etiqueta ni imágenes sin `alt`.
+Verificación de integración sobre el stack Docker (`scripts/verificar-integracion-local.ps1`, vía Nginx): 28 comprobaciones HTTP aprobadas, y recorrido en Chrome (F5, renovación automática, pago rechazado y aprobado con comprobante, URLs restringidas, logout) con 17 comprobaciones aprobadas. Medición responsive en Chrome de 22 rutas a 360, 768, 1024 y 1280 px sin desbordes, errores de consola, campos sin etiqueta ni imágenes sin `alt`.
+
+Verificaciones adicionales en Chrome con datos ficticios: recorrido del nutricionista (agenda, pacientes, editar ficha clínica con motivo, registrar atención y mediciones, nueva versión del plan, rutas restringidas) y del administrador (usuarios, servicios, pestañas de gestión, rutas restringidas) con 35 comprobaciones aprobadas; Swagger UI con Authorize y operaciones CRUD de servicios (crear, leer, actualizar, desactivar, eliminar, 400, 409 y 401 tras Logout) con 12 comprobaciones aprobadas; 77 estados de la interfaz (reserva con calendario y horarios, pago, reprogramación, comprobante, vista de impresión y PDF A4, agenda, tablas de administración y formularios con errores) a 360, 768 y 1280 px sin hallazgos; mapa con ubicación simulada, permiso rechazado y alternativa manual; y Caddy con HTTPS local (cookie de refresco `Secure`, renovación JWT por HTTPS, reinicio de contenedores con persistencia de sesión y datos) con 19 comprobaciones aprobadas. La reproducción efectiva del video de YouTube no pudo verificarse en el equipo de desarrollo porque un control de aplicaciones de la red bloquea `youtube-nocookie.com`; debe comprobarse en una red sin ese filtro.
 
 La cobertura del módulo Común es baja porque sus clases se ejercitan sobre todo desde las pruebas de integración de los otros módulos, que JaCoCo contabiliza en cada uno de ellos.
 
