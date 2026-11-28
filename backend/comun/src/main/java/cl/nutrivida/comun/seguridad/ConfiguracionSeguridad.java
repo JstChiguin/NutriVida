@@ -41,6 +41,7 @@ public class ConfiguracionSeguridad {
                 .authorizeHttpRequests(rutas -> {
                     rutas.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
                     rutas.requestMatchers(RUTAS_DOCUMENTACION).permitAll();
+                    rutas.requestMatchers(HttpMethod.GET, "/api/v1/nutricionistas/yo").authenticated();
                     if (!propiedades.rutasPublicasGet().isEmpty()) {
                         rutas.requestMatchers(HttpMethod.GET, propiedades.rutasPublicasGet().toArray(String[]::new)).permitAll();
                     }
