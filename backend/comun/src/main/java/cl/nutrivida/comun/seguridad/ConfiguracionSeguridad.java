@@ -59,7 +59,8 @@ public class ConfiguracionSeguridad {
         CorsConfiguration configuracion = new CorsConfiguration();
         configuracion.setAllowedOrigins(propiedades.origenesPermitidos());
         configuracion.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuracion.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuracion.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Nutrivida-Csrf"));
+        configuracion.setAllowCredentials(true);
         configuracion.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource fuente = new UrlBasedCorsConfigurationSource();
         fuente.registerCorsConfiguration("/**", configuracion);

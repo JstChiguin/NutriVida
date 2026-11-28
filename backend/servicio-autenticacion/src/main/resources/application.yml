@@ -13,11 +13,16 @@ spring:
 nutrivida:
   seguridad:
     secreto-jwt: ${NUTRIVIDA_JWT_SECRETO:}
-    expiracion-minutos: ${NUTRIVIDA_JWT_EXPIRACION_MINUTOS:60}
+    expiracion-minutos: ${NUTRIVIDA_JWT_EXPIRACION_MINUTOS:15}
     origenes-permitidos: ${NUTRIVIDA_ORIGENES_PERMITIDOS:http://localhost:5173}
     rutas-publicas-post:
       - /api/v1/autenticacion/registro
       - /api/v1/autenticacion/iniciar-sesion
+      - /api/v1/autenticacion/refrescar
+  sesion:
+    maxima-horas: ${NUTRIVIDA_SESION_MAXIMA_HORAS:8}
+    cookie-segura: ${NUTRIVIDA_COOKIE_SEGURA:true}
+    cookie-same-site: ${NUTRIVIDA_COOKIE_SAME_SITE:Lax}
   servicios:
     clinico-url: ${NUTRIVIDA_URL_CLINICO:http://localhost:8082}
   administrador:

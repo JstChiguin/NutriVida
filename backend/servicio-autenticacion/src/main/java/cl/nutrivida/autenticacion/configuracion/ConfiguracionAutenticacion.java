@@ -7,12 +7,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestClient;
 
+import java.time.Clock;
+
 @Configuration
 public class ConfiguracionAutenticacion {
 
     @Bean
     public PasswordEncoder codificadorContrasenas() {
         return new BCryptPasswordEncoder(10);
+    }
+
+    @Bean
+    public Clock reloj() {
+        return Clock.systemUTC();
     }
 
     @Bean

@@ -1,6 +1,7 @@
 package cl.nutrivida.autenticacion.servicio;
 
 import cl.nutrivida.autenticacion.dto.RespuestaSesion;
+import cl.nutrivida.autenticacion.dto.SesionEmitida;
 import cl.nutrivida.autenticacion.dto.SolicitudInicioSesion;
 import cl.nutrivida.autenticacion.dto.SolicitudPerfilPaciente;
 import cl.nutrivida.autenticacion.dto.SolicitudRegistroPaciente;
@@ -33,22 +34,25 @@ public class ServicioAutenticacion {
     private final ServicioTokens servicioTokens;
     private final ClienteServicioClinico clienteServicioClinico;
     private final ServicioAuditoria servicioAuditoria;
+    private final ServicioRefresco servicioRefresco;
 
     public ServicioAutenticacion(RepositorioUsuarios repositorioUsuarios,
                                  RepositorioTokensRevocados repositorioTokensRevocados,
                                  PasswordEncoder codificadorContrasenas,
                                  ServicioTokens servicioTokens,
                                  ClienteServicioClinico clienteServicioClinico,
-                                 ServicioAuditoria servicioAuditoria) {
+                                 ServicioAuditoria servicioAuditoria,
+                                 ServicioRefresco servicioRefresco) {
         this.repositorioUsuarios = repositorioUsuarios;
         this.repositorioTokensRevocados = repositorioTokensRevocados;
         this.codificadorContrasenas = codificadorContrasenas;
         this.servicioTokens = servicioTokens;
         this.clienteServicioClinico = clienteServicioClinico;
         this.servicioAuditoria = servicioAuditoria;
+        this.servicioRefresco = servicioRefresco;
     }
 
-    public RespuestaSesion registrarPaciente(SolicitudRegistroPaciente solicitud) {
+    public SesionEmitida registrarPaciente(SolicitudRegistroPaciente solicitud) {
         String correo = normalizarCorreo(solicitud.correo());
         Usuario usuario = guardarUsuarioNuevo(solicitud.nombreCompleto(), correo, solicitud.contrasena(), Rol.PACIENTE);
         try {
@@ -63,7 +67,7 @@ public class ServicioAutenticacion {
         return crearSesion(usuario);
     }
 
-    public RespuestaSesion iniciarSesion(SolicitudInicioSesion solicitud) {
+    public SesionEmitida iniciarSesion(SolicitudInicioSesion solicitud) {
         Usuario usuario = repositorioUsuarios.findByCorreo(normalizarCorreo(solicitud.correo()))
                 .orElseThrow(() -> new CredencialesInvalidas("Correo o contraseña incorrectos"));
         if (!codificadorContrasenas.matches(solicitud.contrasena(), usuario.hashContrasena())) {
@@ -76,7 +80,18 @@ public class ServicioAutenticacion {
         return crearSesion(actualizado);
     }
 
-    public void cerrarSesion(UsuarioAutenticado usuario, String token) {
+    public SesionEmitida refrescarSesion(String valorRefresco) {
+        ServicioRefresco.Rotacion rotacion = servicioRefresco.rotar(valorRefresco);
+        Usuario usuario = repositorioUsuarios.findById(rotacion.usuarioId()).orElse(null);
+        if (usuario == null || !usuario.activo()) {
+            servicioRefresco.revocarSesionesDelUsuario(rotacion.usuarioId());
+            throw new CredencialesInvalidas("La sesión expiró o ya no es válida. Inicie sesión nuevamente");
+        }
+        return new SesionEmitida(emitirAcceso(usuario), rotacion.emitido());
+    }
+
+    public void cerrarSesion(UsuarioAutenticado usuario, String token, String valorRefresco) {
+        servicioRefresco.revocarSesionDe(valorRefresco);
         Instant expiracion = servicioTokens.obtenerExpiracion(token);
         repositorioTokensRevocados.save(
                 new TokenRevocado(usuario.identificadorToken(), usuario.usuarioId(), Instant.now(), expiracion));
@@ -106,7 +121,11 @@ public class ServicioAutenticacion {
         return correo.trim().toLowerCase();
     }
 
-    private RespuestaSesion crearSesion(Usuario usuario) {
+    private SesionEmitida crearSesion(Usuario usuario) {
+        return new SesionEmitida(emitirAcceso(usuario), servicioRefresco.emitirNuevaSesion(usuario.id()));
+    }
+
+    private RespuestaSesion emitirAcceso(Usuario usuario) {
         String token = servicioTokens.generar(usuario.id(), usuario.correo(), usuario.rol());
         return RespuestaSesion.bearer(token, servicioTokens.getExpiracionSegundos(), UsuarioRespuesta.desde(usuario));
     }

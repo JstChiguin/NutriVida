@@ -31,15 +31,17 @@ public class ServicioUsuarios {
     private final ServicioAutenticacion servicioAutenticacion;
     private final PasswordEncoder codificadorContrasenas;
     private final ServicioAuditoria servicioAuditoria;
+    private final ServicioRefresco servicioRefresco;
 
     public ServicioUsuarios(RepositorioUsuarios repositorioUsuarios, MongoTemplate plantillaMongo,
                             ServicioAutenticacion servicioAutenticacion, PasswordEncoder codificadorContrasenas,
-                            ServicioAuditoria servicioAuditoria) {
+                            ServicioAuditoria servicioAuditoria, ServicioRefresco servicioRefresco) {
         this.repositorioUsuarios = repositorioUsuarios;
         this.plantillaMongo = plantillaMongo;
         this.servicioAutenticacion = servicioAutenticacion;
         this.codificadorContrasenas = codificadorContrasenas;
         this.servicioAuditoria = servicioAuditoria;
+        this.servicioRefresco = servicioRefresco;
     }
 
     public PaginaRespuesta<UsuarioRespuesta> listarUsuarios(String texto, Rol rol, Boolean activo, Pageable paginacion) {
@@ -82,6 +84,9 @@ public class ServicioUsuarios {
             throw new SolicitudInvalida("No puede desactivar su propia cuenta");
         }
         Usuario guardado = guardar(buscarUsuario(usuarioId).conEstado(activo));
+        if (!activo) {
+            servicioRefresco.revocarSesionesDelUsuario(usuarioId);
+        }
         servicioAuditoria.registrar("usuarios", usuarioId, activo ? "ACTIVAR_USUARIO" : "DESACTIVAR_USUARIO",
                 responsable, Map.of());
         return UsuarioRespuesta.desde(guardado);
@@ -96,6 +101,7 @@ public class ServicioUsuarios {
         }
         Usuario existente = buscarUsuario(usuarioId);
         Usuario guardado = guardar(existente.conRol(nuevoRol));
+        servicioRefresco.revocarSesionesDelUsuario(usuarioId);
         servicioAuditoria.registrar("usuarios", usuarioId, "CAMBIAR_ROL", responsable,
                 Map.of("rolAnterior", existente.rol().name(), "rolNuevo", nuevoRol.name()));
         return UsuarioRespuesta.desde(guardado);
