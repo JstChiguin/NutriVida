@@ -65,7 +65,7 @@ class RefrescoSesionIntegracionPruebas {
 
     @BeforeEach
     void limpiar() {
-        for (String coleccion : List.of("usuarios", "tokens_revocados", "tokens_refresco", "auditorias")) {
+        for (String coleccion : List.of("usuarios", "tokens_revocados", "tokens_refresco", "usuarios_invalidados", "auditorias")) {
             plantillaMongo.remove(new Query(), coleccion);
         }
     }
@@ -224,5 +224,54 @@ class RefrescoSesionIntegracionPruebas {
         refrescar(sesion.refresco(), 401);
         assertThat(plantillaMongo.count(Query.query(Criteria.where("revocado").is(true)), TokenRefresco.class))
                 .isEqualTo(1);
+    }
+
+    @Test
+    void unAccessTokenPreviamenteValidoDejaDeFuncionarTrasDesactivarAlUsuario() throws Exception {
+        Sesion sesion = registrar("accesodesactivado@nutrivida.test");
+        mockMvc.perform(get("/api/autenticacion/yo").header("Authorization", "Bearer " + sesion.token()))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(patch("/api/usuarios/" + sesion.usuarioId() + "/estado")
+                        .header("Authorization", "Bearer " + tokenAdministrador())
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"activo\":false}"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/autenticacion/yo").header("Authorization", "Bearer " + sesion.token()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void unAccessTokenConElRolAnteriorDejaDeFuncionarTrasCambiarElRol() throws Exception {
+        Sesion sesion = registrar("accesorol@nutrivida.test");
+        String administrador = tokenAdministrador();
+
+        mockMvc.perform(patch("/api/usuarios/" + sesion.usuarioId() + "/rol").header("Authorization", "Bearer " + administrador)
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"rol\":\"NUTRICIONISTA\"}"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/autenticacion/yo").header("Authorization", "Bearer " + sesion.token()))
+                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/autenticacion/yo").header("Authorization", "Bearer " + administrador))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void trasCambiarElRolUnNuevoInicioDeSesionEmiteUnTokenValidoConElRolNuevo() throws Exception {
+        Sesion sesion = registrar("relogin@nutrivida.test");
+        mockMvc.perform(patch("/api/usuarios/" + sesion.usuarioId() + "/rol")
+                        .header("Authorization", "Bearer " + tokenAdministrador())
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"rol\":\"NUTRICIONISTA\"}"))
+                .andExpect(status().isOk());
+        Thread.sleep(1100);
+
+        MvcResult inicio = mockMvc.perform(post("/api/autenticacion/iniciar-sesion").contentType(MediaType.APPLICATION_JSON)
+                        .content(convertidorJson.writeValueAsString(Map.of("correo", "relogin@nutrivida.test", "contrasena", CONTRASENA))))
+                .andExpect(status().isOk()).andReturn();
+        JsonNode cuerpo = convertidorJson.readTree(inicio.getResponse().getContentAsString());
+
+        assertThat(cuerpo.get("usuario").get("rol").asText()).isEqualTo("NUTRICIONISTA");
+        mockMvc.perform(get("/api/autenticacion/yo").header("Authorization", "Bearer " + cuerpo.get("token").asText()))
+                .andExpect(status().isOk());
     }
 }

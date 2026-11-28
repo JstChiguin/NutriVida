@@ -1,6 +1,7 @@
 package cl.nutrivida.autenticacion.servicio;
 
 import cl.nutrivida.autenticacion.modelo.TokenRefresco;
+import cl.nutrivida.autenticacion.modelo.UsuarioInvalidado;
 import cl.nutrivida.comun.excepciones.CredencialesInvalidas;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
@@ -31,6 +32,7 @@ public class ServicioRefresco {
     }
 
     private static final int BYTES_ALEATORIOS = 32;
+    private static final Duration VIGENCIA_INVALIDACION = Duration.ofDays(1);
 
     private final MongoTemplate plantillaMongo;
     private final Clock reloj;
@@ -88,6 +90,8 @@ public class ServicioRefresco {
     public void revocarSesionesDelUsuario(String usuarioId) {
         plantillaMongo.updateMulti(Query.query(Criteria.where("usuarioId").is(usuarioId)),
                 new Update().set("revocado", true), TokenRefresco.class);
+        Instant ahora = reloj.instant();
+        plantillaMongo.save(new UsuarioInvalidado(usuarioId, ahora, ahora.plus(VIGENCIA_INVALIDACION)));
     }
 
     private Emitido guardarNuevo(String usuarioId, String familia, Instant ahora, Instant sesionExpiraEn) {

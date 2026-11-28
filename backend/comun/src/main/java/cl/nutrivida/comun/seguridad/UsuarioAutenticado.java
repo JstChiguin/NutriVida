@@ -1,6 +1,8 @@
 package cl.nutrivida.comun.seguridad;
 
-public record UsuarioAutenticado(String usuarioId, String correo, Rol rol, String identificadorToken) {
+import java.time.Instant;
+
+public record UsuarioAutenticado(String usuarioId, String correo, Rol rol, String identificadorToken, Instant emitidoEn) {
 
     public boolean esAdministrador() {
         return rol == Rol.ADMINISTRADOR;

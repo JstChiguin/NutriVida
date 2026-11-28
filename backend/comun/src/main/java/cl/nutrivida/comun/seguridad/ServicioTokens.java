@@ -61,7 +61,8 @@ public class ServicioTokens {
                     .getPayload();
             Rol rol = Rol.valueOf(reclamos.get(RECLAMO_ROL, String.class));
             return Optional.of(new UsuarioAutenticado(
-                    reclamos.getSubject(), reclamos.get(RECLAMO_CORREO, String.class), rol, reclamos.getId()));
+                    reclamos.getSubject(), reclamos.get(RECLAMO_CORREO, String.class), rol, reclamos.getId(),
+                    reclamos.getIssuedAt().toInstant()));
         } catch (JwtException | IllegalArgumentException excepcion) {
             return Optional.empty();
         }

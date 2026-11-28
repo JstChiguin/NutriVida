@@ -38,4 +38,15 @@ class SesionesRevocadasIntegracionPruebas extends BaseIntegracionAgenda {
         ejecutar(get("/api/citas"), new Persona(pacientePedro.usuarioId(), pacientePedro.perfilId(), expirado), null)
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void invalidarLasSesionesDeUnUsuarioRechazaSusAccessTokensPreviosEnElServicioDeAgenda() throws Exception {
+        ejecutar(get("/api/citas"), pacientePedro, null).andExpect(status().isOk());
+
+        plantillaMongo.save(new java.util.HashMap<>(Map.of("_id", new org.bson.types.ObjectId(pacientePedro.usuarioId()), "desde", Instant.now(),
+                "expiraEn", Instant.now().plus(Duration.ofDays(1)))), "usuarios_invalidados");
+
+        ejecutar(get("/api/citas"), pacientePedro, null).andExpect(status().isUnauthorized());
+        ejecutar(get("/api/citas"), pacientePaula, null).andExpect(status().isOk());
+    }
 }

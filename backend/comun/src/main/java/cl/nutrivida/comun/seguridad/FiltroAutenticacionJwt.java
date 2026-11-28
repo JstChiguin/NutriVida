@@ -41,7 +41,7 @@ public class FiltroAutenticacionJwt extends OncePerRequestFilter {
 
     private boolean noEstaRevocado(UsuarioAutenticado usuario) {
         VerificadorRevocacion verificador = verificadorRevocacion.getIfAvailable();
-        return verificador == null || !verificador.estaRevocado(usuario.identificadorToken());
+        return verificador == null || !verificador.estaRevocado(usuario);
     }
 
     private void establecerAutenticacion(UsuarioAutenticado usuario, String token) {
