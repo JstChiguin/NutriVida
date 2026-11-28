@@ -101,11 +101,17 @@ Cada usuario autenticado accede a las funcionalidades permitidas para su rol.
 La aplicación incorpora los siguientes mecanismos de seguridad:
 
 - Autenticación mediante JWT.
-- Vigencia predeterminada del token de 60 minutos.
+- Token de acceso de corta duración (15 minutos por defecto).
+- Renovación automática de la sesión con refresh token opaco, enviado en una cookie `HttpOnly` y `SameSite=Lax` (`Secure` configurable con `NUTRIVIDA_COOKIE_SEGURA`).
+- El refresh token se almacena solo como hash SHA-256, rota en cada renovación, revoca toda su familia si se reutiliza uno ya rotado y tiene un límite absoluto de sesión (8 horas por defecto, `NUTRIVIDA_SESION_MAXIMA_HORAS`).
+- Protección CSRF de la renovación con la cabecera `X-Nutrivida-Csrf` y CORS con orígenes explícitos.
+- La renovación vuelve a leer al usuario: una cuenta desactivada o un cambio de rol invalidan las sesiones de renovación. Un token de acceso ya emitido sigue siendo válido hasta su expiración.
 - Protección de contraseñas mediante hash BCrypt.
-- Persistencia de sesión mediante `sessionStorage`.
-- Revocación del token al cerrar sesión.
+- Persistencia de sesión del token de acceso mediante `sessionStorage` (el refresh token nunca es accesible desde JavaScript).
+- Revocación del token de acceso y de la sesión de renovación al cerrar sesión.
 - Manejo de sesiones expiradas.
+- Pago simulado con comprobante ficticio, un único pago aprobado por cita garantizado por índice único parcial.
+- Recordatorios dentro de la aplicación para citas confirmadas próximas (24 horas por defecto, `NUTRIVIDA_HORAS_RECORDATORIO`). No se envían correos, SMS ni mensajes externos.
 - Validación de datos en frontend y backend.
 - Control de acceso por roles y propiedad de los recursos.
 - Configuración de orígenes permitidos mediante CORS.
@@ -229,7 +235,7 @@ La API utiliza el prefijo `/api/v1` para organizar y versionar sus operaciones.
 | Clínico | `/clinico/swagger-ui/index.html` |
 | Agenda | `/agenda/swagger-ui/index.html` |
 
-El código de entrega contempla 83 operaciones HTTP, incluyendo las operaciones internas entre microservicios.
+El código actual contempla 85 operaciones HTTP (13 en Autenticación, 46 en Clínico y 26 en Agenda), incluyendo las operaciones internas entre microservicios. Respecto de EP3 se agregaron `POST /api/v1/autenticacion/refrescar` y `GET /api/v1/citas/recordatorios`.
 
 Los endpoints protegidos requieren un token JWT válido y los permisos correspondientes.
 
@@ -378,29 +384,23 @@ El frontend dispone de pruebas automatizadas mediante Vitest y React Testing Lib
 
 El backend incorpora pruebas mediante JUnit y MockMvc para verificar controladores, servicios, seguridad, reglas de negocio y persistencia.
 
-### Resultados históricos de las verificaciones
+### Resultados de las verificaciones de la versión EFT
 
-Durante las verificaciones del 24 de noviembre de 2026 sobre los repositorios independientes de frontend y backend se informaron los siguientes resultados:
+Resultados obtenidos el 28 de noviembre de 2026 en la rama `feature/eft-nutrivida`:
 
-| Verificación | Resultado histórico |
+| Verificación | Resultado |
 |---|---|
-| Pruebas frontend | 198 pruebas aprobadas en 18 archivos. |
-| Pruebas backend | 137 pruebas aprobadas. |
-| Compilación frontend | Correcta, con advertencia de tamaño del paquete principal. |
+| Pruebas frontend (Vitest) | 215 aprobadas en 19 archivos. |
+| Cobertura frontend (v8) | Sentencias 87,92 %, ramas 85,70 %, funciones 80,33 %, líneas 88,38 %. |
+| Pruebas backend (JUnit, MongoDB 7 aislado en Docker) | 155 métodos `@Test`, 155 ejecutadas, 0 fallos, 0 omitidas. |
+| Cobertura backend (JaCoCo, líneas) | Autenticación 86,0 %, Clínico 92,8 %, Agenda 91,5 %, Común 20,8 %. |
 | ESLint | Sin errores. |
-| Dependencias de producción | Sin vulnerabilidades informadas en la revisión realizada. |
 
-En el backend del repositorio integrado se identificaron 137 métodos de prueba anotados con `@Test`, distribuidos de la siguiente manera:
+Métodos de prueba del backend por módulo: Común 11, Autenticación 46, Clínico 47 y Agenda 51.
 
-| Módulo | Métodos de prueba |
-|---|---:|
-| Común | 11 |
-| Autenticación | 35 |
-| Clínico | 45 |
-| Agenda | 46 |
-| **Total** | **137** |
+La cobertura del módulo Común es baja porque sus clases se ejercitan sobre todo desde las pruebas de integración de los otros módulos, que JaCoCo contabiliza en cada uno de ellos.
 
-Estos resultados corresponden a verificaciones históricas y a la inspección del código fuente. No sustituyen una nueva ejecución de las pruebas sobre el ZIP definitivo de entrega.
+Sin una base MongoDB accesible, las pruebas de integración se omiten y Maven informa igualmente `BUILD SUCCESS`. Por eso la verificación de entrega debe hacerse con el script descrito más abajo, que falla si hay pruebas omitidas.
 
 ### Ejecutar las verificaciones del frontend
 
@@ -408,9 +408,20 @@ Estos resultados corresponden a verificaciones históricas y a la inspección de
 cd frontend
 npm install
 npm run test
+npm run test:cobertura
 npm run build
 npm run lint
 ```
+
+### Verificación completa del backend con MongoDB aislado (recomendada)
+
+Con Docker instalado, desde PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\verificar-backend.ps1
+```
+
+El script levanta un MongoDB 7 temporal en una red Docker propia, ejecuta `mvn verify` con Maven y Java 21 en contenedor, elimina el MongoDB temporal al terminar y falla si Maven termina con error, si se ejecutan menos pruebas que los métodos `@Test` declarados, si hay pruebas omitidas o fallidas. Imprime además la cobertura JaCoCo por módulo. No utiliza ninguna base de datos de uso habitual.
 
 ### Ejecutar las pruebas del backend
 
