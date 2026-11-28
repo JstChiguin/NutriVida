@@ -146,22 +146,25 @@ describe('Expiración y cierre controlado de la sesión', () => {
     expect(sessionStorage.getItem('nutrivida.sesion')).not.toBeNull();
   });
 
-  it('F5 con token expirado: no autentica, limpia el almacenamiento y avisa en el inicio de sesión', async () => {
+  it('F5 con token expirado y renovación rechazada: no autentica, limpia el almacenamiento y avisa', async () => {
     guardarSesion(crearJwt(-60));
+    fetch.mockResolvedValue(respuesta(401, { codigo: 'CREDENCIALES_INVALIDAS', mensaje: 'La sesión expiró' }));
     renderizarEn(<RutasDePrueba />, '/mis-datos');
     await act(async () => {});
 
     expect(screen.getByRole('heading', { name: 'Iniciar sesión' })).toBeTruthy();
     expect(screen.getByText(MENSAJE_SESION_EXPIRADA)).toBeTruthy();
     expect(sessionStorage.getItem('nutrivida.sesion')).toBeNull();
-    expect(fetch).not.toHaveBeenCalled();
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch.mock.calls[0][0]).toContain('/api/v1/autenticacion/refrescar');
   });
 
-  it('expiración mientras el usuario usa la aplicación: cierra la sesión en el instante del vencimiento', async () => {
+  it('sin renovación posible: cierra la sesión al llegar al margen previo al vencimiento', async () => {
     guardarSesion(crearJwt(60));
+    fetch.mockResolvedValue(respuesta(401, {}));
     renderizarEn(<RutasDePrueba />, '/mis-datos');
 
-    await avanzar(59_000);
+    await avanzar(29_000);
     expect(screen.getByText('Sesión de Ana Prueba Demo')).toBeTruthy();
 
     await avanzar(2_000);
@@ -208,14 +211,15 @@ describe('Expiración y cierre controlado de la sesión', () => {
     expect(screen.getByText('Sesión de Ana Prueba Demo')).toBeTruthy();
   });
 
-  it('no envía la petición si el token ya venció y cierra la sesión con aviso', async () => {
-    guardarSesion(crearJwt(60));
+  it('no envía la petición original si el token venció y la renovación falla', async () => {
+    guardarSesion(crearJwt(3600));
     renderizarEn(<Panel />);
+    fetch.mockResolvedValue(respuesta(401, {}));
 
-    await saltarEnElTiempo(120_000);
+    await saltarEnElTiempo(7_200_000);
     await pulsar('Consultar');
 
-    expect(fetch).not.toHaveBeenCalled();
+    expect(fetch.mock.calls.every(([url]) => url.includes('/refrescar'))).toBe(true);
     expect(screen.getByText('Sin sesión')).toBeTruthy();
     expect(screen.getByText(`Aviso: ${MENSAJE_SESION_EXPIRADA}`)).toBeTruthy();
     expect(sessionStorage.getItem('nutrivida.sesion')).toBeNull();
@@ -299,6 +303,7 @@ describe('Expiración y cierre controlado de la sesión', () => {
     expect(screen.getByText('Sin aviso')).toBeTruthy();
     expect(JSON.parse(sessionStorage.getItem('nutrivida.sesion')).token).toBe(nuevo);
 
+    fetch.mockResolvedValue(respuesta(401, {}));
     await avanzar(3_000_000);
     expect(screen.getByText('Sesión de Ana Prueba Demo')).toBeTruthy();
     await avanzar(700_000);
@@ -330,6 +335,9 @@ describe('Expiración y cierre controlado de la sesión', () => {
     guardarSesion(primero);
     let resolverTardia;
     fetch.mockImplementation((url) => {
+      if (url.includes('/refrescar')) {
+        return Promise.resolve(respuesta(401, {}));
+      }
       if (url.includes('iniciar-sesion')) {
         return Promise.resolve(respuesta(200, { token: segundo, tipo: 'Bearer', usuario: { ...USUARIO, nombreCompleto: 'Beto Prueba Demo' } }));
       }
@@ -365,5 +373,121 @@ describe('Expiración y cierre controlado de la sesión', () => {
 
     expect(screen.getByText('Sesión de Ana Prueba Demo')).toBeTruthy();
     expect(vi.getTimerCount()).toBe(0);
+  });
+});
+
+describe('Renovación automática de la sesión', () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] });
+    vi.setSystemTime(AHORA);
+    vi.stubGlobal('fetch', vi.fn());
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it('con el token vencido renueva y luego envía la petición original con el nuevo token', async () => {
+    guardarSesion(crearJwt(3600, 'viejo'));
+    const nuevo = crearJwt(900, 'nuevo');
+    fetch.mockImplementation((url) => Promise.resolve(url.includes('/refrescar')
+      ? respuesta(200, { token: nuevo, tipo: 'Bearer', usuario: USUARIO })
+      : respuesta(200, {})));
+    renderizarEn(<Panel />);
+    await act(async () => {});
+    fetch.mockClear();
+
+    await saltarEnElTiempo(7_200_000);
+    await pulsar('Consultar');
+
+    expect(screen.getByText('Resultado: ok')).toBeTruthy();
+    expect(screen.getByText('Sesión de Ana Prueba Demo')).toBeTruthy();
+    expect(JSON.parse(sessionStorage.getItem('nutrivida.sesion')).token).toBe(nuevo);
+    const llamadaPaciente = fetch.mock.calls.find(([url]) => url.includes('/pacientes/yo'));
+    expect(llamadaPaciente[1].headers.Authorization).toBe(`Bearer ${nuevo}`);
+  });
+
+  it('la solicitud de renovación envía la cookie y la cabecera anti-CSRF', async () => {
+    guardarSesion(crearJwt(-60));
+    fetch.mockResolvedValue(respuesta(401, {}));
+    renderizarEn(<Panel />);
+    await act(async () => {});
+
+    const [url, opciones] = fetch.mock.calls[0];
+    expect(url).toContain('/api/v1/autenticacion/refrescar');
+    expect(opciones.method).toBe('POST');
+    expect(opciones.credentials).toBe('include');
+    expect(opciones.headers['X-Nutrivida-Csrf']).toBe('1');
+  });
+
+  it('ante un 401 renueva una vez y reintenta la petición con el nuevo token', async () => {
+    guardarSesion(crearJwt(3600, 'viejo'));
+    const nuevo = crearJwt(900, 'nuevo');
+    let intentos = 0;
+    fetch.mockImplementation((url) => {
+      if (url.includes('/refrescar')) {
+        return Promise.resolve(respuesta(200, { token: nuevo, tipo: 'Bearer', usuario: USUARIO }));
+      }
+      intentos += 1;
+      return Promise.resolve(intentos === 1 ? respuesta(401, {}) : respuesta(200, {}));
+    });
+    renderizarEn(<Panel />);
+
+    await pulsar('Consultar');
+
+    expect(screen.getByText('Resultado: ok')).toBeTruthy();
+    expect(screen.getByText('Sesión de Ana Prueba Demo')).toBeTruthy();
+    expect(fetch).toHaveBeenCalledTimes(3);
+  });
+
+  it('si el 401 persiste tras renovar no entra en bucle y cierra la sesión', async () => {
+    guardarSesion(crearJwt(3600, 'viejo'));
+    const nuevo = crearJwt(900, 'nuevo');
+    fetch.mockImplementation((url) => Promise.resolve(url.includes('/refrescar')
+      ? respuesta(200, { token: nuevo, tipo: 'Bearer', usuario: USUARIO })
+      : respuesta(401, {})));
+    renderizarEn(<Panel />);
+
+    await pulsar('Consultar');
+
+    expect(fetch).toHaveBeenCalledTimes(3);
+    expect(screen.getByText('Sin sesión')).toBeTruthy();
+    expect(screen.getByText(`Aviso: ${MENSAJE_SESION_EXPIRADA}`)).toBeTruthy();
+  });
+
+  it('varias solicitudes simultáneas con el token vencido provocan una sola renovación', async () => {
+    guardarSesion(crearJwt(3600, 'viejo'));
+    let nuevo = null;
+    fetch.mockImplementation((url) => Promise.resolve(url.includes('/refrescar')
+      ? respuesta(200, { token: nuevo, tipo: 'Bearer', usuario: USUARIO })
+      : respuesta(200, {})));
+    renderizarEn(<Panel />);
+    await act(async () => {});
+    fetch.mockClear();
+
+    await saltarEnElTiempo(7_200_000);
+    nuevo = crearJwt(900, 'nuevo');
+    await act(async () => {
+      await Promise.all([clinicoApi.consultarMiPerfilPaciente(), clinicoApi.consultarMiPerfilPaciente(),
+        clinicoApi.consultarMiPerfilPaciente()]);
+    });
+
+    expect(fetch.mock.calls.filter(([url]) => url.includes('/refrescar'))).toHaveLength(1);
+    expect(fetch.mock.calls.filter(([url]) => url.includes('/pacientes/yo'))).toHaveLength(3);
+  });
+
+  it('renueva por adelantado cuando falta menos del margen para el vencimiento', async () => {
+    guardarSesion(crearJwt(60, 'viejo'));
+    const nuevo = crearJwt(900, 'nuevo');
+    fetch.mockResolvedValue(respuesta(200, { token: nuevo, tipo: 'Bearer', usuario: USUARIO }));
+    renderizarEn(<Panel />);
+
+    await avanzar(31_000);
+
+    expect(fetch.mock.calls[0][0]).toContain('/refrescar');
+    expect(screen.getByText('Sesión de Ana Prueba Demo')).toBeTruthy();
+    expect(JSON.parse(sessionStorage.getItem('nutrivida.sesion')).token).toBe(nuevo);
   });
 });

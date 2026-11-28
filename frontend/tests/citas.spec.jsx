@@ -219,6 +219,6 @@ describe('Agenda del nutricionista', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Atención realizada' }));
 
     expect(agendaApi.registrarAtencionRealizada).toHaveBeenCalledWith('c1');
-    expect(screen.getByRole('link', { name: 'Ver ficha clínica' }).getAttribute('href')).toBe('/pacientes/p1/ficha-clinica');
+    expect((await screen.findByRole('link', { name: 'Ver ficha clínica' })).getAttribute('href')).toBe('/pacientes/p1/ficha-clinica');
   });
 });

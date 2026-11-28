@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ContextoSesion } from './ContextoSesion.js';
 import { autenticacionApi } from '../servicios/autenticacionApi.js';
-import { configurarSesionApi } from '../servicios/clienteApi.js';
-import { MENSAJE_SESION_EXPIRADA, obtenerExpiracionMs, tokenExpirado } from '../utils/sesion.js';
+import { configurarSesionApi, renovarSesion } from '../servicios/clienteApi.js';
+import { MENSAJE_SESION_EXPIRADA, obtenerExpiracionMs } from '../utils/sesion.js';
 
 const CLAVE_SESION = 'nutrivida.sesion';
 const ESPERA_MAXIMA_MS = 2 ** 31 - 1;
+const MARGEN_RENOVACION_MS = 30000;
 
 function leerSesionGuardada() {
   try {
@@ -30,26 +31,14 @@ function guardarSesion(sesion) {
 
 function restaurarSesion() {
   const guardada = leerSesionGuardada();
-  if (!guardada?.token) {
-    return { sesion: null, aviso: null };
-  }
-  if (tokenExpirado(guardada.token)) {
-    return { sesion: null, aviso: MENSAJE_SESION_EXPIRADA };
-  }
-  return { sesion: guardada, aviso: null };
+  return guardada?.token ? guardada : null;
 }
 
 export function ProveedorAutenticacion({ children }) {
   const [inicial] = useState(restaurarSesion);
-  const [sesion, setSesion] = useState(inicial.sesion);
-  const [avisoSesion, setAvisoSesion] = useState(inicial.aviso);
-  const tokenActual = useRef(inicial.sesion?.token ?? null);
-
-  useEffect(() => {
-    if (inicial.aviso) {
-      guardarSesion(null);
-    }
-  }, [inicial]);
+  const [sesion, setSesion] = useState(inicial);
+  const [avisoSesion, setAvisoSesion] = useState(null);
+  const tokenActual = useRef(inicial?.token ?? null);
 
   const establecerSesion = useCallback((nuevaSesion) => {
     tokenActual.current = nuevaSesion?.token ?? null;
@@ -72,8 +61,9 @@ export function ProveedorAutenticacion({ children }) {
     configurarSesionApi({
       obtenerToken: () => tokenActual.current,
       alInvalidarSesion: invalidarSesion,
+      alRenovarSesion: establecerSesion,
     });
-  }, [invalidarSesion]);
+  }, [invalidarSesion, establecerSesion]);
 
   const token = sesion?.token ?? null;
 
@@ -88,8 +78,12 @@ export function ProveedorAutenticacion({ children }) {
       if (cancelado) {
         return;
       }
-      if (tokenExpirado(token)) {
-        invalidarSesion(token);
+      if (obtenerExpiracionMs(token) - Date.now() <= MARGEN_RENOVACION_MS) {
+        renovarSesion().then((nuevoToken) => {
+          if (!nuevoToken && !cancelado) {
+            invalidarSesion(token);
+          }
+        });
         return;
       }
       programar();
@@ -97,7 +91,7 @@ export function ProveedorAutenticacion({ children }) {
 
     function programar() {
       clearTimeout(temporizador);
-      const restante = obtenerExpiracionMs(token) - Date.now();
+      const restante = obtenerExpiracionMs(token) - Date.now() - MARGEN_RENOVACION_MS;
       temporizador = setTimeout(verificar, Math.min(Math.max(restante, 0), ESPERA_MAXIMA_MS));
     }
 
@@ -107,7 +101,7 @@ export function ProveedorAutenticacion({ children }) {
       }
     };
 
-    programar();
+    verificar();
     window.addEventListener('focus', verificar);
     document.addEventListener('visibilitychange', alRecuperarVisibilidad);
 
