@@ -36,16 +36,18 @@ Los pacientes registrados cuentan con funcionalidades para:
 - Consultar y actualizar información de su perfil.
 - Buscar profesionales y servicios nutricionales.
 - Solicitar citas según los horarios disponibles.
-- Consultar sus citas registradas.
+- Consultar, cancelar y reprogramar sus citas.
+- Registrar pagos simulados.
 - Acceder a información de su seguimiento nutricional.
-- Revisar la información nutricional que corresponda a su perfil.
+- Consultar sus fichas clínicas y planes alimentarios.
 
 ### 🩺 Nutricionistas
 
 Los profesionales pueden utilizar el sistema para:
 
 - Consultar su agenda de atención.
-- Revisar información de sus pacientes asignados.
+- Gestionar citas, horarios y bloqueos.
+- Revisar información de sus pacientes autorizados.
 - Gestionar información de fichas clínicas.
 - Registrar evaluaciones y mediciones nutricionales.
 - Realizar seguimiento de la evolución de los pacientes.
@@ -59,7 +61,7 @@ Los usuarios con permisos administrativos pueden:
 - Administrar la información de los nutricionistas.
 - Gestionar los servicios nutricionales.
 - Supervisar citas y agendas.
-- Gestionar registros de pagos.
+- Gestionar registros de pagos simulados.
 - Revisar solicitudes de contacto.
 - Consultar reportes e información administrativa.
 - Revisar registros de auditoría.
@@ -71,19 +73,21 @@ Los usuarios con permisos administrativos pueden:
 | Inicio | Presentación de la clínica y sus servicios. |
 | Servicios | Catálogo de prestaciones nutricionales con búsqueda y filtros. |
 | Nutricionistas | Información de los profesionales disponibles. |
-| Contacto | Formulario de consultas y mapa de ubicación referencial. |
+| Contacto | Formulario de consultas con persistencia en MongoDB y mapa de ubicación referencial. |
 | Autenticación | Registro, inicio y cierre de sesión. |
 | Pacientes | Gestión de perfiles e información de pacientes. |
 | Agenda | Disponibilidad de horarios y gestión de citas. |
 | Ficha clínica | Registro y consulta de información de atención nutricional. |
 | Seguimiento | Control de mediciones y evolución nutricional. |
-| Planes alimentarios | Gestión de indicaciones y planes nutricionales. |
+| Planes alimentarios | Gestión y versionamiento de planes nutricionales. |
+| Pagos | Registro y gestión de pagos simulados. |
 | Administración | Gestión de usuarios, servicios, profesionales y solicitudes. |
-| Reportes | Consulta de información clínica y administrativa. |
+| Reportes | Consulta de indicadores agregados e información administrativa. |
+| Auditoría | Registro de operaciones realizadas en el sistema. |
 
 ## 🔐 Seguridad y acceso
 
-NutriVida utiliza autenticación mediante **JWT (JSON Web Token)** y control de acceso basado en roles.
+NutriVida utiliza autenticación mediante **JWT (JSON Web Token)** y control de acceso basado en roles (RBAC).
 
 El sistema contempla cuatro perfiles principales:
 
@@ -94,7 +98,20 @@ El sistema contempla cuatro perfiles principales:
 
 Cada usuario autenticado accede a las funcionalidades permitidas para su rol.
 
-La aplicación también incorpora validaciones de entrada, controles de autorización y mecanismos de auditoría.
+La aplicación incorpora los siguientes mecanismos de seguridad:
+
+- Autenticación mediante JWT.
+- Vigencia predeterminada del token de 60 minutos.
+- Protección de contraseñas mediante hash BCrypt.
+- Persistencia de sesión mediante `sessionStorage`.
+- Revocación del token al cerrar sesión.
+- Manejo de sesiones expiradas.
+- Validación de datos en frontend y backend.
+- Control de acceso por roles y propiedad de los recursos.
+- Configuración de orígenes permitidos mediante CORS.
+- Manejo centralizado de errores HTTP.
+- Registro de operaciones mediante auditoría.
+- Comunicación HTTPS en el entorno de AWS.
 
 **Importante:** NutriVida es un proyecto académico. Los datos utilizados para demostraciones y pruebas deben ser ficticios; no debe utilizarse para almacenar información real de pacientes sin una evaluación formal de seguridad y privacidad.
 
@@ -104,33 +121,48 @@ La aplicación también incorpora validaciones de entrada, controles de autoriza
 
 - React 19.
 - JavaScript y JSX.
-- Vite.
-- React Router.
+- Vite 8.
+- React Router 7.
 - Bootstrap 5.
 - CSS3.
 - Leaflet y OpenStreetMap.
 
 ### Backend
 
-- Java.
-- Spring Boot.
+- Java 21.
+- Spring Boot 3.5.
 - API REST.
 - Spring Security.
+- Spring Data MongoDB.
 - JWT.
+- BCrypt.
 - Maven.
+- JUnit y MockMvc.
 
 ### Base de datos
 
 - MongoDB.
+- MongoDB Atlas.
 - Colecciones y documentos.
 - Validadores e índices.
 - Consultas y operaciones CRUD.
+
+### Infraestructura y despliegue
+
+- AWS Academy.
+- Amazon EC2.
+- Docker y Docker Compose.
+- Docker Hub.
+- Nginx.
+- Caddy.
+- HTTPS mediante Let's Encrypt.
+- systemd.
+- Dominios dinámicos sslip.io.
 
 ### Herramientas de desarrollo
 
 - Visual Studio Code.
 - Git y GitHub.
-- Docker y Docker Compose.
 - Vitest.
 - React Testing Library.
 - ESLint.
@@ -146,25 +178,85 @@ NutriVida se organiza en tres componentes principales:
 
 **Base de datos:** MongoDB, utilizada para almacenar la información de la aplicación.
 
-El backend se divide en tres servicios:
+El backend se divide en tres microservicios y un módulo compartido:
 
-| Servicio | Responsabilidad |
-|---|---|
-| Autenticación | Registro, inicio de sesión, usuarios y roles. |
-| Clínico | Pacientes, nutricionistas, fichas clínicas, mediciones y planes alimentarios. |
-| Agenda | Disponibilidad de horarios, reservas, citas, pagos y reportes asociados. |
+| Servicio | Puerto | Responsabilidad |
+|---|---:|---|
+| Autenticación | 8081 | Registro, inicio y cierre de sesión, usuarios y roles. |
+| Clínico | 8082 | Pacientes, nutricionistas, servicios, fichas clínicas, mediciones, planes alimentarios y solicitudes de contacto. |
+| Agenda | 8083 | Disponibilidad de horarios, reservas, citas, pagos simulados y reportes asociados. |
+| Común | No aplica | Seguridad, validaciones, auditoría, paginación y manejo de errores compartidos. |
 
 La comunicación entre el frontend y los servicios se realiza mediante API REST utilizando solicitudes HTTP y respuestas JSON.
+
+### Arquitectura en capas del backend
+
+- **Controller:** recibe las solicitudes HTTP y entrega las respuestas correspondientes.
+- **Service:** aplica las reglas de negocio.
+- **Repository:** gestiona el acceso a MongoDB.
+- **Model:** representa los documentos de la base de datos.
+- **DTO:** define los datos de entrada y salida de las operaciones.
+
+### Flujo general de comunicación
+
+```text
+Usuario
+    |
+Frontend React
+    |
+HTTPS / Caddy
+    |
+Nginx
+    |
+    +-- Autenticación :8081
+    |
+    +-- Clínico       :8082
+    |
+    +-- Agenda        :8083
+    |
+MongoDB Atlas
+```
+
+## 📚 Documentación de APIs
+
+Los microservicios cuentan con documentación interactiva mediante Swagger y OpenAPI.
+
+La API utiliza el prefijo `/api/v1` para organizar y versionar sus operaciones.
+
+| Servicio | Swagger UI mediante el proxy |
+|---|---|
+| Autenticación | `/autenticacion/swagger-ui/index.html` |
+| Clínico | `/clinico/swagger-ui/index.html` |
+| Agenda | `/agenda/swagger-ui/index.html` |
+
+El código de entrega contempla 83 operaciones HTTP, incluyendo las operaciones internas entre microservicios.
+
+Los endpoints protegidos requieren un token JWT válido y los permisos correspondientes.
+
+### Códigos de respuesta HTTP
+
+| Código | Significado |
+|---|---|
+| 200 | Solicitud realizada correctamente. |
+| 201 | Recurso creado correctamente. |
+| 204 | Operación exitosa sin contenido de respuesta. |
+| 400 | Solicitud inválida. |
+| 401 | Usuario no autenticado o token inválido. |
+| 403 | Permisos insuficientes. |
+| 404 | Recurso no encontrado. |
+| 409 | Conflicto de datos o reglas de negocio. |
+| 500 | Error interno del servidor. |
+| 503 | Servicio no disponible. |
 
 ## 📁 Organización del proyecto
 
 El repositorio está organizado en las siguientes carpetas:
 
 - `frontend/`: aplicación web desarrollada en React.
-- `backend/`: servicios Spring Boot y componentes compartidos.
+- `backend/`: microservicios Spring Boot y componentes compartidos.
 - `mongodb/`: scripts para colecciones, validaciones, índices y datos ficticios.
-- `despliegue/`: configuración versionada para desplegar en AWS (Docker Compose, Caddy y plantillas `.env.example`).
-- `scripts/`: herramientas auxiliares para la preparación de datos y la generación del ZIP de entrega.
+- `despliegue/`: configuración versionada para desplegar en AWS, Docker Compose, Caddy y plantillas `.env.example`.
+- `scripts/`: herramientas auxiliares para la preparación de datos y operaciones del proyecto.
 
 El archivo `docker-compose.yml` contiene la configuración para ejecutar los servicios mediante contenedores.
 
@@ -174,7 +266,7 @@ El archivo `docker-compose.yml` contiene la configuración para ejecutar los ser
 
 - Git.
 - Node.js y npm.
-- Java y Maven, para ejecutar el backend fuera de contenedores.
+- Java 21 y Maven, para ejecutar el backend fuera de contenedores.
 - Docker y Docker Compose, para utilizar el entorno con contenedores.
 
 ### 1. Clonar el repositorio
@@ -183,6 +275,8 @@ El archivo `docker-compose.yml` contiene la configuración para ejecutar los ser
 git clone https://github.com/JstChiguin/NutriVida.git
 cd NutriVida
 ```
+
+También es posible descargar el código fuente desde GitHub mediante la opción **Code → Download ZIP** y descomprimirlo en una carpeta local.
 
 ### 2. Configurar el entorno
 
@@ -198,27 +292,17 @@ Con Docker instalado y la configuración local preparada:
 docker compose up --build -d
 ```
 
-`NUTRIVIDA_CONTRASENA_DEMO` define la contraseña común de las cuentas ficticias. Si `NUTRIVIDA_ADMIN_CONTRASENA` queda vacía, el administrador inicial utiliza esa misma contraseña. Ambas se configuran solo en el archivo `.env` local, que no se versiona. El archivo `.env.example` no trae valores para contraseñas ni para `NUTRIVIDA_JWT_SECRETO`: defínalos localmente (el secreto JWT requiere al menos 32 caracteres aleatorios) y no los publique.
+`NUTRIVIDA_CONTRASENA_DEMO` define la contraseña común de las cuentas ficticias. Si `NUTRIVIDA_ADMIN_CONTRASENA` queda vacía, el administrador inicial utiliza esa misma contraseña.
+
+Ambas se configuran solo en el archivo `.env` local, que no se versiona.
+
+El archivo `.env.example` no trae valores para contraseñas ni para `NUTRIVIDA_JWT_SECRETO`. Estos valores deben definirse localmente. El secreto JWT requiere al menos 32 caracteres aleatorios y no debe publicarse.
 
 Para cargar los datos ficticios en una base nueva:
 
 ```bash
 node --env-file=.env scripts/sembrar-datos-demo.mjs
 ```
-
-### Despliegue en AWS
-
-La configuración para desplegar NutriVida en AWS (Caddy con HTTPS, Nginx con React, Docker Compose para la EC2 pública y la EC2 privada, y MongoDB Atlas) está en `despliegue/aws/`, con un `.env.example` por cada instancia que lista las variables de entorno necesarias.
-
-El despliegue de laboratorio utiliza dos instancias EC2. La pública ejecuta Caddy, que atiende HTTPS, y Nginx, que sirve la aplicación React y solo escucha en `127.0.0.1`. La privada ejecuta los tres servicios Spring Boot, conectados a MongoDB Atlas. Nginx reenvía `/autenticacion/`, `/clinico/` y `/agenda/` a cada servicio y bloquea las rutas internas, y el frontend consume la API versionada (`/api/v1`).
-
-Las imágenes Docker se publican con una etiqueta basada en el commit, por ejemplo `chiguin/nutrivida:frontend-899e328`, y se reemplazan servicio por servicio conservando el contenedor anterior para poder revertir.
-
-En el Compose del backend, la imagen de Autenticación admite una etiqueta propia (`ETIQUETA_AUTENTICACION`) que, si no se define, usa `ETIQUETA_IMAGENES`. Así se actualiza Autenticación sin cambiar Clínico ni Agenda. El procedimiento está en `despliegue/aws/backend/ACTUALIZACION-AUTENTICACION.md`.
-
-La recuperación automática del dominio tras reiniciar AWS Academy cubre solo la EC2 pública (Caddy y el dominio `sslip.io`), según `despliegue/aws/frontend/automatizacion/README.md`. El backend no se sincroniza automáticamente con ese dominio: funciona porque Spring acepta el mismo origen y no necesita cambios.
-
-El entorno de AWS es de laboratorio y no permanece encendido de forma permanente. La dirección pública (un dominio `sslip.io` derivado de la IP de la instancia) cambia cada vez que se enciende, por lo que no es una URL permanente. Las credenciales, los archivos `.env` reales y los procedimientos internos de despliegue no se publican en el repositorio.
 
 ### 4. Iniciar el frontend
 
@@ -238,48 +322,114 @@ Desde la raíz del proyecto:
 docker compose down
 ```
 
-## 📦 Generar el ZIP de entrega
+## ☁️ Despliegue en AWS
 
-Desde la carpeta `scripts` de un clon del proyecto:
+La configuración para desplegar NutriVida en AWS se encuentra en `despliegue/aws/`, con un archivo `.env.example` por cada instancia que lista las variables de entorno necesarias.
 
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\generar-zip-evaluacion.ps1"
-```
+El despliegue de laboratorio utiliza dos instancias EC2.
 
-El script incluye `backend`, `frontend`, `mongodb`, `scripts`, `despliegue` y los documentos de la raíz permitidos; la carpeta `docs` solo se agrega con el parámetro `-IncluirDocs`. Excluye `.git`, `node_modules`, `dist`, `target`, los archivos `.env` (salvo `.env.example`), las claves y los certificados, y se detiene sin crear el ZIP si detecta patrones de credenciales. El resultado queda en la carpeta `Entregas-NutriVida`, junto a la carpeta del proyecto. Conviene revisar su contenido antes de compartirlo.
+### Instancia FRONT
+
+- Ejecuta Caddy para gestionar las conexiones HTTPS.
+- Ejecuta Nginx para servir la aplicación React.
+- Nginx escucha localmente en `127.0.0.1`.
+- Recibe las solicitudes de los usuarios.
+- Reenvía las solicitudes hacia los microservicios del backend.
+- Gestiona el dominio dinámico sslip.io.
+
+### Instancia BACK
+
+- Ejecuta los tres microservicios Spring Boot.
+- Se conecta a MongoDB Atlas.
+- Se comunica con FRONT mediante su dirección IP privada dentro de la VPC.
+- Su acceso está controlado mediante Security Groups.
+
+La instancia BACK dispone de una dirección IPv4 pública en el entorno de laboratorio. Por lo tanto, no corresponde describirla como una instancia ubicada en una subred privada.
+
+Nginx reenvía `/autenticacion/`, `/clinico/` y `/agenda/` a cada servicio y bloquea las rutas internas. El frontend consume la API versionada mediante `/api/v1`.
+
+Las imágenes Docker se publican con una etiqueta basada en el commit, por ejemplo `chiguin/nutrivida:frontend-899e328`, y se reemplazan servicio por servicio conservando el contenedor anterior para poder revertir una actualización.
+
+En el Compose del backend, la imagen de Autenticación admite una etiqueta propia (`ETIQUETA_AUTENTICACION`) que, si no se define, utiliza `ETIQUETA_IMAGENES`.
+
+Esto permite actualizar Autenticación sin cambiar los servicios Clínico y Agenda.
+
+El procedimiento está disponible en:
+
+`despliegue/aws/backend/ACTUALIZACION-AUTENTICACION.md`
+
+### Recuperación automática del dominio
+
+La recuperación automática del dominio tras reiniciar AWS Academy cubre la instancia FRONT, Caddy y el dominio sslip.io mediante systemd.
+
+La documentación correspondiente está disponible en:
+
+`despliegue/aws/frontend/automatizacion/README.md`
+
+El backend no se sincroniza automáticamente con ese dominio. La comunicación funciona mediante el mismo origen publicado por el frontend.
+
+El entorno de AWS es de laboratorio y no permanece encendido de forma permanente. La dirección pública puede cambiar al reiniciar el laboratorio, por lo que no constituye una URL permanente.
+
+Las credenciales, los archivos `.env` reales y las claves privadas no se publican en el repositorio.
 
 ## 🧪 Pruebas y validación
 
 El frontend dispone de pruebas automatizadas mediante Vitest y React Testing Library.
 
-En la última verificación local sobre `develop` (23-11-2026) se obtuvieron los siguientes resultados:
+El backend incorpora pruebas mediante JUnit y MockMvc para verificar controladores, servicios, seguridad, reglas de negocio y persistencia.
 
-- **Frontend: 190 pruebas aprobadas** en 18 archivos de pruebas.
-- **Backend: 124 pruebas aprobadas** (11 del módulo común, 22 de autenticación, 45 del servicio clínico y 46 de agenda), ejecutadas contra una base MongoDB de pruebas aislada y con datos ficticios.
-- Compilación de producción del frontend realizada correctamente (Vite informa una advertencia por el tamaño del paquete principal).
-- Análisis estático con ESLint sin errores.
+### Resultados históricos de las verificaciones
 
-Para ejecutar las verificaciones del frontend:
+Durante las verificaciones del 24 de noviembre de 2026 sobre los repositorios independientes de frontend y backend se informaron los siguientes resultados:
+
+| Verificación | Resultado histórico |
+|---|---|
+| Pruebas frontend | 198 pruebas aprobadas en 18 archivos. |
+| Pruebas backend | 137 pruebas aprobadas. |
+| Compilación frontend | Correcta, con advertencia de tamaño del paquete principal. |
+| ESLint | Sin errores. |
+| Dependencias de producción | Sin vulnerabilidades informadas en la revisión realizada. |
+
+En el backend del repositorio integrado se identificaron 137 métodos de prueba anotados con `@Test`, distribuidos de la siguiente manera:
+
+| Módulo | Métodos de prueba |
+|---|---:|
+| Común | 11 |
+| Autenticación | 35 |
+| Clínico | 45 |
+| Agenda | 46 |
+| **Total** | **137** |
+
+Estos resultados corresponden a verificaciones históricas y a la inspección del código fuente. No sustituyen una nueva ejecución de las pruebas sobre el ZIP definitivo de entrega.
+
+### Ejecutar las verificaciones del frontend
 
 ```bash
 cd frontend
+npm install
 npm run test
 npm run build
 npm run lint
 ```
 
-Para ejecutar las pruebas del backend se necesita Maven, Java y un servidor MongoDB de pruebas distinto de cualquier base con datos propios. Su dirección se indica con la variable `NUTRIVIDA_MONGO_SERVIDOR_PRUEBAS`:
+### Ejecutar las pruebas del backend
+
+Para ejecutar las pruebas del backend se necesita Maven, Java 21 y un servidor MongoDB de pruebas distinto de cualquier base de datos de uso habitual.
+
+Su dirección se indica mediante la variable `NUTRIVIDA_MONGO_SERVIDOR_PRUEBAS`.
 
 ```bash
 cd backend
 mvn test
 ```
 
+Las pruebas deben ejecutarse exclusivamente con datos ficticios y en un entorno aislado.
+
 ## 📌 Estado del proyecto
 
 La aplicación fue integrada en la rama principal `main` mediante Pull Requests, conservando el historial del trabajo colaborativo.
 
-**Versión integrada de referencia:** commit `b2d2ccb` de `main`, correspondiente al Pull Request #30.
+La rama `main` contiene la versión integrada del proyecto académico.
 
 ### Funcionalidades incorporadas
 
@@ -289,24 +439,44 @@ La aplicación fue integrada en la rama principal `main` mediante Pull Requests,
 - Control de acceso según roles.
 - Gestión de pacientes y nutricionistas.
 - Gestión de citas y disponibilidad.
+- Intervalos de agenda de 15 minutos.
 - Fichas clínicas y seguimiento nutricional.
-- Planes alimentarios.
+- Planes alimentarios versionados.
 - Administración de usuarios y servicios.
+- Pagos simulados.
 - Reportes y auditoría.
 - Mapa interactivo de ubicación referencial.
-- API REST versionada (`/api/v1`) en los tres servicios y en el frontend.
+- API REST versionada en los tres microservicios.
 - Manejo de la expiración de sesión y de las respuestas 401 y 403 en el frontend.
-- Despliegue en AWS con Docker, Caddy y Nginx, completado y verificado en un entorno de laboratorio.
+- Formulario de contacto integrado con el backend y persistencia en MongoDB.
+- Manejo del RUT duplicado mediante HTTP 409.
+- Despliegue en AWS con Docker, Caddy y Nginx, verificado previamente en el entorno de laboratorio.
+- Recuperación automática del dominio público mediante systemd.
 
 ### Verificaciones y mejoras pendientes
 
 - Verificar nuevamente el despliegue en AWS cada vez que se encienda el entorno de laboratorio.
-- Revisar las vulnerabilidades moderadas informadas por npm.
-- Optimizar el tamaño de los archivos generados en la compilación.
-- Completar las pruebas funcionales de extremo a extremo.
-- Verificar el envío y la persistencia de consultas del formulario de contacto.
+- Ejecutar las pruebas y la compilación sobre la versión definitiva de entrega.
+- Completar las pruebas funcionales de extremo a extremo para todos los roles.
+- Verificar las respuestas 401 y 403 del endpoint de perfil del nutricionista.
+- Completar las evidencias de diseño responsive.
+- Revisar las vulnerabilidades moderadas informadas históricamente en las dependencias de desarrollo.
+- Optimizar el tamaño de los archivos generados durante la compilación.
+- Implementar recordatorios automáticos de citas.
+- Completar la validación de seguridad antes de considerar un uso productivo.
 
 El despliegue del frontend en GitHub Pages no implica automáticamente que los servicios backend y MongoDB estén disponibles públicamente.
+
+## 📄 Documentación académica
+
+La documentación complementaria del proyecto contempla:
+
+- Especificación de Requisitos de Software (ERS).
+- Anexo 2: Documentación de APIs e Integración.
+- Anexo 3: Catálogo de endpoints de la API.
+- Anexo 4: Manual de usuario.
+
+Estos documentos describen los requisitos, la arquitectura, las funcionalidades, la integración, las pruebas, las evidencias y las limitaciones del sistema.
 
 ## 👩‍💻 Equipo de desarrollo
 
@@ -329,9 +499,7 @@ El desarrollo se organiza utilizando Git y GitHub.
 - `feature/*`: ramas de desarrollo de funcionalidades.
 - `fix/*`: ramas de correcciones.
 
-
 Los cambios se incorporan mediante Pull Requests, permitiendo revisar el trabajo antes de integrarlo.
-
 
 ---
 
