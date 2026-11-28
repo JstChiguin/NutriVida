@@ -11,6 +11,7 @@ import { Paginador } from '../components/ui/Paginador.jsx';
 import { useConsulta } from '../hooks/useConsulta.js';
 import { agendaApi } from '../servicios/agendaApi.js';
 import { describirError } from '../servicios/clienteApi.js';
+import { notificarCitasActualizadas } from '../utils/eventosCitas.js';
 import { ETIQUETAS_ESTADO_CITA, formatearFechaHora, formatearPrecio } from '../utils/formatos.js';
 
 function PanelReprogramacion({ cita, onConfirmar, onCancelar }) {
@@ -88,25 +89,6 @@ function TarjetaCita({ cita, onAccion, onReprogramar, onPagoFinalizado }) {
   );
 }
 
-function Recordatorios() {
-  const { datos } = useConsulta(() => agendaApi.listarRecordatorios(), {});
-  if (!datos || datos.length === 0) {
-    return null;
-  }
-  return (
-    <section className="mb-4 rounded-lg border border-amber-300 bg-amber-50 p-3" aria-label="Recordatorios de citas">
-      <h2 className="mb-1 text-base font-bold">Recordatorios</h2>
-      <ul className="text-sm">
-        {datos.map((recordatorio) => (
-          <li key={recordatorio.citaId}>
-            Tienes {recordatorio.nombreServicio} con {recordatorio.nombreNutricionista} el {formatearFechaHora(recordatorio.inicio)}.
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
 export default function MisCitas() {
   const ubicacion = useLocation();
   const [pagina, setPagina] = useState(0);
@@ -120,6 +102,7 @@ export default function MisCitas() {
     try {
       await accion();
       setResultado({ tipo: 'exito', texto: textoExito });
+      notificarCitasActualizadas();
       recargar();
     } catch (falla) {
       setResultado({ tipo: 'error', texto: describirError(falla) });
@@ -130,12 +113,11 @@ export default function MisCitas() {
     <Contenedor titulo="Mis citas" descripcion="Revisa, paga, reprograma o cancela tus atenciones."
       acciones={<EnlaceBoton to="/mis-citas/nueva">Solicitar nueva cita</EnlaceBoton>}>
       <Mensaje tipo={resultado.tipo}>{resultado.texto}</Mensaje>
-      <Recordatorios />
       <EstadoConsulta cargando={cargando} error={error} onReintentar={recargar}
         vacio={datos?.contenido.length === 0} mensajeVacio="Aún no tienes citas. ¡Solicita la primera!">
         <ul className="space-y-3">
           {datos?.contenido.map((cita) => (
-            <TarjetaCita key={cita.id} cita={cita} onAccion={ejecutar} onPagoFinalizado={recargar}
+            <TarjetaCita key={cita.id} cita={cita} onAccion={ejecutar} onPagoFinalizado={() => { notificarCitasActualizadas(); recargar(); }}
               onReprogramar={(citaId, inicio) =>
                 ejecutar(() => agendaApi.reprogramarCita(citaId, inicio, 'Reprogramada por el paciente'), 'Cita reprogramada; queda pendiente de confirmación')} />
           ))}

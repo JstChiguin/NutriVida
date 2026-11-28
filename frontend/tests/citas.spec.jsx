@@ -139,15 +139,17 @@ describe('Mis citas del paciente', () => {
     expect(agendaApi.listarPagosDeCita).toHaveBeenCalledWith('c1');
   });
 
-  it('muestra los recordatorios de citas próximas confirmadas', async () => {
-    agendaApi.listarCitas.mockResolvedValue({ contenido: [], totalPaginas: 1 });
-    agendaApi.listarRecordatorios.mockResolvedValue([
-      { citaId: 'c1', nombreServicio: 'Control nutricional', nombreNutricionista: 'Ana Ficticia', inicio: '2026-11-03T12:00:00Z', minutosRestantes: 1200 },
-    ]);
+  it('al cancelar una cita avisa al resto de la aplicación para actualizar los recordatorios', async () => {
+    agendaApi.listarCitas.mockResolvedValue({ contenido: [CITA], totalPaginas: 1 });
+    agendaApi.cancelarCita.mockResolvedValue({});
+    const alActualizar = vi.fn();
+    window.addEventListener('nutrivida:citas-actualizadas', alActualizar);
     renderizarEn(<MisCitas />);
 
-    expect(await screen.findByRole('heading', { name: 'Recordatorios' })).toBeTruthy();
-    expect(screen.getByText(/Tienes Control nutricional con Ana Ficticia/)).toBeTruthy();
+    await userEvent.click(await screen.findByRole('button', { name: 'Cancelar cita' }));
+
+    await waitFor(() => expect(alActualizar).toHaveBeenCalledTimes(1));
+    window.removeEventListener('nutrivida:citas-actualizadas', alActualizar);
   });
 
   it('muestra el error del backend cuando una acción es rechazada', async () => {
