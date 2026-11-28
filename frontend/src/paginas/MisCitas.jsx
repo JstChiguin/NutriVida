@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import Comprobante from '../components/citas/Comprobante.jsx';
+import PanelPago from '../components/citas/PanelPago.jsx';
 import SelectorHorario from '../components/citas/SelectorHorario.jsx';
 import Contenedor from '../components/layout/Contenedor.jsx';
 import { Boton, EnlaceBoton } from '../components/ui/Boton.jsx';
@@ -26,8 +28,24 @@ function PanelReprogramacion({ cita, onConfirmar, onCancelar }) {
   );
 }
 
-function TarjetaCita({ cita, onAccion, onReprogramar }) {
+function PanelComprobante({ cita, onCerrar }) {
+  const { datos, cargando, error, recargar } = useConsulta(() => agendaApi.listarPagosDeCita(cita.id), { citaId: cita.id });
+  const aprobado = datos?.find((pago) => pago.estado === 'APROBADO_SIMULADO');
+  return (
+    <div className="mt-3">
+      <EstadoConsulta cargando={cargando} error={error} onReintentar={recargar} vacio={!aprobado}
+        mensajeVacio="No se encontró un comprobante para esta cita.">
+        {aprobado && <Comprobante cita={cita} pago={aprobado} />}
+      </EstadoConsulta>
+      <Boton variante="suave" className="mt-2" onClick={onCerrar}>Cerrar</Boton>
+    </div>
+  );
+}
+
+function TarjetaCita({ cita, onAccion, onReprogramar, onPagoFinalizado }) {
   const [reprogramando, setReprogramando] = useState(false);
+  const [pagando, setPagando] = useState(false);
+  const [verComprobante, setVerComprobante] = useState(false);
   const activa = cita.estado === 'SOLICITADA' || cita.estado === 'CONFIRMADA';
 
   return (
@@ -46,9 +64,10 @@ function TarjetaCita({ cita, onAccion, onReprogramar }) {
       {activa && (
         <div className="mt-3 flex flex-wrap gap-2">
           {!cita.pagada && (
-            <Boton variante="contorno" onClick={() => onAccion(() => agendaApi.pagarCita(cita.id, 'TARJETA_SIMULADA'), 'Pago simulado registrado')}>
-              Pagar (simulado)
-            </Boton>
+            <Boton variante="contorno" onClick={() => setPagando(!pagando)}>Pagar (simulado)</Boton>
+          )}
+          {cita.pagada && (
+            <Boton variante="contorno" onClick={() => setVerComprobante(!verComprobante)}>Ver comprobante</Boton>
           )}
           <Boton variante="contorno" onClick={() => setReprogramando(!reprogramando)}>Reprogramar</Boton>
           <Boton variante="peligro" onClick={() => onAccion(() => agendaApi.cancelarCita(cita.id, 'Cancelada por el paciente'), 'Cita cancelada')}>
@@ -56,6 +75,8 @@ function TarjetaCita({ cita, onAccion, onReprogramar }) {
           </Boton>
         </div>
       )}
+      {pagando && <PanelPago cita={cita} onCerrar={() => setPagando(false)} onPagoFinalizado={onPagoFinalizado} />}
+      {verComprobante && cita.pagada && <PanelComprobante cita={cita} onCerrar={() => setVerComprobante(false)} />}
       {reprogramando && (
         <PanelReprogramacion cita={cita} onCancelar={() => setReprogramando(false)}
           onConfirmar={(inicio) => {
@@ -64,6 +85,25 @@ function TarjetaCita({ cita, onAccion, onReprogramar }) {
           }} />
       )}
     </li>
+  );
+}
+
+function Recordatorios() {
+  const { datos } = useConsulta(() => agendaApi.listarRecordatorios(), {});
+  if (!datos || datos.length === 0) {
+    return null;
+  }
+  return (
+    <section className="mb-4 rounded-lg border border-amber-300 bg-amber-50 p-3" aria-label="Recordatorios de citas">
+      <h2 className="mb-1 text-base font-bold">Recordatorios</h2>
+      <ul className="text-sm">
+        {datos.map((recordatorio) => (
+          <li key={recordatorio.citaId}>
+            Tienes {recordatorio.nombreServicio} con {recordatorio.nombreNutricionista} el {formatearFechaHora(recordatorio.inicio)}.
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -90,11 +130,12 @@ export default function MisCitas() {
     <Contenedor titulo="Mis citas" descripcion="Revisa, paga, reprograma o cancela tus atenciones."
       acciones={<EnlaceBoton to="/mis-citas/nueva">Solicitar nueva cita</EnlaceBoton>}>
       <Mensaje tipo={resultado.tipo}>{resultado.texto}</Mensaje>
+      <Recordatorios />
       <EstadoConsulta cargando={cargando} error={error} onReintentar={recargar}
         vacio={datos?.contenido.length === 0} mensajeVacio="Aún no tienes citas. ¡Solicita la primera!">
         <ul className="space-y-3">
           {datos?.contenido.map((cita) => (
-            <TarjetaCita key={cita.id} cita={cita} onAccion={ejecutar}
+            <TarjetaCita key={cita.id} cita={cita} onAccion={ejecutar} onPagoFinalizado={recargar}
               onReprogramar={(citaId, inicio) =>
                 ejecutar(() => agendaApi.reprogramarCita(citaId, inicio, 'Reprogramada por el paciente'), 'Cita reprogramada; queda pendiente de confirmación')} />
           ))}

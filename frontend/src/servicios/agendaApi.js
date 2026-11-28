@@ -18,7 +18,10 @@ export const agendaApi = {
     solicitar('agenda', 'PATCH', `/api/v1/citas/${citaId}/reprogramacion`, { cuerpo: { nuevoInicio, motivo } }),
   registrarAtencionRealizada: (citaId) => solicitar('agenda', 'PATCH', `/api/v1/citas/${citaId}/atencion-realizada`),
   registrarInasistencia: (citaId) => solicitar('agenda', 'PATCH', `/api/v1/citas/${citaId}/inasistencia`),
-  pagarCita: (citaId, metodo) => solicitar('agenda', 'POST', `/api/v1/citas/${citaId}/pagos`, { cuerpo: { metodo } }),
+  pagarCita: (citaId, metodo, simularRechazo = false) =>
+    solicitar('agenda', 'POST', `/api/v1/citas/${citaId}/pagos`, { cuerpo: { metodo, simularRechazo } }),
+  listarPagosDeCita: (citaId) => solicitar('agenda', 'GET', `/api/v1/citas/${citaId}/pagos`),
+  listarRecordatorios: () => solicitar('agenda', 'GET', '/api/v1/citas/recordatorios'),
 
   listarPagos: (parametros) => solicitar('agenda', 'GET', '/api/v1/pagos', { parametros }),
   anularPago: (pagoId) => solicitar('agenda', 'PATCH', `/api/v1/pagos/${pagoId}/anulacion`),

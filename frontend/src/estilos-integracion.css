@@ -579,3 +579,43 @@ main .overflow-x-auto { border-radius: .7rem; }
 }
 .boton-quitar-asignacion:hover { background: #fff1f1; color: #951c2a; border-color: #951c2a; }
 .boton-quitar-asignacion:focus-visible { outline: 3px solid #f3a7af; outline-offset: 2px; }
+
+.comprobante-datos div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px dashed #d1d5db;
+}
+
+.comprobante-datos dt {
+  font-weight: 600;
+}
+
+.comprobante-datos dd {
+  margin: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .comprobante,
+  .comprobante * {
+    visibility: visible;
+  }
+
+  .comprobante {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    border: 1px solid #000;
+  }
+
+  .no-imprimir {
+    display: none;
+  }
+}

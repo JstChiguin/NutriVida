@@ -23,7 +23,8 @@ const CASOS = [
   ['agenda: horarios', () => agendaApi.definirHorarios('n1', []), 'agenda', 'PUT', '/api/v1/agendas/n1/horarios', { cuerpo: { horarios: [] } }],
   ['agenda: solicitud de cita', () => agendaApi.solicitarCita({ servicioId: 's1' }), 'agenda', 'POST', '/api/v1/citas', { cuerpo: { servicioId: 's1' } }],
   ['agenda: reprogramación', () => agendaApi.reprogramarCita('c1', '2026-11-04T12:00:00Z', 'Cambio'), 'agenda', 'PATCH', '/api/v1/citas/c1/reprogramacion', { cuerpo: { nuevoInicio: '2026-11-04T12:00:00Z', motivo: 'Cambio' } }],
-  ['agenda: pago simulado', () => agendaApi.pagarCita('c1', 'TARJETA_SIMULADA'), 'agenda', 'POST', '/api/v1/citas/c1/pagos', { cuerpo: { metodo: 'TARJETA_SIMULADA' } }],
+  ['agenda: pago simulado', () => agendaApi.pagarCita('c1', 'TARJETA_SIMULADA'), 'agenda', 'POST', '/api/v1/citas/c1/pagos', { cuerpo: { metodo: 'TARJETA_SIMULADA', simularRechazo: false } }],
+  ['agenda: recordatorios', () => agendaApi.listarRecordatorios(), 'agenda', 'GET', '/api/v1/citas/recordatorios', undefined],
   ['agenda: reporte por estado', () => agendaApi.contarCitasPorEstado({}), 'agenda', 'GET', '/api/v1/reportes/citas-por-estado', { parametros: {} }],
 ];
 

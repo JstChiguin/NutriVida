@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Routes } from 'react-router-dom';
 import Agenda from '../src/paginas/Agenda.jsx';
@@ -14,12 +14,14 @@ vi.mock('../src/servicios/agendaApi.js', () => ({
   agendaApi: {
     listarCitas: vi.fn(), cancelarCita: vi.fn(), pagarCita: vi.fn(), reprogramarCita: vi.fn(), confirmarCita: vi.fn(),
     rechazarCita: vi.fn(), registrarAtencionRealizada: vi.fn(), registrarInasistencia: vi.fn(),
-    consultarDisponibilidad: vi.fn(), solicitarCita: vi.fn(),
+    consultarDisponibilidad: vi.fn(), solicitarCita: vi.fn(), listarRecordatorios: vi.fn(), listarPagosDeCita: vi.fn(),
   },
 }));
 vi.mock('../src/servicios/clinicoApi.js', () => ({
   clinicoApi: { listarServicios: vi.fn(), listarNutricionistas: vi.fn(), consultarNutricionista: vi.fn() },
 }));
+
+const PAGO_APROBADO = { id: 'pg1', citaId: 'c1', monto: 25000, estado: 'APROBADO_SIMULADO', metodo: 'TARJETA_SIMULADA', comprobante: { numero: 'NV-20261102-ABC123', emitidoEn: '2026-11-02T12:00:00Z', glosa: 'COMPROBANTE FICTICIO - PAGO SIMULADO SIN VALOR TRIBUTARIO' } };
 
 const CITA = {
   id: 'c1', pacienteId: 'p1', nombrePaciente: 'Pedro Ficticio', nutricionistaId: 'n1', nombreNutricionista: 'Ana Ficticia',
@@ -31,6 +33,7 @@ describe('Mis citas del paciente', () => {
   beforeEach(() => {
     sessionStorage.clear();
     vi.clearAllMocks();
+    agendaApi.listarRecordatorios.mockResolvedValue([]);
     guardarSesionDePrueba('PACIENTE');
   });
 
@@ -62,15 +65,89 @@ describe('Mis citas del paciente', () => {
     expect(agendaApi.listarCitas).toHaveBeenCalledTimes(2);
   });
 
-  it('realiza un pago simulado', async () => {
+  it('muestra el resumen antes de pagar y no invoca el pago hasta confirmar', async () => {
     agendaApi.listarCitas.mockResolvedValue({ contenido: [CITA], totalPaginas: 1 });
-    agendaApi.pagarCita.mockResolvedValue({});
     renderizarEn(<MisCitas />);
 
     await userEvent.click(await screen.findByRole('button', { name: 'Pagar (simulado)' }));
 
-    expect(agendaApi.pagarCita).toHaveBeenCalledWith('c1', 'TARJETA_SIMULADA');
-    expect(await screen.findByText('Pago simulado registrado')).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Resumen y pago simulado' })).toBeTruthy();
+    expect(screen.getByText(/no se usa dinero ni tarjetas reales/i)).toBeTruthy();
+    expect(agendaApi.pagarCita).not.toHaveBeenCalled();
+  });
+
+  it('un pago aprobado muestra el comprobante y recarga el listado al cerrar', async () => {
+    agendaApi.listarCitas.mockResolvedValue({ contenido: [CITA], totalPaginas: 1 });
+    agendaApi.pagarCita.mockResolvedValue(PAGO_APROBADO);
+    renderizarEn(<MisCitas />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Pagar (simulado)' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Confirmar pago simulado' }));
+
+    expect(agendaApi.pagarCita).toHaveBeenCalledWith('c1', 'TARJETA_SIMULADA', false);
+    expect(await screen.findByRole('heading', { name: 'Comprobante de pago simulado' })).toBeTruthy();
+    expect(screen.getByText('NV-20261102-ABC123')).toBeTruthy();
+    expect(screen.getByText(/COMPROBANTE FICTICIO/)).toBeTruthy();
+    expect(agendaApi.listarCitas).toHaveBeenCalledTimes(1);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Cerrar' }));
+    await waitFor(() => expect(agendaApi.listarCitas).toHaveBeenCalledTimes(2));
+  });
+
+  it('un pago rechazado informa el motivo, no muestra comprobante y permite reintentar', async () => {
+    agendaApi.listarCitas.mockResolvedValue({ contenido: [CITA], totalPaginas: 1 });
+    agendaApi.pagarCita.mockResolvedValueOnce({ id: 'pg0', estado: 'RECHAZADO_SIMULADO', comprobante: null });
+    agendaApi.pagarCita.mockResolvedValueOnce(PAGO_APROBADO);
+    renderizarEn(<MisCitas />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Pagar (simulado)' }));
+    await userEvent.click(screen.getByLabelText('Simular un pago rechazado (demostración)'));
+    await userEvent.click(screen.getByRole('button', { name: 'Confirmar pago simulado' }));
+
+    expect(agendaApi.pagarCita).toHaveBeenLastCalledWith('c1', 'TARJETA_SIMULADA', true);
+    expect(await screen.findByText(/pago simulado fue rechazado/i)).toBeTruthy();
+    expect(screen.queryByRole('heading', { name: 'Comprobante de pago simulado' })).toBeNull();
+
+    await userEvent.click(screen.getByLabelText('Simular un pago rechazado (demostración)'));
+    await userEvent.click(screen.getByRole('button', { name: 'Reintentar pago' }));
+
+    expect(agendaApi.pagarCita).toHaveBeenLastCalledWith('c1', 'TARJETA_SIMULADA', false);
+    expect(await screen.findByRole('heading', { name: 'Comprobante de pago simulado' })).toBeTruthy();
+    expect(agendaApi.pagarCita).toHaveBeenCalledTimes(2);
+  });
+
+  it('muestra el conflicto del backend cuando la cita ya tiene un pago aprobado', async () => {
+    agendaApi.listarCitas.mockResolvedValue({ contenido: [CITA], totalPaginas: 1 });
+    agendaApi.pagarCita.mockRejectedValue(new ErrorApi(409, 'CONFLICTO_DE_NEGOCIO', 'La cita ya tiene un pago aprobado'));
+    renderizarEn(<MisCitas />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Pagar (simulado)' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Confirmar pago simulado' }));
+
+    expect(await screen.findByText('La cita ya tiene un pago aprobado')).toBeTruthy();
+  });
+
+  it('una cita pagada permite consultar su comprobante', async () => {
+    agendaApi.listarCitas.mockResolvedValue({ contenido: [{ ...CITA, estado: 'CONFIRMADA', pagada: true }], totalPaginas: 1 });
+    agendaApi.listarPagosDeCita.mockResolvedValue([PAGO_APROBADO]);
+    renderizarEn(<MisCitas />);
+
+    expect(screen.queryByRole('button', { name: 'Pagar (simulado)' })).toBeNull();
+    await userEvent.click(await screen.findByRole('button', { name: 'Ver comprobante' }));
+
+    expect(await screen.findByText('NV-20261102-ABC123')).toBeTruthy();
+    expect(agendaApi.listarPagosDeCita).toHaveBeenCalledWith('c1');
+  });
+
+  it('muestra los recordatorios de citas próximas confirmadas', async () => {
+    agendaApi.listarCitas.mockResolvedValue({ contenido: [], totalPaginas: 1 });
+    agendaApi.listarRecordatorios.mockResolvedValue([
+      { citaId: 'c1', nombreServicio: 'Control nutricional', nombreNutricionista: 'Ana Ficticia', inicio: '2026-11-03T12:00:00Z', minutosRestantes: 1200 },
+    ]);
+    renderizarEn(<MisCitas />);
+
+    expect(await screen.findByRole('heading', { name: 'Recordatorios' })).toBeTruthy();
+    expect(screen.getByText(/Tienes Control nutricional con Ana Ficticia/)).toBeTruthy();
   });
 
   it('muestra el error del backend cuando una acción es rechazada', async () => {

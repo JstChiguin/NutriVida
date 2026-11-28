@@ -16,7 +16,7 @@ import { guardarSesionDePrueba, renderizarEn } from './ayudas.jsx';
 vi.mock('../src/servicios/agendaApi.js', () => ({
   agendaApi: {
     consultarDisponibilidad: vi.fn(), solicitarCita: vi.fn(), listarCitas: vi.fn(), registrarInasistencia: vi.fn(),
-    cancelarCita: vi.fn(), pagarCita: vi.fn(), reprogramarCita: vi.fn(),
+    cancelarCita: vi.fn(), pagarCita: vi.fn(), reprogramarCita: vi.fn(), listarRecordatorios: vi.fn(() => Promise.resolve([])),
   },
 }));
 vi.mock('../src/servicios/clinicoApi.js', () => ({
