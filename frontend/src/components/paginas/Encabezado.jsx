@@ -69,7 +69,7 @@ export default function Encabezado() {
 
         <button
           type="button"
-          className="btn btn-outline-light d-md-none d-flex flex-column justify-content-center align-items-center p-2"
+          className="btn btn-outline-light d-lg-none d-flex flex-column justify-content-center align-items-center p-2"
           aria-expanded={abierto}
           aria-controls="menu-secciones"
           onClick={() => setAbierto(!abierto)}
@@ -96,10 +96,10 @@ export default function Encabezado() {
           id="menu-secciones"
           aria-label="Secciones"
           className={`navegacion-principal ${
-            abierto ? 'd-block w-100 mt-3' : 'd-none d-md-block'
+            abierto ? 'd-block w-100 mt-3' : 'd-none d-lg-block'
           }`}
         >
-          <ul className="d-flex flex-column flex-md-row gap-3 gap-md-4 list-unstyled mb-0 align-items-md-center">
+          <ul className="d-flex flex-column flex-lg-row gap-3 gap-lg-4 list-unstyled mb-0 align-items-lg-center">
             {enlaces.map((enlace) => (
               <li key={enlace.ruta}>
                 <NavLink

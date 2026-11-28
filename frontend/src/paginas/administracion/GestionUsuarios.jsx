@@ -113,7 +113,7 @@ export default function GestionUsuarios() {
   };
 
   const filtrar = (evento) => {
-    setFiltros({ ...filtros, [evento.target.id]: evento.target.value });
+    setFiltros({ ...filtros, [evento.target.id.replace('filtro-', '')]: evento.target.value });
     setPagina(0);
   };
 
@@ -122,9 +122,9 @@ export default function GestionUsuarios() {
       <FormularioNuevoUsuario onCreado={recargar} />
       <Tarjeta titulo="Usuarios registrados">
         <div className="grid gap-x-4 md:grid-cols-3">
-          <CampoTexto etiqueta="Buscar" id="texto" value={filtros.texto} onChange={filtrar} />
-          <CampoSeleccion etiqueta="Rol" id="rol" marcador="Todos" opciones={OPCIONES_ROL} value={filtros.rol} onChange={filtrar} />
-          <CampoSeleccion etiqueta="Estado" id="activo" marcador="Todos" value={filtros.activo} onChange={filtrar}
+          <CampoTexto etiqueta="Buscar" id="filtro-texto" value={filtros.texto} onChange={filtrar} />
+          <CampoSeleccion etiqueta="Rol" id="filtro-rol" marcador="Todos" opciones={OPCIONES_ROL} value={filtros.rol} onChange={filtrar} />
+          <CampoSeleccion etiqueta="Estado" id="filtro-activo" marcador="Todos" value={filtros.activo} onChange={filtrar}
             opciones={[{ valor: 'true', etiqueta: 'Activos' }, { valor: 'false', etiqueta: 'Inactivos' }]} />
         </div>
         <Mensaje tipo={resultado.tipo}>{resultado.texto}</Mensaje>
@@ -148,7 +148,7 @@ export default function GestionUsuarios() {
                       </select>
                     </td>
                     <td className="p-2"><Insignia tipo={usuario.activo ? 'positivo' : 'negativo'}>{usuario.activo ? 'Activo' : 'Inactivo'}</Insignia></td>
-                    <td className="flex gap-2 p-2">
+                    <td className="flex flex-wrap gap-2 p-2">
                       <Boton variante="suave" onClick={() => setUsuarioEnEdicion(usuario.id)}>Editar</Boton>
                       <Boton variante={usuario.activo ? 'peligro' : 'contorno'} disabled={usuario.id === usuarioActual.id}
                         onClick={() => ejecutar(() => autenticacionApi.cambiarEstadoUsuario(usuario.id, !usuario.activo))}>

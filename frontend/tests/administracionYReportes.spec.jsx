@@ -51,6 +51,19 @@ describe('Administración', () => {
     expect(autenticacionApi.cambiarEstadoUsuario).toHaveBeenCalledWith('u2', false);
   });
 
+  it('los filtros de usuarios tienen etiqueta propia y consultan la API con el rol y el texto elegidos', async () => {
+    renderizarEn(<Administracion />);
+    await screen.findByText('Luis Prueba Demo');
+
+    await userEvent.selectOptions(screen.getByLabelText('Rol', { selector: '#filtro-rol' }), 'PACIENTE');
+    await userEvent.type(screen.getByLabelText('Buscar'), 'luis');
+
+    const ultima = autenticacionApi.listarUsuarios.mock.calls.at(-1)[0];
+    expect(ultima.rol).toBe('PACIENTE');
+    expect(ultima.texto).toBe('luis');
+    expect(document.querySelectorAll('[id="rol"]').length).toBeLessThanOrEqual(1);
+  });
+
   it('impide que el administrador desactive su propia cuenta', async () => {
     renderizarEn(<Administracion />);
     await screen.findByText('Luis Prueba Demo');
