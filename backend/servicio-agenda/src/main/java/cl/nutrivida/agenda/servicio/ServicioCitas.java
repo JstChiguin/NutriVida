@@ -6,6 +6,7 @@ import cl.nutrivida.agenda.clinico.ResumenPaciente;
 import cl.nutrivida.agenda.clinico.ResumenServicio;
 import cl.nutrivida.agenda.configuracion.PropiedadesAgenda;
 import cl.nutrivida.agenda.dto.CitaRespuesta;
+import cl.nutrivida.agenda.dto.RecordatorioRespuesta;
 import cl.nutrivida.agenda.dto.SolicitudCita;
 import cl.nutrivida.agenda.modelo.Cita;
 import cl.nutrivida.agenda.modelo.Cita.CambioEstado;
@@ -23,13 +24,17 @@ import cl.nutrivida.comun.paginacion.PaginaRespuesta;
 import cl.nutrivida.comun.seguridad.UsuarioAutenticado;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -46,6 +51,7 @@ public class ServicioCitas {
     private final ServicioAuditoria servicioAuditoria;
     private final Clock reloj;
     private final Duration anticipacionMinimaPaciente;
+    private final Duration ventanaRecordatorio;
 
     public ServicioCitas(RepositorioCitas repositorioCitas, MongoTemplate plantillaMongo, ClienteClinico clienteClinico,
                          ServicioDisponibilidad servicioDisponibilidad, ReservaDeBloques reservaDeBloques,
@@ -60,6 +66,7 @@ public class ServicioCitas {
         this.servicioAuditoria = servicioAuditoria;
         this.reloj = reloj;
         this.anticipacionMinimaPaciente = Duration.ofHours(propiedades.horasMinimasCancelacion());
+        this.ventanaRecordatorio = Duration.ofHours(propiedades.horasRecordatorio());
     }
 
     public CitaRespuesta solicitarCita(UsuarioAutenticado usuario, SolicitudCita solicitud) {
@@ -102,6 +109,17 @@ public class ServicioCitas {
                 .igual("servicioId", servicioId)
                 .entreFechas("inicio", desde, hasta);
         return PaginaRespuesta.de(consulta.paginar(plantillaMongo, paginacion, Cita.class), CitaRespuesta::desde);
+    }
+
+    public List<RecordatorioRespuesta> listarRecordatorios(UsuarioAutenticado usuario) {
+        Contexto contexto = identidadSolicitante.resolver(usuario);
+        Instant ahora = reloj.instant();
+        Query consulta = Query.query(Criteria.where("pacienteId").is(contexto.pacienteId())
+                        .and("estado").is(EstadoCita.CONFIRMADA)
+                        .and("inicio").gt(ahora).lte(ahora.plus(ventanaRecordatorio)))
+                .with(Sort.by("inicio"));
+        return plantillaMongo.find(consulta, Cita.class).stream()
+                .map(cita -> RecordatorioRespuesta.desde(cita, ahora)).toList();
     }
 
     public CitaRespuesta consultarCita(UsuarioAutenticado usuario, String citaId) {

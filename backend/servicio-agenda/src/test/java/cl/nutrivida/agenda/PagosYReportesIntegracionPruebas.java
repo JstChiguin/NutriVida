@@ -5,7 +5,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -42,6 +48,26 @@ class PagosYReportesIntegracionPruebas extends BaseIntegracionAgenda {
         ejecutar(get("/api/citas/" + citaId), pacientePedro, null).andExpect(jsonPath("$.pagada").value(true));
         ejecutar(post("/api/citas/" + citaId + "/pagos"), pacientePedro, Map.of("metodo", "TARJETA_SIMULADA"))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    void pagosSimultaneosDeLaMismaCitaApruebanSoloUno() throws Exception {
+        String citaId = solicitar(pacientePedro, nutricionistaAna, servicioControlId, a(MARTES, 9, 0));
+        ExecutorService ejecutor = Executors.newFixedThreadPool(6);
+        List<Callable<Integer>> tareas = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            tareas.add(() -> ejecutar(post("/api/citas/" + citaId + "/pagos"), pacientePedro,
+                    Map.of("metodo", "TARJETA_SIMULADA")).andReturn().getResponse().getStatus());
+        }
+        List<Integer> estados = new ArrayList<>();
+        for (Future<Integer> futuro : ejecutor.invokeAll(tareas)) {
+            estados.add(futuro.get());
+        }
+        ejecutor.shutdown();
+
+        assertThat(estados).filteredOn(estado -> estado == 201).hasSize(1);
+        assertThat(estados).filteredOn(estado -> estado == 409).hasSize(5);
+        ejecutar(get("/api/citas/" + citaId + "/pagos"), pacientePedro, null).andExpect(jsonPath("$.length()").value(1));
     }
 
     @Test

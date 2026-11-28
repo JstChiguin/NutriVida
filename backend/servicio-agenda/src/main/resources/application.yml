@@ -19,6 +19,7 @@ nutrivida:
     zona-horaria: ${NUTRIVIDA_ZONA_HORARIA:America/Santiago}
     horas-minimas-cancelacion: ${NUTRIVIDA_HORAS_MINIMAS_CANCELACION:2}
     paso-oferta-minutos: 30
+    horas-recordatorio: ${NUTRIVIDA_HORAS_RECORDATORIO:24}
     url-clinico: ${NUTRIVIDA_URL_CLINICO:http://localhost:8082}
   mongo:
     colecciones-con-esquema: agendas,citas,ocupaciones_agenda,pagos

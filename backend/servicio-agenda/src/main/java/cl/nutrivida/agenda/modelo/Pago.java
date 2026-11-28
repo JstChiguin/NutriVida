@@ -2,6 +2,7 @@ package cl.nutrivida.agenda.modelo;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -10,6 +11,8 @@ import org.springframework.data.mongodb.core.mapping.FieldType;
 import java.time.Instant;
 
 @Document(collection = "pagos")
+@CompoundIndex(name = "un_pago_aprobado_por_cita", def = "{'citaId': 1}", unique = true,
+        partialFilter = "{'estado': 'APROBADO_SIMULADO'}")
 public record Pago(
         @Id String id,
         @Indexed @Field(targetType = FieldType.OBJECT_ID) String citaId,

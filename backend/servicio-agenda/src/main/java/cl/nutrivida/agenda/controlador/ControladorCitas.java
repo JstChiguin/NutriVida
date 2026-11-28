@@ -1,6 +1,7 @@
 package cl.nutrivida.agenda.controlador;
 
 import cl.nutrivida.agenda.dto.CitaRespuesta;
+import cl.nutrivida.agenda.dto.RecordatorioRespuesta;
 import cl.nutrivida.agenda.dto.PagoRespuesta;
 import cl.nutrivida.agenda.dto.SolicitudCita;
 import cl.nutrivida.agenda.dto.SolicitudMotivo;
@@ -66,6 +67,13 @@ public class ControladorCitas {
             @RequestParam(defaultValue = "false") boolean descendente) {
         return servicioCitas.listarCitas(UsuarioActual.obtener(), estado, nutricionistaId, pacienteId, servicioId,
                 desde, hasta, ParametrosPagina.crear(pagina, tamano, "inicio", descendente));
+    }
+
+    @GetMapping("/recordatorios")
+    @PreAuthorize("hasRole('PACIENTE')")
+    @Operation(summary = "Recordatorios del paciente: citas confirmadas que comienzan dentro de la ventana configurada (24 h por defecto). Se muestran en la aplicación; no se envían correos ni mensajes externos")
+    public List<RecordatorioRespuesta> listarRecordatorios() {
+        return servicioCitas.listarRecordatorios(UsuarioActual.obtener());
     }
 
     @GetMapping("/{citaId}")

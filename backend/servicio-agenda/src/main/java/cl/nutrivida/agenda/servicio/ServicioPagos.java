@@ -15,6 +15,7 @@ import cl.nutrivida.comun.excepciones.RecursoNoEncontrado;
 import cl.nutrivida.comun.paginacion.ConstructorConsulta;
 import cl.nutrivida.comun.paginacion.PaginaRespuesta;
 import cl.nutrivida.comun.seguridad.UsuarioAutenticado;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -68,9 +69,14 @@ public class ServicioPagos {
         Instant ahora = reloj.instant();
         boolean aprobado = !solicitud.simularRechazo();
         Comprobante comprobante = aprobado ? emitirComprobante(ahora) : null;
-        Pago guardado = repositorioPagos.save(new Pago(null, citaId, cita.pacienteId(), cita.precioReferencial(),
-                aprobado ? EstadoPago.APROBADO_SIMULADO : EstadoPago.RECHAZADO_SIMULADO, solicitud.metodo(),
-                comprobante, ahora, null));
+        Pago guardado;
+        try {
+            guardado = repositorioPagos.save(new Pago(null, citaId, cita.pacienteId(), cita.precioReferencial(),
+                    aprobado ? EstadoPago.APROBADO_SIMULADO : EstadoPago.RECHAZADO_SIMULADO, solicitud.metodo(),
+                    comprobante, ahora, null));
+        } catch (DuplicateKeyException excepcion) {
+            throw new ConflictoDeNegocio("La cita ya tiene un pago aprobado");
+        }
         if (aprobado) {
             marcarCitaComoPagada(citaId, true);
         }
