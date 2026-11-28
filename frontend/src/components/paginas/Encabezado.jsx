@@ -7,6 +7,8 @@ const enlacesPublicos = [
   { ruta: '/', etiqueta: 'Inicio' },
   { ruta: '/servicios', etiqueta: 'Servicios' },
   { ruta: '/nutricionistas', etiqueta: 'Nutricionistas' },
+  { ruta: '/blog', etiqueta: 'Blog' },
+  { ruta: '/nosotros', etiqueta: 'Nosotros' },
   { ruta: '/contacto', etiqueta: 'Contacto' },
 ];
 

@@ -5,6 +5,9 @@ import Inicio from './components/paginas/Inicio.jsx';
 import Servicios from './components/paginas/Servicios.jsx';
 import Nutricionistas from './components/paginas/Nutricionistas.jsx';
 import Contacto from './components/paginas/Contacto.jsx';
+import Blog from './paginas/Blog.jsx';
+import ArticuloBlog from './paginas/ArticuloBlog.jsx';
+import Nosotros from './paginas/Nosotros.jsx';
 import IniciarSesion from './paginas/IniciarSesion.jsx';
 import Registro from './paginas/Registro.jsx';
 import Perfil from './paginas/Perfil.jsx';
@@ -26,6 +29,9 @@ export default function App() {
         <Route index element={<Inicio />} />
         <Route path="servicios" element={<Servicios />} />
         <Route path="nutricionistas" element={<Nutricionistas />} />
+        <Route path="blog" element={<Blog />} />
+        <Route path="blog/:slug" element={<ArticuloBlog />} />
+        <Route path="nosotros" element={<Nosotros />} />
         <Route path="contacto" element={<Contacto />} />
         <Route path="iniciar-sesion" element={<IniciarSesion />} />
         <Route path="registro" element={<Registro />} />

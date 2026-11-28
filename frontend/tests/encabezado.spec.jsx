@@ -10,7 +10,7 @@ describe('Encabezado y navegación', () => {
   it('muestra los enlaces públicos y el acceso para visitantes', () => {
     renderizarEn(<Encabezado />);
 
-    ['Inicio', 'Servicios', 'Nutricionistas', 'Contacto', 'Iniciar sesión', 'Registrarse'].forEach((etiqueta) => {
+    ['Inicio', 'Servicios', 'Nutricionistas', 'Blog', 'Nosotros', 'Contacto', 'Iniciar sesión', 'Registrarse'].forEach((etiqueta) => {
       expect(screen.getByRole('link', { name: etiqueta })).toBeTruthy();
     });
     expect(screen.queryByRole('link', { name: 'Mis citas' })).toBeNull();
