@@ -274,4 +274,25 @@ class RefrescoSesionIntegracionPruebas {
         mockMvc.perform(get("/api/autenticacion/yo").header("Authorization", "Bearer " + cuerpo.get("token").asText()))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void laRutaDeLaCookieIncluyeElPrefijoDelProxyInverso() throws Exception {
+        MvcResult resultado = mockMvc.perform(post("/autenticacion/api/autenticacion/registro").contextPath("/autenticacion")
+                .contentType(MediaType.APPLICATION_JSON).content(cuerpoRegistro("prefijo@nutrivida.test"))).andReturn();
+
+        assertThat(resultado.getResponse().getHeader(HttpHeaders.SET_COOKIE))
+                .contains("Path=/autenticacion/api/v1/autenticacion");
+    }
+
+    @Test
+    void elCierreDeSesionExpiraLaCookieConElMismoAlcance() throws Exception {
+        Sesion sesion = registrar("expiracookie@nutrivida.test");
+
+        MvcResult resultado = mockMvc.perform(post("/api/autenticacion/cerrar-sesion")
+                .header("Authorization", "Bearer " + sesion.token()).cookie(new Cookie(COOKIE, sesion.refresco())))
+                .andExpect(status().isNoContent()).andReturn();
+
+        assertThat(resultado.getResponse().getHeader(HttpHeaders.SET_COOKIE))
+                .contains("Max-Age=0").contains("HttpOnly").contains("Path=/api/v1/autenticacion");
+    }
 }

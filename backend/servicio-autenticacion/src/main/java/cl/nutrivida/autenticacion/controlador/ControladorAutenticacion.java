@@ -18,6 +18,7 @@ import cl.nutrivida.autenticacion.servicio.ServicioAutenticacion;
 import cl.nutrivida.comun.seguridad.UsuarioActual;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,33 +51,37 @@ public class ControladorAutenticacion {
 
     @PostMapping("/registro")
     @Operation(summary = "Registra un paciente nuevo. El registro público siempre asigna el rol PACIENTE")
-    public ResponseEntity<RespuestaSesion> registrarPaciente(@Valid @RequestBody SolicitudRegistroPaciente solicitud) {
-        return responder(HttpStatus.CREATED, servicioAutenticacion.registrarPaciente(solicitud));
+    public ResponseEntity<RespuestaSesion> registrarPaciente(@Valid @RequestBody SolicitudRegistroPaciente solicitud,
+                                                            HttpServletRequest peticion) {
+        return responder(HttpStatus.CREATED, servicioAutenticacion.registrarPaciente(solicitud), peticion);
     }
 
     @PostMapping("/iniciar-sesion")
     @Operation(summary = "Valida las credenciales y entrega un token JWT de acceso y una cookie HttpOnly de refresco")
-    public ResponseEntity<RespuestaSesion> iniciarSesion(@Valid @RequestBody SolicitudInicioSesion solicitud) {
-        return responder(HttpStatus.OK, servicioAutenticacion.iniciarSesion(solicitud));
+    public ResponseEntity<RespuestaSesion> iniciarSesion(@Valid @RequestBody SolicitudInicioSesion solicitud,
+                                                       HttpServletRequest peticion) {
+        return responder(HttpStatus.OK, servicioAutenticacion.iniciarSesion(solicitud), peticion);
     }
 
     @PostMapping("/refrescar")
     @Operation(summary = "Renueva el token de acceso rotando la cookie de refresco. Exige la cabecera X-Nutrivida-Csrf")
     public ResponseEntity<RespuestaSesion> refrescar(
             @RequestHeader(value = CABECERA_ANTI_CSRF, required = false) String cabeceraAntiCsrf,
-            @CookieValue(value = COOKIE_REFRESCO, required = false) String valorRefresco) {
+            @CookieValue(value = COOKIE_REFRESCO, required = false) String valorRefresco,
+            HttpServletRequest peticion) {
         if (!"1".equals(cabeceraAntiCsrf)) {
             throw new PermisoDenegado("Solicitud de renovación no permitida");
         }
-        return responder(HttpStatus.OK, servicioAutenticacion.refrescarSesion(valorRefresco));
+        return responder(HttpStatus.OK, servicioAutenticacion.refrescarSesion(valorRefresco), peticion);
     }
 
     @PostMapping("/cerrar-sesion")
     @Operation(summary = "Revoca el token de acceso y la sesión de refresco actuales")
-    public ResponseEntity<Void> cerrarSesion(@CookieValue(value = COOKIE_REFRESCO, required = false) String valorRefresco) {
+    public ResponseEntity<Void> cerrarSesion(@CookieValue(value = COOKIE_REFRESCO, required = false) String valorRefresco,
+                                             HttpServletRequest peticion) {
         servicioAutenticacion.cerrarSesion(UsuarioActual.obtener(), UsuarioActual.obtenerTokenActual(), valorRefresco);
         return ResponseEntity.noContent()
-                .header(HttpHeaders.SET_COOKIE, construirCookie("", Duration.ZERO).toString()).build();
+                .header(HttpHeaders.SET_COOKIE, construirCookie("", Duration.ZERO, peticion).toString()).build();
     }
 
     @GetMapping("/yo")
@@ -85,17 +90,17 @@ public class ControladorAutenticacion {
         return servicioAutenticacion.obtenerUsuarioActual(UsuarioActual.obtener());
     }
 
-    private ResponseEntity<RespuestaSesion> responder(HttpStatus estado, SesionEmitida sesion) {
+    private ResponseEntity<RespuestaSesion> responder(HttpStatus estado, SesionEmitida sesion, HttpServletRequest peticion) {
         Emitido refresco = sesion.refresco();
         Duration vida = Duration.between(Instant.now(), refresco.expiraEn());
         return ResponseEntity.status(estado)
-                .header(HttpHeaders.SET_COOKIE, construirCookie(refresco.valor(), vida).toString())
+                .header(HttpHeaders.SET_COOKIE, construirCookie(refresco.valor(), vida, peticion).toString())
                 .body(sesion.cuerpo());
     }
 
-    private ResponseCookie construirCookie(String valor, Duration vida) {
+    private ResponseCookie construirCookie(String valor, Duration vida, HttpServletRequest peticion) {
         return ResponseCookie.from(COOKIE_REFRESCO, valor)
                 .httpOnly(true).secure(cookieSegura).sameSite(cookieSameSite)
-                .path(RUTA_COOKIE).maxAge(vida).build();
+                .path(peticion.getContextPath() + RUTA_COOKIE).maxAge(vida).build();
     }
 }
