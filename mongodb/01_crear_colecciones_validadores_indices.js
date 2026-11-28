@@ -723,9 +723,15 @@ coleccionesConEsquema.forEach((coleccion) => {
 if (!db.getCollectionNames().includes('auditorias')) {
   db.createCollection('auditorias');
 }
+if (!db.getCollectionNames().includes('tokens_refresco')) {
+  db.createCollection('tokens_refresco');
+}
 
 db.usuarios.createIndex({ correo: 1 }, { unique: true });
 db.tokens_revocados.createIndex({ expiraEn: 1 }, { expireAfterSeconds: 0 });
+db.tokens_refresco.createIndex({ sesionExpiraEn: 1 }, { expireAfterSeconds: 0 });
+db.tokens_refresco.createIndex({ usuarioId: 1 });
+db.tokens_refresco.createIndex({ familia: 1 });
 db.pacientes.createIndex({ usuarioId: 1 }, { unique: true });
 db.pacientes.createIndex({ rut: 1 }, { unique: true, sparse: true });
 db.nutricionistas.createIndex({ usuarioId: 1 }, { unique: true });
@@ -746,6 +752,7 @@ db.citas.createIndex({ pacienteId: 1, inicio: 1 });
 db.citas.createIndex({ estado: 1, inicio: 1 });
 db.ocupaciones_agenda.createIndex({ citaId: 1 });
 db.pagos.createIndex({ citaId: 1 });
+db.pagos.createIndex({ citaId: 1 }, { unique: true, partialFilterExpression: { estado: 'APROBADO_SIMULADO' }, name: 'un_pago_aprobado_por_cita' });
 db.pagos.createIndex({ pacienteId: 1 });
 db.auditorias.createIndex({ entidad: 1, entidadId: 1 });
 db.auditorias.createIndex({ fecha: -1 });
