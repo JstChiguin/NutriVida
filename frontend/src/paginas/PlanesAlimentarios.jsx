@@ -39,7 +39,7 @@ function EditorPlan({ pacienteId, planActual, onGuardado }) {
   };
 
   return (
-    <Tarjeta titulo={planActual ? 'Crear nueva versión del plan' : 'Crear plan alimentario'}>
+    <Tarjeta titulo={planActual ? 'Editar plan alimentario (nueva versión)' : 'Crear plan alimentario'}>
       <Mensaje>{error}</Mensaje>
       <form onSubmit={guardar}>
         <CampoAreaTexto etiqueta="Objetivos (uno por línea)" id="objetivos" required value={objetivos}

@@ -56,7 +56,7 @@ function FormularioPerfilPaciente({ perfil }) {
   };
 
   return (
-    <Tarjeta titulo="Mis datos personales">
+    <Tarjeta titulo="Editar datos personales">
       <Mensaje tipo={resultado.tipo}>{resultado.texto}</Mensaje>
       <form onSubmit={guardar} noValidate>
         <CampoTexto etiqueta="Nombre completo" id="nombreCompleto" value={valores.nombreCompleto}

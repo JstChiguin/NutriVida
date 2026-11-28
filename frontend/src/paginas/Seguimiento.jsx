@@ -38,7 +38,7 @@ function FormularioMedicion({ pacienteId, onRegistrada }) {
   const modificar = (evento) => setValores({ ...valores, [evento.target.id]: evento.target.value });
 
   return (
-    <Tarjeta titulo="Registrar medición">
+    <Tarjeta titulo="Registrar mediciones">
       <Mensaje>{error}</Mensaje>
       <form onSubmit={registrar}>
         <CampoTexto etiqueta="Peso (kg)" id="pesoKg" type="number" step="0.1" required value={valores.pesoKg} onChange={modificar} />
@@ -46,7 +46,7 @@ function FormularioMedicion({ pacienteId, onRegistrada }) {
           ayuda="Obligatoria en la primera medición." onChange={modificar} />
         <CampoTexto etiqueta="Cintura (cm)" id="cinturaCm" type="number" step="0.1" value={valores.cinturaCm} onChange={modificar} />
         <CampoAreaTexto etiqueta="Observaciones" id="observaciones" value={valores.observaciones} onChange={modificar} />
-        <Boton type="submit">Registrar</Boton>
+        <Boton type="submit">Registrar mediciones</Boton>
       </form>
     </Tarjeta>
   );

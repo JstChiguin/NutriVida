@@ -121,7 +121,10 @@ function EdicionDatosBase({ pacienteId, ficha, onGuardado, onCancelar }) {
   };
 
   return (
-    <Tarjeta titulo="Corregir datos base de la ficha">
+    <Tarjeta titulo="Editar ficha clínica">
+      <p className="mb-3 text-xs text-gray-600">
+        Modifica los antecedentes y la evaluación de la ficha. No cambia los datos personales, las mediciones ni las atenciones ya registradas. La versión anterior queda guardada en el historial de la ficha junto con el motivo del cambio.
+      </p>
       <p className="mb-3 text-sm text-gray-600">El estado anterior se conserva en el historial de correcciones junto con el motivo del cambio.</p>
       <Mensaje>{resultado}</Mensaje>
       <form onSubmit={guardar}>
@@ -136,7 +139,7 @@ function EdicionDatosBase({ pacienteId, ficha, onGuardado, onCancelar }) {
         <CampoAreaTexto etiqueta="Indicaciones" id="indicaciones" value={valores.indicaciones} onChange={modificar} />
         <CampoTexto etiqueta="Motivo del cambio" id="motivoCambio" required value={valores.motivoCambio} onChange={modificar} />
         <div className="flex gap-2">
-          <Boton type="submit" disabled={!valores.motivoCambio.trim() || !valores.motivoConsulta.trim()}>Guardar corrección</Boton>
+          <Boton type="submit" disabled={!valores.motivoCambio.trim() || !valores.motivoConsulta.trim()}>Guardar cambios de la ficha</Boton>
           <Boton variante="suave" onClick={onCancelar}>Cancelar</Boton>
         </div>
       </form>
@@ -178,14 +181,14 @@ function FichaCompleta({ pacienteId, ficha, puedeEscribir, onCambio }) {
           <div><dt className="font-semibold">Estado</dt><dd>{ficha.estado === 'ABIERTA' ? 'Abierta' : 'Cerrada'}</dd></div>
         </dl>
         {puedeEscribir && ficha.estado === 'ABIERTA' && !editando && (
-          <Boton className="mt-4" variante="contorno" onClick={() => setEditando(true)}>Corregir datos base</Boton>
+          <Boton className="mt-4" variante="contorno" onClick={() => setEditando(true)}>Editar ficha clínica</Boton>
         )}
         {ficha.correcciones.length > 0 && (
           <p className="mt-3 text-xs text-gray-500">Esta ficha tiene {ficha.correcciones.length} corrección(es) registrada(s) en el historial.</p>
         )}
       </Tarjeta>
 
-      <Tarjeta titulo={`Evoluciones (${ficha.evoluciones.length})`}>
+      <Tarjeta titulo={`Atenciones registradas (${ficha.evoluciones.length})`}>
         <Mensaje>{resultado}</Mensaje>
         <ul className="space-y-3">
           {ficha.evoluciones.map((evolucion) => (
@@ -203,11 +206,11 @@ function FichaCompleta({ pacienteId, ficha, puedeEscribir, onCambio }) {
               setIndicaciones('');
             });
           }}>
-            <CampoAreaTexto etiqueta="Nueva evolución" id="nueva-evolucion" required value={descripcion}
+            <CampoAreaTexto etiqueta="Detalle de la atención" id="nueva-evolucion" required value={descripcion}
               onChange={(evento) => setDescripcion(evento.target.value)} />
             <CampoTexto etiqueta="Indicaciones" id="indicaciones" value={indicaciones}
               onChange={(evento) => setIndicaciones(evento.target.value)} />
-            <Boton type="submit">Registrar evolución</Boton>
+            <Boton type="submit">Registrar atención</Boton>
           </form>
         )}
       </Tarjeta>

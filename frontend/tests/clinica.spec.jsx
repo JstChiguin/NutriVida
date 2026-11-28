@@ -52,7 +52,7 @@ describe('Ficha clínica', () => {
     renderizarEn(rutaDePaciente(<FichaClinica />), '/pacientes/p1/ficha-clinica');
 
     expect(await screen.findByText('Primera evaluación')).toBeTruthy();
-    expect(screen.getByLabelText('Nueva evolución')).toBeTruthy();
+    expect(screen.getByLabelText('Detalle de la atención')).toBeTruthy();
     expect(clinicoApi.consultarPaciente).toHaveBeenCalledWith('p1');
   });
 
@@ -62,8 +62,8 @@ describe('Ficha clínica', () => {
     clinicoApi.registrarEvolucion.mockResolvedValue({});
     renderizarEn(rutaDePaciente(<FichaClinica />), '/pacientes/p1/ficha-clinica');
 
-    await userEvent.type(await screen.findByLabelText('Nueva evolución'), 'Buena adherencia');
-    await userEvent.click(screen.getByRole('button', { name: 'Registrar evolución' }));
+    await userEvent.type(await screen.findByLabelText('Detalle de la atención'), 'Buena adherencia');
+    await userEvent.click(screen.getByRole('button', { name: 'Registrar atención' }));
 
     expect(clinicoApi.registrarEvolucion).toHaveBeenCalledWith('p1', { descripcion: 'Buena adherencia', indicaciones: null });
   });
@@ -74,7 +74,7 @@ describe('Ficha clínica', () => {
     renderizarEn(rutaDePaciente(<FichaClinica />), '/ficha-clinica');
 
     expect(await screen.findByText('Primera evaluación')).toBeTruthy();
-    expect(screen.queryByLabelText('Nueva evolución')).toBeNull();
+    expect(screen.queryByLabelText('Detalle de la atención')).toBeNull();
     expect(clinicoApi.consultarMiPerfilPaciente).toHaveBeenCalled();
   });
 
@@ -103,14 +103,14 @@ describe('Ficha clínica', () => {
     expect(await screen.findByText(/No tiene autorización/)).toBeTruthy();
   });
 
-  it('permite al nutricionista corregir los datos base exigiendo el motivo del cambio', async () => {
+  it('permite al nutricionista editar la ficha clínica exigiendo el motivo del cambio', async () => {
     guardarSesionDePrueba('NUTRICIONISTA');
     clinicoApi.consultarFicha.mockResolvedValue(FICHA);
     clinicoApi.actualizarFicha.mockResolvedValue({});
     renderizarEn(rutaDePaciente(<FichaClinica />), '/pacientes/p1/ficha-clinica');
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Corregir datos base' }));
-    const guardar = screen.getByRole('button', { name: 'Guardar corrección' });
+    await userEvent.click(await screen.findByRole('button', { name: 'Editar ficha clínica' }));
+    const guardar = screen.getByRole('button', { name: 'Guardar cambios de la ficha' });
     expect(guardar.disabled).toBe(true);
     await userEvent.type(screen.getByLabelText(/Alergias/), ', Mariscos');
     await userEvent.type(screen.getByLabelText(/Motivo del cambio/), 'Alergia informada después');
@@ -123,14 +123,14 @@ describe('Ficha clínica', () => {
     expect(motivo).toBe('Alergia informada después');
   });
 
-  it('no muestra la corrección de datos base al paciente', async () => {
+  it('no muestra la edición de la ficha clínica al paciente', async () => {
     guardarSesionDePrueba('PACIENTE');
     clinicoApi.consultarFicha.mockResolvedValue(FICHA);
     renderizarEn(rutaDePaciente(<FichaClinica />), '/ficha-clinica');
 
     await screen.findByText('Control de peso');
 
-    expect(screen.queryByRole('button', { name: 'Corregir datos base' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Editar ficha clínica' })).toBeNull();
   });
 });
 
@@ -165,7 +165,7 @@ describe('Seguimiento nutricional', () => {
     expect((await screen.findAllByText('80.1 kg')).length).toBeGreaterThan(0);
     expect(screen.getByText('-2.3 kg')).toBeTruthy();
     expect(screen.getByRole('img', { name: 'Evolución del peso en kilogramos' })).toBeTruthy();
-    expect(screen.queryByRole('button', { name: 'Registrar' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Registrar mediciones' })).toBeNull();
   });
 
   it('permite al nutricionista registrar una medición y refrescar la evolución', async () => {
@@ -174,7 +174,7 @@ describe('Seguimiento nutricional', () => {
     renderizarEn(rutaDePaciente(<Seguimiento />), '/pacientes/p1/seguimiento');
 
     await userEvent.type(await screen.findByLabelText(/Peso \(kg\)/), '79.5');
-    await userEvent.click(screen.getByRole('button', { name: 'Registrar' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Registrar mediciones' }));
 
     expect(clinicoApi.registrarMedicion).toHaveBeenCalledWith('p1', {
       pesoKg: 79.5, estaturaCm: null, cinturaCm: null, observaciones: null,
@@ -188,7 +188,7 @@ describe('Seguimiento nutricional', () => {
     renderizarEn(rutaDePaciente(<Seguimiento />), '/pacientes/p1/seguimiento');
 
     await userEvent.type(await screen.findByLabelText(/Peso \(kg\)/), '70');
-    await userEvent.click(screen.getByRole('button', { name: 'Registrar' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Registrar mediciones' }));
 
     expect(await screen.findByText('Debe indicar la estatura en la primera medición')).toBeTruthy();
   });
