@@ -53,7 +53,7 @@ public class ControladorFichasClinicas {
 
     @PutMapping
     @PreAuthorize("hasRole('NUTRICIONISTA')")
-    @Operation(summary = "Corrige los datos base de la ficha conservando el estado anterior")
+    @Operation(summary = "Edita la ficha clínica (antecedentes y evaluación) conservando el estado anterior en su historial")
     public FichaClinicaRespuesta actualizarFicha(@PathVariable String pacienteId,
                                                  @Valid @RequestBody SolicitudActualizarFicha solicitud) {
         return servicioFichas.actualizarFicha(UsuarioActual.obtener(), pacienteId, solicitud);
