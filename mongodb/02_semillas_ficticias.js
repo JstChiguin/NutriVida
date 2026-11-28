@@ -58,7 +58,7 @@ db.servicios.insertMany(prestaciones.map(([n, nombre, categoria, duracionMinutos
 
 db.nutricionistas.insertMany(profesionales.map(([n, nombreCompleto, especialidad]) => ({
   _id: ID.nutricionista(n), usuarioId: ID.usuario(10 + n), nombreCompleto, titulo: 'Nutricionista',
-  especialidades: [especialidad], biografia: 'Perfil ficticio para demostración académica.', fotoUrl: null,
+  especialidades: [especialidad], biografia: 'Perfil ficticio de demostración.', fotoUrl: null,
   serviciosIds: prestaciones.map(([s]) => ID.servicio(s)), activo: true,
   creadoEn: CREACION, actualizadoEn: CREACION, version: NumberLong('0'),
 })));

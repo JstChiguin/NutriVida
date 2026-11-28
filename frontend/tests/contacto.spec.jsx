@@ -75,11 +75,11 @@ describe('Pruebas de interacción del formulario de contacto', () => {
 
     await usuario.type(
       screen.getByLabelText(/Nombre completo/),
-      'Chiguin Chiang'
+      'Ana Pérez Soto'
     );
     await usuario.type(
       screen.getByLabelText(/Correo electrónico/),
-      'chiguin@correo.cl'
+      'persona.prueba@correo.cl'
     );
     await usuario.selectOptions(
       screen.getByLabelText(/Motivo de consulta/),
@@ -112,11 +112,11 @@ describe('Pruebas de interacción del formulario de contacto', () => {
 
     await usuario.type(
       screen.getByLabelText(/Nombre completo/),
-      'Chiguin Chiang'
+      'Ana Pérez Soto'
     );
     await usuario.type(
       screen.getByLabelText(/Correo electrónico/),
-      'chiguin@correo.cl'
+      'persona.prueba@correo.cl'
     );
     await usuario.selectOptions(
       screen.getByLabelText(/Motivo de consulta/),
@@ -138,7 +138,7 @@ describe('Pruebas de interacción del formulario de contacto', () => {
       screen.getByText('¡Mensaje recibido con éxito!')
     ).toBeTruthy();
 
-    expect(screen.getByText('chiguin@correo.cl')).toBeTruthy();
+    expect(screen.getByText('persona.prueba@correo.cl')).toBeTruthy();
   });
 
   it('debe limpiar el formulario al seleccionar enviar otra consulta', async () => {
@@ -148,11 +148,11 @@ describe('Pruebas de interacción del formulario de contacto', () => {
 
     await usuario.type(
       screen.getByLabelText(/Nombre completo/),
-      'Chiguin Chiang'
+      'Ana Pérez Soto'
     );
     await usuario.type(
       screen.getByLabelText(/Correo electrónico/),
-      'chiguin@correo.cl'
+      'persona.prueba@correo.cl'
     );
     await usuario.selectOptions(
       screen.getByLabelText(/Motivo de consulta/),

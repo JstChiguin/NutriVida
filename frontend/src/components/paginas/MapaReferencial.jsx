@@ -46,7 +46,7 @@ export default function MapaReferencial() {
             .bindPopup(`
         <strong>Clínica NutriVida</strong>
         <p>${UBICACION_CLINICA.direccion}</p>
-        <small>Ubicación referencial del proyecto académico.</small>
+        <small>Ubicación referencial de la clínica.</small>
       `);
 
         return () => mapa.remove();
@@ -62,7 +62,7 @@ export default function MapaReferencial() {
                 <h2 id="titulo-ubicacion">¿Dónde estamos?</h2>
                 <p>{UBICACION_CLINICA.direccion}</p>
                 <p className="ubicacion-contacto-aviso">
-                    Ubicación utilizada para la demostración académica.
+                    Ubicación de referencia; no corresponde a un inmueble real.
                 </p>
             </div>
 

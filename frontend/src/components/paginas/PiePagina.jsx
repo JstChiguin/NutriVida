@@ -28,7 +28,7 @@ export default function PiePagina() {
 
         <div className="border-top border-secondary pt-3 text-center inferior-pie-pagina">
           <p className="small text-muted mb-0">
-            &copy; 2026 Clínica Nutricional NutriVida. Todos los derechos reservados. Desarrollado para DSY1104.
+            &copy; 2026 Clínica Nutricional NutriVida. Todos los derechos reservados. Los datos mostrados en este sitio son ficticios.
           </p>
         </div>
       </div>

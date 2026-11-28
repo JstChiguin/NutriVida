@@ -9,6 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -44,6 +47,10 @@ public class ManejadorErroresGlobal {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<RespuestaError> manejarAccesoDenegado(AccessDeniedException excepcion, HttpServletRequest peticion) {
+        Authentication autenticacion = SecurityContextHolder.getContext().getAuthentication();
+        if (autenticacion == null || autenticacion instanceof AnonymousAuthenticationToken) {
+            return responder(HttpStatus.UNAUTHORIZED, "NO_AUTENTICADO", "Debe iniciar sesión para acceder", peticion, List.of());
+        }
         return responder(HttpStatus.FORBIDDEN, "PERMISO_DENEGADO", "No tiene permisos para realizar esta operación", peticion, List.of());
     }
 

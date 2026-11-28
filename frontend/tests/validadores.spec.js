@@ -10,7 +10,7 @@ import {
 
 describe('Validaciones del formulario de contacto', () => {
   it('Debe aceptar un nombre válido', () => {
-    const resultado = validarNombre('Chiguin Chiang');
+    const resultado = validarNombre('Ana Pérez Soto');
 
     expect(resultado).toBeNull();
   });
@@ -33,21 +33,21 @@ describe('Validaciones del formulario de contacto', () => {
 
 
   it('Debe rechazar un nombre que contenga números', () => {
-    const resultado = validarNombre('Chiguin123');
+    const resultado = validarNombre('Persona123');
 
     expect(resultado).toBe('El nombre solo puede contener letras y espacios');
   });
 
 
   it('Debe aceptar un correo electrónico válido', () => {
-    const resultado = validarCorreo('chiguin@correo.cl');
+    const resultado = validarCorreo('persona.prueba@correo.cl');
 
     expect(resultado).toBeNull();
   });
 
 
   it('Debe rechazar un correo electrónico sin arroba', () => {
-    const resultado = validarCorreo('chiguincorreo.cl');
+    const resultado = validarCorreo('personacorreo.cl');
 
     expect(resultado).toBe(
       'El correo ingresado no es válido (ej: paciente@correo.cl)'

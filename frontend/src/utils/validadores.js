@@ -10,12 +10,6 @@ export function estaVacio(valor) {
   return String(valor).trim() === "";
 }
 
-/**
- * Valida que un campo no esté vacío o que un booleano sea true
- * @param {any} valor 
- * @param {string} mensaje 
- * @returns {string|null}
- */
 export function obligatorio(valor, mensaje = "Este campo es obligatorio") {
   if (typeof valor === "boolean") {
     return valor ? null : mensaje;
@@ -24,13 +18,6 @@ export function obligatorio(valor, mensaje = "Este campo es obligatorio") {
   return estaVacio(valor) ? mensaje : null;
 }
 
-/**
- * Valida la longitud mínima de una cadena de texto
- * @param {string} valor 
- * @param {number} minimo 
- * @param {string} mensaje 
- * @returns {string|null}
- */
 export function longitudMinima(valor, minimo, mensaje) {
   if (estaVacio(valor)) {
     return null;
@@ -42,13 +29,6 @@ export function longitudMinima(valor, minimo, mensaje) {
     : null;
 }
 
-/**
- * Valida la longitud máxima de una cadena de texto
- * @param {string} valor 
- * @param {number} maximo 
- * @param {string} mensaje 
- * @returns {string|null}
- */
 export function longitudMaxima(valor, maximo, mensaje) {
   if (estaVacio(valor)) {
     return null;
@@ -60,12 +40,6 @@ export function longitudMaxima(valor, maximo, mensaje) {
     : null;
 }
 
-/**
- * Valida el formato de una dirección de correo electrónico
- * @param {string} valor 
- * @param {string} mensaje 
- * @returns {string|null}
- */
 export function correo(
   valor,
   mensaje = "El correo ingresado no es válido",
@@ -78,12 +52,6 @@ export function correo(
   return patronCorreo.test(String(valor).trim()) ? null : mensaje;
 }
 
-/**
- * Valida que el texto contenga únicamente letras y espacios (soporta acentos y ñ)
- * @param {string} valor 
- * @param {string} mensaje 
- * @returns {string|null}
- */
 export function soloLetras(valor, mensaje = "El nombre solo puede contener letras y espacios") {
   if (estaVacio(valor)) {
     return null;
@@ -93,12 +61,6 @@ export function soloLetras(valor, mensaje = "El nombre solo puede contener letra
   return patronLetras.test(String(valor).trim()) ? null : mensaje;
 }
 
-/**
- * Valida números de teléfono chilenos (9 dígitos locales comenzando con 9, u 11 con código país 569)
- * @param {string} valor 
- * @param {string} mensaje 
- * @returns {string|null}
- */
 export function telefonoChileno(
   valor,
   mensaje = "Ingresa un celular chileno válido (ej: 9 1234 5678)",
@@ -131,9 +93,6 @@ export function validarCorreo(valor) {
   );
 }
 
-/**
- * Valida el teléfono celular (campo opcional, pero si se escribe debe ser válido)
- */
 export function validarTelefono(valor) {
   if (estaVacio(valor)) {
     return null;
@@ -145,9 +104,6 @@ export function validarTelefono(valor) {
   );
 }
 
-/**
- * Valida el motivo de consulta basado en las especialidades de NutriVida
- */
 export function validarMotivo(valor) {
   const motivosValidos = [
     "consulta_inicial",
@@ -168,9 +124,6 @@ export function validarMotivo(valor) {
   );
 }
 
-/**
- * Valida el cuerpo del mensaje de la consulta
- */
 export function validarMensaje(valor) {
   return (
     obligatorio(valor, "El mensaje es obligatorio") ||
@@ -179,9 +132,6 @@ export function validarMensaje(valor) {
   );
 }
 
-/**
- * Valida el consentimiento de privacidad y tratamiento confidencial de datos de salud
- */
 export function validarPrivacidad(valor) {
   return obligatorio(
     valor,

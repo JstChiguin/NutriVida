@@ -392,11 +392,11 @@ Resultados obtenidos el 28 de noviembre de 2026 en la rama `feature/eft-nutrivid
 |---|---|
 | Pruebas frontend (Vitest) | 215 aprobadas en 19 archivos. |
 | Cobertura frontend (v8) | Sentencias 87,92 %, ramas 85,70 %, funciones 80,33 %, líneas 88,38 %. |
-| Pruebas backend (JUnit, MongoDB 7 aislado en Docker) | 155 métodos `@Test`, 155 ejecutadas, 0 fallos, 0 omitidas. |
-| Cobertura backend (JaCoCo, líneas) | Autenticación 86,0 %, Clínico 92,8 %, Agenda 91,5 %, Común 20,8 %. |
+| Pruebas backend (JUnit, MongoDB 7 aislado en Docker) | 161 métodos `@Test`, 161 ejecutadas, 0 fallos, 0 omitidas. |
+| Cobertura backend (JaCoCo, líneas) | Autenticación 86,0 %, Clínico 92,8 %, Agenda 91,5 %, Común 20,5 %. |
 | ESLint | Sin errores. |
 
-Métodos de prueba del backend por módulo: Común 11, Autenticación 46, Clínico 47 y Agenda 51.
+Métodos de prueba del backend por módulo: Común 11, Autenticación 46, Clínico 53 y Agenda 51.
 
 La cobertura del módulo Común es baja porque sus clases se ejercitan sobre todo desde las pruebas de integración de los otros módulos, que JaCoCo contabiliza en cada uno de ellos.
 

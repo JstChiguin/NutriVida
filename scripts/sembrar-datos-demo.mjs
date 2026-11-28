@@ -100,7 +100,7 @@ async function main() {
     const perfil = await crearOBuscar(
       () => llamar(URL_CLINICO, 'POST', '/api/v1/nutricionistas', tokenAdministrador, {
         usuarioId: usuario.id, nombreCompleto: integrante.nombre, titulo: 'Nutricionista', especialidades: integrante.especialidades,
-        biografia: 'Perfil ficticio para demostración académica.', fotoUrl: integrante.foto, serviciosIds: identificadoresServicios,
+        biografia: 'Perfil ficticio de demostración.', fotoUrl: integrante.foto, serviciosIds: identificadoresServicios,
       }),
       async () => (await llamar(URL_CLINICO, 'GET', `/api/v1/nutricionistas?texto=${encodeURIComponent(integrante.nombre)}`)).contenido[0],
     );
