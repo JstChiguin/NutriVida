@@ -2,6 +2,7 @@
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import IndicacionesLlegada from './IndicacionesLlegada.jsx';
 
 const UBICACION_CLINICA = {
     latitud: -33.044541,
@@ -64,6 +65,7 @@ export default function MapaReferencial() {
                 <p className="ubicacion-contacto-aviso">
                     Ubicación de referencia; no corresponde a un inmueble real.
                 </p>
+                <IndicacionesLlegada destino={UBICACION_CLINICA} />
             </div>
 
             <div
