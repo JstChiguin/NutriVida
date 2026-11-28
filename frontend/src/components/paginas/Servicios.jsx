@@ -4,7 +4,6 @@ import { useConsulta } from '../../hooks/useConsulta.js';
 import { EnlaceBoton } from '../ui/Boton.jsx';
 import { clinicoApi } from '../../servicios/clinicoApi.js';
 import { EstadoConsulta } from '../ui/EstadoConsulta.jsx';
-import { SERVICIOS_REFERENCIALES } from '../../datos/contenidoInstitucional.js';
 import { formatearPrecio } from '../../utils/formatos.js';
 
 export default function Servicios() {
@@ -15,10 +14,7 @@ export default function Servicios() {
     () => clinicoApi.listarServicios({ tamano: 50 })
   );
 
-  const sinConexion = error?.codigo === 'SIN_CONEXION';
-
-  const servicios = datos?.contenido ??
-    (sinConexion ? SERVICIOS_REFERENCIALES : []);
+  const servicios = datos?.contenido ?? [];
 
   const categorias = [
     ...new Set(servicios.map((servicio) => servicio.categoria).filter(Boolean)),
@@ -46,12 +42,6 @@ export default function Servicios() {
       <h2 className="text-center mb-4 fw-bold">
         Nuestros servicios
       </h2>
-
-      {sinConexion && (
-        <p role="status" className="alert alert-warning">
-          Sin conexión con el servidor: se muestra información referencial.
-        </p>
-      )}
 
       <div className="row justify-content-center mb-4">
         <div className="col-12 col-md-8 col-lg-6">
@@ -94,7 +84,7 @@ export default function Servicios() {
 
       <EstadoConsulta
         cargando={cargando}
-        error={sinConexion ? null : error}
+        error={error}
         onReintentar={recargar}
         vacio={serviciosFiltrados.length === 0}
         mensajeVacio="No se encontraron servicios que coincidan con la búsqueda."
@@ -123,15 +113,13 @@ export default function Servicios() {
                     </p>
                   )}
 
-                  {!sinConexion && (
-                    <EnlaceBoton
-                      variante="contorno"
-                      to={`/mis-citas/nueva?servicioId=${servicio.id}`}
-                      className="mt-3"
-                    >
-                      Reservar
-                    </EnlaceBoton>
-                  )}
+                  <EnlaceBoton
+                    variante="contorno"
+                    to={`/mis-citas/nueva?servicioId=${servicio.id}`}
+                    className="mt-3"
+                  >
+                    Reservar
+                  </EnlaceBoton>
                 </div>
               </article>
             </div>

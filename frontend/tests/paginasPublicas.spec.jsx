@@ -58,13 +58,19 @@ describe('Página de servicios', () => {
     expect(screen.getByText('No se encontraron servicios que coincidan con la búsqueda.')).toBeTruthy();
   });
 
-  it('muestra contenido referencial sin reservas cuando no hay conexión', async () => {
-    clinicoApi.listarServicios.mockRejectedValue(new ErrorApi(0, 'SIN_CONEXION', 'No fue posible comunicarse'));
+  it('sin conexión no sustituye el catálogo por datos simulados: muestra el error y permite reintentar', async () => {
+    clinicoApi.listarServicios.mockRejectedValueOnce(new ErrorApi(0, 'SIN_CONEXION', 'No fue posible comunicarse con el servidor'));
+    clinicoApi.listarServicios.mockResolvedValueOnce(SERVICIOS);
     renderizarEn(<Servicios />);
 
-    expect(await screen.findByText('Control de peso')).toBeTruthy();
-    expect(screen.getByText(/Sin conexión con el servidor/)).toBeTruthy();
+    expect(await screen.findByText('No fue posible comunicarse con el servidor')).toBeTruthy();
+    expect(screen.queryByText('Control de peso')).toBeNull();
     expect(screen.queryByRole('link', { name: 'Reservar' })).toBeNull();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Reintentar' }));
+
+    expect(await screen.findByText('Control nutricional')).toBeTruthy();
+    expect(screen.getAllByRole('link', { name: 'Reservar' }).length).toBeGreaterThan(0);
   });
 
   it('muestra el error y permite reintentar ante un fallo del servidor', async () => {
@@ -96,12 +102,14 @@ describe('Página de nutricionistas', () => {
     expect(screen.getByRole('link', { name: 'Reservar' }).getAttribute('href')).toBe('/mis-citas/nueva?nutricionistaId=n1');
   });
 
-  it('usa el equipo referencial cuando no hay conexión', async () => {
-    clinicoApi.listarNutricionistas.mockRejectedValue(new ErrorApi(0, 'SIN_CONEXION', 'No fue posible comunicarse'));
+  it('sin conexión no muestra un equipo simulado: informa el error y no ofrece reservas', async () => {
+    clinicoApi.listarNutricionistas.mockRejectedValue(new ErrorApi(0, 'SIN_CONEXION', 'No fue posible comunicarse con el servidor'));
     renderizarEn(<Nutricionistas />);
 
-    expect(await screen.findByText('Carolina Fuentes M.')).toBeTruthy();
-    expect(screen.getByAltText('Nutricionista Felipe Araya R.')).toBeTruthy();
+    expect(await screen.findByText('No fue posible comunicarse con el servidor')).toBeTruthy();
+    expect(screen.queryByText('Carolina Fuentes M.')).toBeNull();
+    expect(screen.queryByRole('link', { name: 'Reservar' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Reintentar' })).toBeTruthy();
   });
 });
 

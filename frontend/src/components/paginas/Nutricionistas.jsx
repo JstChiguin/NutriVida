@@ -3,14 +3,6 @@ import { useConsulta } from '../../hooks/useConsulta.js';
 import { clinicoApi } from '../../servicios/clinicoApi.js';
 import { EnlaceBoton } from '../ui/Boton.jsx';
 import { EstadoConsulta } from '../ui/EstadoConsulta.jsx';
-import { NUTRICIONISTAS_REFERENCIALES } from '../../datos/contenidoInstitucional.js';
-
-const horariosReferenciales = {
-  'Carolina Fuentes M.': 'Lunes, Miércoles y Viernes',
-  'Rodrigo Sepúlveda A.': 'Martes, Jueves y Sábados',
-  'Daniela Morales C.': 'Lunes a Viernes',
-  'Felipe Araya R.': 'Martes a Viernes',
-};
 
 function Fotografia({ profesional }) {
   if (!profesional.fotoUrl) {
@@ -44,10 +36,7 @@ export default function Nutricionistas() {
     () => clinicoApi.listarNutricionistas({ tamano: 50 })
   );
 
-  const sinConexion = error?.codigo === 'SIN_CONEXION';
-
-  const profesionales = datos?.contenido ??
-    (sinConexion ? NUTRICIONISTAS_REFERENCIALES : []);
+  const profesionales = datos?.contenido ?? [];
 
   return (
     <section
@@ -58,15 +47,9 @@ export default function Nutricionistas() {
         Nuestros nutricionistas
       </h2>
 
-      {sinConexion && (
-        <p role="status" className="alert alert-warning">
-          Sin conexión con el servidor: se muestra información referencial.
-        </p>
-      )}
-
       <EstadoConsulta
         cargando={cargando}
-        error={sinConexion ? null : error}
+        error={error}
         onReintentar={recargar}
         vacio={profesionales.length === 0}
         mensajeVacio="Aún no hay nutricionistas disponibles."
@@ -88,22 +71,13 @@ export default function Nutricionistas() {
                     </p>
                   </div>
 
-                  {sinConexion &&
-                    horariosReferenciales[profesional.nombreCompleto] && (
-                      <p className="text-muted small mt-2">
-                        {horariosReferenciales[profesional.nombreCompleto]}
-                      </p>
-                    )}
-
-                  {!sinConexion && (
-                    <EnlaceBoton
-                      variante="contorno"
-                      to={`/mis-citas/nueva?nutricionistaId=${profesional.id}`}
-                      className="mt-3 w-100"
-                    >
-                      Reservar
-                    </EnlaceBoton>
-                  )}
+                  <EnlaceBoton
+                    variante="contorno"
+                    to={`/mis-citas/nueva?nutricionistaId=${profesional.id}`}
+                    className="mt-3 w-100"
+                  >
+                    Reservar
+                  </EnlaceBoton>
                 </div>
               </article>
             </li>
