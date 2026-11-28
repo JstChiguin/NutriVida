@@ -726,12 +726,16 @@ if (!db.getCollectionNames().includes('auditorias')) {
 if (!db.getCollectionNames().includes('tokens_refresco')) {
   db.createCollection('tokens_refresco');
 }
+if (!db.getCollectionNames().includes('usuarios_invalidados')) {
+  db.createCollection('usuarios_invalidados');
+}
 
 db.usuarios.createIndex({ correo: 1 }, { unique: true });
 db.tokens_revocados.createIndex({ expiraEn: 1 }, { expireAfterSeconds: 0 });
 db.tokens_refresco.createIndex({ sesionExpiraEn: 1 }, { expireAfterSeconds: 0 });
 db.tokens_refresco.createIndex({ usuarioId: 1 });
 db.tokens_refresco.createIndex({ familia: 1 });
+db.usuarios_invalidados.createIndex({ expiraEn: 1 }, { expireAfterSeconds: 0 });
 db.pacientes.createIndex({ usuarioId: 1 }, { unique: true });
 db.pacientes.createIndex({ rut: 1 }, { unique: true, sparse: true });
 db.nutricionistas.createIndex({ usuarioId: 1 }, { unique: true });
