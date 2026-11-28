@@ -246,7 +246,7 @@ Desde la carpeta `scripts` de un clon del proyecto:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\generar-zip-evaluacion.ps1"
 ```
 
-El script incluye `backend`, `frontend`, `mongodb`, `scripts`, `despliegue` y los documentos de la raíz permitidos; la carpeta `docs` solo se agrega con el parámetro `-IncluirDocs`. Excluye `.git`, `.claude`, `node_modules`, `dist`, `target`, los archivos `.env` (salvo `.env.example`), las claves y los certificados, y se detiene sin crear el ZIP si detecta patrones de credenciales. El resultado queda en la carpeta `Entregas-NutriVida`, junto a la carpeta del proyecto. Conviene revisar su contenido antes de compartirlo.
+El script incluye `backend`, `frontend`, `mongodb`, `scripts`, `despliegue` y los documentos de la raíz permitidos; la carpeta `docs` solo se agrega con el parámetro `-IncluirDocs`. Excluye `.git`, `node_modules`, `dist`, `target`, los archivos `.env` (salvo `.env.example`), las claves y los certificados, y se detiene sin crear el ZIP si detecta patrones de credenciales. El resultado queda en la carpeta `Entregas-NutriVida`, junto a la carpeta del proyecto. Conviene revisar su contenido antes de compartirlo.
 
 ## 🧪 Pruebas y validación
 
