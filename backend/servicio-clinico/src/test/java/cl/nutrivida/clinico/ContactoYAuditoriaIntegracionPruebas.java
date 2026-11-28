@@ -28,6 +28,20 @@ class ContactoYAuditoriaIntegracionPruebas extends BaseIntegracionClinica {
     }
 
     @Test
+    void elMensajeDeContactoAceptaHasta500CaracteresYRechazaMas() throws Exception {
+        Map<String, Object> valido = new java.util.HashMap<>(Map.of("nombre", "Persona Ficticia", "correo", "persona@nutrivida.test",
+                "telefono", "56912345678", "mensaje", "a".repeat(500)));
+        ejecutar(post("/api/solicitudes-contacto"), null, valido).andExpect(status().isCreated());
+
+        valido.put("correo", "otra@nutrivida.test");
+        valido.put("mensaje", "a".repeat(501));
+        ejecutar(post("/api/solicitudes-contacto"), null, valido).andExpect(status().isBadRequest());
+
+        valido.put("mensaje", "a".repeat(14));
+        ejecutar(post("/api/solicitudes-contacto"), null, valido).andExpect(status().isBadRequest());
+    }
+
+    @Test
     void validaLosDatosDelFormularioDeContacto() throws Exception {
         ejecutar(post("/api/solicitudes-contacto"), null, Map.of("nombre", "Ab", "correo", "no-es-correo", "mensaje", "corto"))
                 .andExpect(status().isBadRequest()).andExpect(jsonPath("$.detalles").isNotEmpty());

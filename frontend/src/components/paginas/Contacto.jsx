@@ -327,7 +327,7 @@ export default function Contacto() {
                     name="mensaje"
                     className={obtenerClaseInput('mensaje')}
                     rows="4"
-                    maxLength="600"
+                    maxLength="500"
                     placeholder="Cuéntanos tus metas, dudas o motivo de consulta (mínimo 15 caracteres)..."
                     value={valores.mensaje}
                     onChange={handleChange}
@@ -335,7 +335,7 @@ export default function Contacto() {
                     aria-describedby="hint-mensaje error-mensaje"
                   />
                   <p id="hint-mensaje" className="hint">
-                    Entre 15 y 600 caracteres.
+                    Entre 15 y 500 caracteres.
                   </p>
                   <p id="error-mensaje" className="error" role="alert">
                     {errores.mensaje || ''}

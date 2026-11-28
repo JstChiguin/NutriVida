@@ -9,5 +9,5 @@ public record SolicitudContactoNueva(
         @NotBlank @Size(min = 3, max = 120) String nombre,
         @NotBlank @Email @Size(max = 120) String correo,
         @Pattern(regexp = "^\\+?\\d{8,12}$", message = "El teléfono debe tener entre 8 y 12 dígitos") String telefono,
-        @NotBlank @Size(min = 10, max = 1000) String mensaje) {
+        @NotBlank @Size(min = 15, max = 500) String mensaje) {
 }
