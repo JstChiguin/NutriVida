@@ -105,7 +105,8 @@ La aplicación incorpora los siguientes mecanismos de seguridad:
 - Renovación automática de la sesión con refresh token opaco, enviado en una cookie `HttpOnly` y `SameSite=Lax` (`Secure` configurable con `NUTRIVIDA_COOKIE_SEGURA`).
 - El refresh token se almacena solo como hash SHA-256, rota en cada renovación, revoca toda su familia si se reutiliza uno ya rotado y tiene un límite absoluto de sesión (8 horas por defecto, `NUTRIVIDA_SESION_MAXIMA_HORAS`).
 - Protección CSRF de la renovación con la cabecera `X-Nutrivida-Csrf` y CORS con orígenes explícitos.
-- La renovación vuelve a leer al usuario: una cuenta desactivada o un cambio de rol invalidan las sesiones de renovación. Un token de acceso ya emitido sigue siendo válido hasta su expiración.
+- La renovación vuelve a leer al usuario. Al desactivar una cuenta o cambiar su rol se revocan sus sesiones de renovación y se registra el instante en `usuarios_invalidados`: los tres microservicios rechazan con 401 los access tokens emitidos hasta ese instante (precisión de un segundo), por lo que no hay ventana de 15 minutos con privilegios antiguos.
+- La cookie de refresco toma su `Path` del prefijo del proxy (`X-Forwarded-Prefix`): `/autenticacion/api/v1/autenticacion` detrás de Nginx y `/api/v1/autenticacion` sin proxy. Detrás de Nginx se requiere `NUTRIVIDA_FORWARD_HEADERS=framework`.
 - Protección de contraseñas mediante hash BCrypt.
 - Persistencia de sesión del token de acceso mediante `sessionStorage` (el refresh token nunca es accesible desde JavaScript).
 - Revocación del token de acceso y de la sesión de renovación al cerrar sesión.
@@ -390,13 +391,15 @@ Resultados obtenidos el 28 de noviembre de 2026 en la rama `feature/eft-nutrivid
 
 | Verificación | Resultado |
 |---|---|
-| Pruebas frontend (Vitest) | 215 aprobadas en 19 archivos. |
-| Cobertura frontend (v8) | Sentencias 87,92 %, ramas 85,70 %, funciones 80,33 %, líneas 88,38 %. |
-| Pruebas backend (JUnit, MongoDB 7 aislado en Docker) | 161 métodos `@Test`, 161 ejecutadas, 0 fallos, 0 omitidas. |
+| Pruebas frontend (Vitest) | 305 aprobadas en 22 archivos. |
+| Cobertura frontend (v8) | Sentencias 91,55 %, ramas 85,15 %, funciones 89,71 %, líneas 92,28 %. `src/servicios`: líneas 98,48 %. |
+| Pruebas backend (JUnit, MongoDB 7 aislado en Docker) | 169 métodos `@Test`, 169 ejecutadas, 0 fallos, 0 omitidas. |
 | Cobertura backend (JaCoCo, líneas) | Autenticación 86,0 %, Clínico 92,8 %, Agenda 91,5 %, Común 20,5 %. |
 | ESLint | Sin errores. |
 
-Métodos de prueba del backend por módulo: Común 11, Autenticación 46, Clínico 53 y Agenda 51.
+Métodos de prueba del backend por módulo: Común 11, Autenticación 51, Clínico 55 y Agenda 52.
+
+Verificación de integración sobre el stack Docker (`scripts/verificar-integracion-local.ps1`, vía Nginx): 28 comprobaciones HTTP aprobadas, y recorrido en Chrome (F5, renovación automática, pago rechazado y aprobado con comprobante, URLs restringidas, logout, video) con 17 comprobaciones aprobadas. Medición responsive en Chrome de 22 rutas a 360, 768, 1024 y 1280 px sin desbordes, errores de consola, campos sin etiqueta ni imágenes sin `alt`.
 
 La cobertura del módulo Común es baja porque sus clases se ejercitan sobre todo desde las pruebas de integración de los otros módulos, que JaCoCo contabiliza en cada uno de ellos.
 
@@ -412,6 +415,18 @@ npm run test:cobertura
 npm run build
 npm run lint
 ```
+
+### Integración local con Docker
+
+```powershell
+$env:NUTRIVIDA_JWT_SECRETO = '<secreto de al menos 32 caracteres>'
+$env:NUTRIVIDA_FORWARD_HEADERS = 'framework'
+docker compose -p nutrivida-eft up -d --build
+docker build -t nutrivida-front-eft frontend
+docker run -d --name nutrivida-front-eft -p 127.0.0.1:8080:80 -e IP_BACKEND_PRIVADA=host.docker.internal --add-host=host.docker.internal:host-gateway nutrivida-front-eft
+```
+
+Con `NUTRIVIDA_ADMIN_CORREO`, `NUTRIVIDA_ADMIN_CONTRASENA` y `NUTRIVIDA_CONTRASENA_DEMO` definidos y `node scripts/sembrar-datos-demo.mjs`, `scripts/verificar-integracion-local.ps1` comprueba el sistema a través de Nginx. Use únicamente datos y secretos de prueba.
 
 ### Verificación completa del backend con MongoDB aislado (recomendada)
 
