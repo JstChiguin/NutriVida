@@ -103,6 +103,19 @@ describe('Ficha clínica', () => {
     expect(await screen.findByText(/No tiene autorización/)).toBeTruthy();
   });
 
+  it('no repite identificadores ni deja campos sin etiqueta al abrir la edición de la ficha', async () => {
+    guardarSesionDePrueba('NUTRICIONISTA');
+    clinicoApi.consultarFicha.mockResolvedValue(FICHA);
+    const { container } = renderizarEn(rutaDePaciente(<FichaClinica />), '/pacientes/p1/ficha-clinica');
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Editar ficha clínica' }));
+
+    const ids = [...container.querySelectorAll('[id]')].map((e) => e.id);
+    expect(ids.filter((id, i) => ids.indexOf(id) !== i)).toEqual([]);
+    const sinEtiqueta = [...container.querySelectorAll('input, textarea, select')].filter((e) => !e.labels?.length);
+    expect(sinEtiqueta).toHaveLength(0);
+  });
+
   it('permite al nutricionista editar la ficha clínica exigiendo el motivo del cambio', async () => {
     guardarSesionDePrueba('NUTRICIONISTA');
     clinicoApi.consultarFicha.mockResolvedValue(FICHA);
@@ -180,6 +193,18 @@ describe('Seguimiento nutricional', () => {
       pesoKg: 79.5, estaturaCm: null, cinturaCm: null, observaciones: null,
     });
     expect(clinicoApi.consultarEvolucionMediciones).toHaveBeenCalledTimes(2);
+  });
+
+  it('declara en el formulario los límites de peso, estatura y cintura que exige el servicio', async () => {
+    guardarSesionDePrueba('NUTRICIONISTA');
+    renderizarEn(rutaDePaciente(<Seguimiento />), '/pacientes/p1/seguimiento');
+
+    const peso = await screen.findByLabelText(/Peso \(kg\)/);
+    const estatura = screen.getByLabelText(/Estatura \(cm\)/);
+    const cintura = screen.getByLabelText(/Cintura \(cm\)/);
+    expect([peso.min, peso.max]).toEqual(['2', '400']);
+    expect([estatura.min, estatura.max]).toEqual(['40', '250']);
+    expect([cintura.min, cintura.max]).toEqual(['20', '250']);
   });
 
   it('muestra el error del servidor cuando la medición es inválida', async () => {

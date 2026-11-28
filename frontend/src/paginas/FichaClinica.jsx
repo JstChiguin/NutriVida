@@ -208,7 +208,7 @@ function FichaCompleta({ pacienteId, ficha, puedeEscribir, onCambio }) {
           }}>
             <CampoAreaTexto etiqueta="Detalle de la atención" id="nueva-evolucion" required value={descripcion}
               onChange={(evento) => setDescripcion(evento.target.value)} />
-            <CampoTexto etiqueta="Indicaciones" id="indicaciones" value={indicaciones}
+            <CampoTexto etiqueta="Indicaciones" id="indicaciones-atencion" value={indicaciones}
               onChange={(evento) => setIndicaciones(evento.target.value)} />
             <Boton type="submit">Registrar atención</Boton>
           </form>

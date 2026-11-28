@@ -41,10 +41,10 @@ function FormularioMedicion({ pacienteId, onRegistrada }) {
     <Tarjeta titulo="Registrar mediciones">
       <Mensaje>{error}</Mensaje>
       <form onSubmit={registrar}>
-        <CampoTexto etiqueta="Peso (kg)" id="pesoKg" type="number" step="0.1" required value={valores.pesoKg} onChange={modificar} />
-        <CampoTexto etiqueta="Estatura (cm)" id="estaturaCm" type="number" step="0.1" value={valores.estaturaCm}
+        <CampoTexto etiqueta="Peso (kg)" id="pesoKg" type="number" step="0.1" min="2" max="400" required value={valores.pesoKg} onChange={modificar} />
+        <CampoTexto etiqueta="Estatura (cm)" id="estaturaCm" type="number" step="0.1" min="40" max="250" value={valores.estaturaCm}
           ayuda="Obligatoria en la primera medición." onChange={modificar} />
-        <CampoTexto etiqueta="Cintura (cm)" id="cinturaCm" type="number" step="0.1" value={valores.cinturaCm} onChange={modificar} />
+        <CampoTexto etiqueta="Cintura (cm)" id="cinturaCm" type="number" step="0.1" min="20" max="250" value={valores.cinturaCm} onChange={modificar} />
         <CampoAreaTexto etiqueta="Observaciones" id="observaciones" value={valores.observaciones} onChange={modificar} />
         <Boton type="submit">Registrar mediciones</Boton>
       </form>
